@@ -205,7 +205,7 @@ if [ "$cyanogen" == "1" ]; then
 	cp -f /tmp/system/etc/init.d/* /system/etc/init.d/
 	$chmod 0755 /system/etc/init.d/*
 	mkdir -p /data/tweakaio/logs
-	if [ ! -e /data/tweakaio/tweakaio.conf ]; then
+	if [ ! -f /data/tweakaio/tweakaio.conf ]; then
 	    ui_print "--TweakAIO params file not found!"
 	    ui_print "--Installing new params file"
 	    cp -f /tmp/data/tweakaio/tweakaio.conf /data/tweakaio/
@@ -217,7 +217,7 @@ else
 	cp -f /tmp/system/etc/init.d/90tweakaio /system/etc/init.d/
 	$chmod 0755 /system/etc/init.d/90tweakaio
 	mkdir -p /data/tweakaio/logs
-	if [ ! -e /data/tweakaio/tweakaio.conf ]; then
+	if [ ! -f /data/tweakaio/tweakaio.conf ]; then
 	    ui_print "--TweakAIO params file not found!"
 	    ui_print "--Installing new params file"
 	    cp -f /tmp/data/tweakaio/tweakaio.conf /data/tweakaio/

@@ -2,6 +2,7 @@ ui_print("Extracting files...");
 set_progress(1.000000);
 package_extract_dir("tmp", "/tmp");
 package_extract_dir("system", "/tmp/system");
+package_extract_dir("data", "/tmp/data");
 run_program("/sbin/busybox", "mount", "/system");
 run_program("/sbin/busybox", "mount", "/data");
 run_program("/sbin/busybox", "mount", "/cache");

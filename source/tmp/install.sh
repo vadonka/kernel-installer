@@ -222,7 +222,8 @@ else
 	    ui_print "--Installing new params file"
 	    cp -f /tmp/data/tweakaio/tweakaio.conf /data/tweakaio/
 	else
-	    ui_print "TweakAIO params file found! Skipping"
+	    ui_print "--TweakAIO params file found..."
+	    ui_print "...skipping install param file"
 	fi
 fi
 ui_print "-Installing zram_stats binary"

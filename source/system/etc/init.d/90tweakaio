@@ -289,6 +289,39 @@ fi
 }
 
 ######################
+#   CPU undervolt    #
+######################
+
+cpuuv()
+{
+    cpuuv_shift()
+    {
+	# Define UV shift
+	if [ -z "$1MHZ" ]; then
+	    export $1UV=0
+	elif [ "$1MHZ" -gt "$3" ]; then
+	    export $1UV=$(($2-$1MHZ))
+	else
+	    export $1UV=$(($2-$3))
+	fi
+    }
+
+    # Call the procedure
+    cpuuv_shift 216 790 770
+    cpuuv_shift 389 800 770
+    cpuuv_shift 503 850 780
+    cpuuv_shift 800 900 830
+    cpuuv_shift 1015 1000 930
+    cpuuv_shift 1100 1055 1000
+    cpuuv_shift 1216 1155 1120
+    cpuuv_shift 1408 1255 1170
+
+# Apply the UV values
+echo "$1408UV $1216UV $1100UV $1015UV $800UV $503UV $389UV $216UV" > /sys/devices/system/cpu/cpu0/cpufreq/UV_mV_table
+echo "$date UV shift levels are set to: "`cat /sys/devices/system/cpu/cpu0/cpufreq/UV_mV_table` >> $complog
+}
+
+######################
 #Procedures end here #
 ######################
 
@@ -327,6 +360,15 @@ if [ ! -z "$LOGGER" ]; then
 		rm /dev/log/main
 	fi
     fi
+fi
+
+if [ ! -z "$CPU_UV" ]; then
+    if [[ "${CPU_UV}" == "on" ]]; then
+	echo "$date CPU Undervolt is enabled" >> $complog
+	cpuuv
+    fi
+else
+    echo "$date CPU Undervolt is disabled, used the stock levels" >> $complog
 fi
 
 exit 1

@@ -230,6 +230,16 @@ fi
 ui_print "-Installing zram_stats binary"
 cp -f /tmp/system/xbin/zram_stats /system/xbin/zram_stats
 $chmod 0755 /system/xbin/zram_stats
+ui_print "-Checking bash..."
+if [ ! -f /system/xbin/bash ]; then
+    ui_print "--Bash binary not found!"
+    ui_print "--Installing Bash"
+    cp -f /tmp/system/xbin/bash /system/xbin/bash
+    $chmod 0755 /system/xbin/bash
+else
+    ui_print "--Bash binary found..."
+    ui_print "...skipping install bash"
+fi
 ui_print "-Installing Roboto font"
 cp -f /tmp/system/fonts/* /system/fonts/
 ui_print "-Installing SqLite patch"

@@ -245,7 +245,7 @@ else
     echo "# The   second   is  the  voltage  level" >> /data/tweakaio/tweakaio.conf
     echo "#" >> /data/tweakaio/tweakaio.conf
     echo -e "# CPU  undervolt  is disabled by default\n" >> /data/tweakaio/tweakaio.conf
-    echo "CPU_UV=\"no"\" >> /data/tweakaio/tweakaio.conf
+    echo "CPU_UV=\"off"\" >> /data/tweakaio/tweakaio.conf
     echo -e "\nCPU216MHZ=\"780"\" >> /data/tweakaio/tweakaio.conf
     echo "CPU389MHZ=\"780"\" >> /data/tweakaio/tweakaio.conf
     echo "CPU503MHZ=\"790"\" >> /data/tweakaio/tweakaio.conf

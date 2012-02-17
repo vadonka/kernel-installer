@@ -227,6 +227,34 @@ else
 	    ui_print "...skipping install param file"
 	fi
 fi
+cpuuv=`$grep -c "CPU_UV=" /data/tweakaio/tweakaio.conf`
+if [ "$cpuuv" -gt "0" ]; then
+    ui_print "-CPU UV patch is already present"
+else
+    ui_print "-Applyed CPU UV patch"
+    echo -e "\n########################################" >> /data/tweakaio/tweakaio.conf
+    echo "#            CPU Undervolt             #" >> /data/tweakaio/tweakaio.conf
+    echo "########################################" >> /data/tweakaio/tweakaio.conf
+    echo "#" >> /data/tweakaio/tweakaio.conf
+    echo "# You  can  define  the  voltage  levels" >> /data/tweakaio/tweakaio.conf
+    echo "# The  init  script  limited the minimum" >> /data/tweakaio/tweakaio.conf
+    echo "# voltage   levels   for  safety  reason" >> /data/tweakaio/tweakaio.conf
+    echo "# so   you   cant  undervolt  too  much." >> /data/tweakaio/tweakaio.conf
+    echo "#" >> /data/tweakaio/tweakaio.conf
+    echo "# The  first value is the CPU freq level" >> /data/tweakaio/tweakaio.conf
+    echo "# The   second   is  the  voltage  level" >> /data/tweakaio/tweakaio.conf
+    echo "#" >> /data/tweakaio/tweakaio.conf
+    echo -e "# CPU  undervolt  is disabled by default\n" >> /data/tweakaio/tweakaio.conf
+    echo "CPU_UV=\"no"\" >> /data/tweakaio/tweakaio.conf
+    echo -e "\nCPU216MHZ=\"780"\" >> /data/tweakaio/tweakaio.conf
+    echo "CPU389MHZ=\"780"\" >> /data/tweakaio/tweakaio.conf
+    echo "CPU503MHZ=\"790"\" >> /data/tweakaio/tweakaio.conf
+    echo "CPU800MHZ=\"840"\" >> /data/tweakaio/tweakaio.conf
+    echo "CPU1015MHZ=\"940"\" >> /data/tweakaio/tweakaio.conf
+    echo "CPU1100MHZ=\"1010"\" >> /data/tweakaio/tweakaio.conf
+    echo "CPU1216MHZ=\"1130"\" >> /data/tweakaio/tweakaio.conf
+    echo "CPU1408MHZ=\"1180"\" >> /data/tweakaio/tweakaio.conf
+fi
 ui_print "-Installing zram_stats binary"
 cp -f /tmp/system/xbin/zram_stats /system/xbin/zram_stats
 $chmod 0755 /system/xbin/zram_stats

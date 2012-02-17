@@ -1,6 +1,6 @@
 #!/system/xbin/bash
 
-#LG Optimus 2X AIO init script 14.02.2012
+#LG Optimus 2X AIO init script 17.02.2012
 
 #cleanup
 deflog="/data/tweakaio/logs/tweakaio.log"
@@ -40,7 +40,7 @@ etweak()
 	if [[ "${SMODE}" == "on" ]]; then
 		if [ -f $1 ]; then
 			echo "$date Original: $1 = "`cat $1` >> $deflog
-			echo "$2" > "$1"
+			su -c 'echo "$2" > "$1"' root
 			echo -e "$date Tweaked: $1 = "`cat $1`"\n" >> $deflog
 		fi
 	elif [ -f $1 ]; then
@@ -55,7 +55,7 @@ etweak_nc()
 	fi
 	if [[ "${SMODE}" == "on" ]]; then
 			echo "$date Original: $1 = "`cat $1` >> $deflog
-			echo "$2" > "$1"
+			su -c 'echo "$2" > "$1"' root
 			echo -e "$date Tweaked: $1 = "`cat $1`"\n" >> $deflog
 		else
 			echo "$date Original: $1 = "`cat $1` >> $deflog
@@ -297,27 +297,27 @@ cpuuv()
     cpuuv_shift()
     {
 	# Define UV shift
-	if [ -z "$1MHZ" ]; then
-	    export $1UV=0
-	elif [ "$1MHZ" -gt "$3" ]; then
-	    export $1UV=$(($2-$1MHZ))
+	if [ -z "$1" ]; then
+	    export $2="0"
+	elif [ "$1" -gt "$4" ]; then
+	    export $2=$(($3-$1))
 	else
-	    export $1UV=$(($2-$3))
+	    export $2=$(($3-$4))
 	fi
     }
 
     # Call the procedure
-    cpuuv_shift 216 790 770
-    cpuuv_shift 389 800 770
-    cpuuv_shift 503 850 780
-    cpuuv_shift 800 900 830
-    cpuuv_shift 1015 1000 930
-    cpuuv_shift 1100 1055 1000
-    cpuuv_shift 1216 1155 1120
-    cpuuv_shift 1408 1255 1170
+    cpuuv_shift $CPU216MHZ CPU216UV 790 770
+    cpuuv_shift $CPU389MHZ CPU389UV 800 770
+    cpuuv_shift $CPU503MHZ CPU503UV 850 780
+    cpuuv_shift $CPU800MHZ CPU800UV 900 830
+    cpuuv_shift $CPU1015MHZ CPU1015UV 1000 930
+    cpuuv_shift $CPU1100MHZ CPU1100UV 1055 1000
+    cpuuv_shift $CPU1216MHZ CPU1216UV 1155 1120
+    cpuuv_shift $CPU1408MHZ CPU1408UV 1255 1170
 
 # Apply the UV values
-echo "$1408UV $1216UV $1100UV $1015UV $800UV $503UV $389UV $216UV" > /sys/devices/system/cpu/cpu0/cpufreq/UV_mV_table
+echo "$CPU1408UV $CPU1216UV $CPU1100UV $CPU1015UV $CPU800UV $CPU503UV $CPU389UV $CPU216UV" > /sys/devices/system/cpu/cpu0/cpufreq/UV_mV_table
 echo "$date UV shift levels are set to: "`cat /sys/devices/system/cpu/cpu0/cpufreq/UV_mV_table` >> $complog
 }
 
@@ -363,12 +363,15 @@ if [ ! -z "$LOGGER" ]; then
 fi
 
 if [ ! -z "$CPU_UV" ]; then
+	echo "CPU_UV defined"
     if [[ "${CPU_UV}" == "on" ]]; then
-	echo "$date CPU Undervolt is enabled" >> $complog
-	cpuuv
+		echo "CPU Undervolt enabled" >> $complog
+		cpuuv
+	else
+		echo "CPU Undervolt defined but its disabled" >> $complog
     fi
 else
-    echo "$date CPU Undervolt is disabled, used the stock levels" >> $complog
+    echo "CPU Undervolt is undefined, used the stock levels" >> $complog
 fi
 
 exit 1

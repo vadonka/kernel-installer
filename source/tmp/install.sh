@@ -247,13 +247,20 @@ else
     echo -e "# CPU  undervolt  is disabled by default\n" >> /data/tweakaio/tweakaio.conf
     echo "CPU_UV=\"off"\" >> /data/tweakaio/tweakaio.conf
     echo -e "\nCPU216MHZ=\"780"\" >> /data/tweakaio/tweakaio.conf
-    echo "CPU389MHZ=\"780"\" >> /data/tweakaio/tweakaio.conf
-    echo "CPU503MHZ=\"790"\" >> /data/tweakaio/tweakaio.conf
-    echo "CPU800MHZ=\"840"\" >> /data/tweakaio/tweakaio.conf
-    echo "CPU1015MHZ=\"940"\" >> /data/tweakaio/tweakaio.conf
-    echo "CPU1100MHZ=\"1010"\" >> /data/tweakaio/tweakaio.conf
-    echo "CPU1216MHZ=\"1130"\" >> /data/tweakaio/tweakaio.conf
-    echo "CPU1408MHZ=\"1180"\" >> /data/tweakaio/tweakaio.conf
+    echo "CPU324MHZ=\"790"\" >> /data/tweakaio/tweakaio.conf
+    echo "CPU503MHZ=\"850"\" >> /data/tweakaio/tweakaio.conf
+    echo "CPU800MHZ=\"900"\" >> /data/tweakaio/tweakaio.conf
+    echo "CPU1015MHZ=\"1000"\" >> /data/tweakaio/tweakaio.conf
+    echo "CPU1100MHZ=\"1050"\" >> /data/tweakaio/tweakaio.conf
+    echo "CPU1216MHZ=\"1150"\" >> /data/tweakaio/tweakaio.conf
+    echo "CPU1408MHZ=\"1250"\" >> /data/tweakaio/tweakaio.conf
+fi
+cpuuv1=`$grep -c "CPU324MHZ=" /data/tweakaio/tweakaio.conf`
+if [ "$cpuuv1" -gt "0" ]; then
+    ui_print "-389Mhz already modifyed to 324Mhz"
+else
+    ui_print "-Change 389Mhz to 324Mhz"
+    $sed -i "s/CPU389/CPU324/g" /data/tweakaio/tweakaio.conf
 fi
 ui_print "-Installing zram_stats binary"
 cp -f /tmp/system/xbin/zram_stats /system/xbin/zram_stats

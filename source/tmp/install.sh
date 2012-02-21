@@ -248,12 +248,12 @@ else
     echo "CPU_UV=\"off"\" >> /data/tweakaio/tweakaio.conf
     echo -e "\nCPU216MHZ=\"780"\" >> /data/tweakaio/tweakaio.conf
     echo "CPU324MHZ=\"790"\" >> /data/tweakaio/tweakaio.conf
-    echo "CPU503MHZ=\"850"\" >> /data/tweakaio/tweakaio.conf
+    echo "CPU503MHZ=\"840"\" >> /data/tweakaio/tweakaio.conf
+    echo "CPU655MHZ=\"870"\" >> /data/tweakaio/tweakaio.conf
     echo "CPU800MHZ=\"900"\" >> /data/tweakaio/tweakaio.conf
     echo "CPU1015MHZ=\"1000"\" >> /data/tweakaio/tweakaio.conf
     echo "CPU1100MHZ=\"1050"\" >> /data/tweakaio/tweakaio.conf
     echo "CPU1216MHZ=\"1150"\" >> /data/tweakaio/tweakaio.conf
-    echo "CPU1408MHZ=\"1250"\" >> /data/tweakaio/tweakaio.conf
 fi
 cpuuv1=`$grep -c "CPU324MHZ=" /data/tweakaio/tweakaio.conf`
 if [ "$cpuuv1" -gt "0" ]; then
@@ -261,6 +261,21 @@ if [ "$cpuuv1" -gt "0" ]; then
 else
     ui_print "-Change 389Mhz to 324Mhz"
     $sed -i "s/CPU389/CPU324/g" /data/tweakaio/tweakaio.conf
+fi
+cpu1408mhz=`$grep -c "CPU1408MHZ=" /data/tweakaio/tweakaio.conf`
+if [ "$cpu1408mhz" -gt "0" ]; then
+    ui_print "-1408Mhz CPU already removed"
+else
+    ui_print "-Remove 1408Mhz CPU step"
+    $sed -i "/CPU1408MHZ/d" /data/tweakaio/tweakaio.conf
+fi
+cpu655mhz=`$grep -c "CPU655MHZ=" /data/tweakaio/tweakaio.conf`
+if [ "$cpu655mhz" -gt "0" ]; then
+    ui_print "-655Mhz CPU step already exsist"
+else
+    ui_print "-Add 655Mhz CPU step"
+    cpu800mhz=`$grep "CPU800MHZ=" /data/tweakaio/tweakaio.conf`
+    $sed -i "/$cpu800mhz/ i\CPU655MHZ=\"870"\" /data/tweakaio/tweakaio.conf
 fi
 ui_print "-Installing zram_stats binary"
 cp -f /tmp/system/xbin/zram_stats /system/xbin/zram_stats

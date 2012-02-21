@@ -264,8 +264,6 @@ else
 fi
 cpu1408mhz=`$grep -c "CPU1408MHZ=" /data/tweakaio/tweakaio.conf`
 if [ "$cpu1408mhz" -gt "0" ]; then
-    ui_print "-1408Mhz CPU already removed"
-else
     ui_print "-Remove 1408Mhz CPU step"
     $sed -i "/CPU1408MHZ/d" /data/tweakaio/tweakaio.conf
 fi

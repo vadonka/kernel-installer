@@ -309,15 +309,15 @@ cpuuv()
     # Call the procedure
     cpuuv_shift $CPU216MHZ CPU216UV 780 770
     cpuuv_shift $CPU324MHZ CPU324UV 790 770
-    cpuuv_shift $CPU503MHZ CPU503UV 850 780
+    cpuuv_shift $CPU503MHZ CPU503UV 840 780
+    cpuuv_shift $CPU655MHZ CPU655UV 870 800
     cpuuv_shift $CPU800MHZ CPU800UV 900 820
     cpuuv_shift $CPU1015MHZ CPU1015UV 1000 920
     cpuuv_shift $CPU1100MHZ CPU1100UV 1050 1020
     cpuuv_shift $CPU1216MHZ CPU1216UV 1150 1120
-    cpuuv_shift $CPU1408MHZ CPU1408UV 1250 1170
 
 # Apply the UV values
-echo "$CPU1408UV $CPU1216UV $CPU1100UV $CPU1015UV $CPU800UV $CPU503UV $CPU324UV $CPU216UV" > /sys/devices/system/cpu/cpu0/cpufreq/UV_mV_table
+echo "$CPU1216UV $CPU1100UV $CPU1015UV $CPU800UV $CPU655UV $CPU503UV $CPU324UV $CPU216UV" > /sys/devices/system/cpu/cpu0/cpufreq/UV_mV_table
 echo "$date UV shift levels are set to: "`cat /sys/devices/system/cpu/cpu0/cpufreq/UV_mV_table` >> $complog
 }
 

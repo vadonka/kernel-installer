@@ -138,21 +138,33 @@ ui_print "-Fix some application issues"
 add ro.kernel.android.checkjni = 0
 # Network speed tweak
 ui_print "-Network speed tweak"
-ui_print "-Removing RIL tweak if any"
-del ro.ril.hsxpa =
-del ro.ril.gprsclass =
-del ro.ril.hep =
-del ro.ril.enable.dtm =
-del ro.ril.hsdpa.category =
-del ro.ril.enable.a53 =
-del ro.ril.enable.3g.prefix =
-del ro.ril.htcmaskw1 =
-del ro.ril.htcmaskw1.bitmask =
-del ro.ril.hsupa.category =
-add net.tcp.buffersize.default = 4096,87380,256960,4096,16384,256960
-add net.tcp.buffersize.wifi = 4096,87380,256960,4096,16384,256960
-add net.tcp.buffersize.umts = 4096,87380,256960,4096,16384,256960
-add net.tcp.buffersize.edge = 4096,87380,256960,4096,16384,256960
+ui_print "-Battery friendly 3G"
+add ro.ril.hsxpa = 2
+add ro.ril.gprsclass = 10
+add ro.ril.hep = 1
+add ro.ril.hsdpa.category = 8
+add ro.ril.enable.3g.prefix = 1
+add ro.ril.htcmaskw1.bitmask = 4294967295
+add ro.ril.htcmaskw1 = 14449
+add ro.ril.hsupa.category = 6
+add ro.ril.def.agps.mode = 2
+add ro.ril.def.agps.feature = 1
+add ro.ril.enable.sdr = 1
+add ro.ril.enable.gea3 = 1
+add ro.ril.enable.fd.plmn.prefix = 23402,23410,23411
+add ro.ril.disable.power.collapse = 0
+add ro.ril.enable.a52 = 0
+add ro.ril.enable.a53 = 0
+add ro.ril.enable.dtm = 0
+add net.tcp.buffersize.default = 6144,87380,1048576,6144,87380,1048576
+add net.tcp.buffersize.wifi = 87380,1048576,2097152,87380,1048576,2097152
+add net.tcp.buffersize.lte = 87380,524288,1048576,87380,524288,1048576
+add net.tcp.buffersize.hsdpa = 6144,87380,1048576,6144,87380,1048576
+add net.tcp.buffersize.evdo_b = 6144,87380,1048576,6144,87380,1048576
+add net.tcp.buffersize.umts = 6144,87380,1048576,6144,87380,1048576
+add net.tcp.buffersize.gprs = 6144,87380,1048576,6144,87380,1048576
+add net.tcp.buffersize.edge = 6144,87380,524288,6144,16384,262144
+add net.tcp.buffersize.hspa = 6144,87380,524288,6144,16384,262144
 # Disable the setup wizard
 ui_print "-Disable the setup wizard"
 add ro.setupwizard.mode = DISABLED

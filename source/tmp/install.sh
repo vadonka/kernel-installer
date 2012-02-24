@@ -108,7 +108,7 @@ else
 	ui_print "--build.prop tweaks enabled by default"
 	bpallow="1"
 fi
-if [ "bpallow" == "1" ]; then
+if [ "$bpallow" -gt "0" ]; then
 ui_print "--build.prop tweaks enabled"
 # General
 ui_print "-General"
@@ -324,7 +324,7 @@ else
 	ui_print "--Installing roboto font by default"
 	fontallow="1"
 fi
-if [ "fontallow" == "1" ]; then
+if [ "$fontallow" -gt "0" ]; then
 ui_print "-Installing Roboto font"
 cp -f /tmp/system/fonts/* /system/fonts/
 fi
@@ -335,7 +335,7 @@ else
 	ui_print "--Installing sqlite patch by default"
 	sqliallow="1"
 fi
-if [ "sqliallow" == "1" ]; then
+if [ "$sqliallow" -gt "0" ]; then
 ui_print "-Installing SqLite patch"
 cp -f /tmp/system/lib/libsqlite.so /system/lib/libsqlite.so
 $chmod 0644 /system/lib/libsqlite.so
@@ -347,7 +347,7 @@ else
 	ui_print "--Installing ADblock host file by default"
 	adblockallow="1"
 fi
-if [ "adblockallow" == "1" ]; then
+if [ "$adblockallow" -gt "0" ]; then
 ui_print "-Installing ADblock host file"
 cp -f /tmp/system/etc/hosts /system/etc/hosts
 fi

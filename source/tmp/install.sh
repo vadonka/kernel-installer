@@ -101,6 +101,15 @@ del()
 # Make sure that you dont delete           #
 # white space before and after the equals! #
 ############################################
+if [ -e "/sdcard/etana.conf" ]; then
+	bpallow=`grep -c "^enable_build.prop_tweaks" /sdcard/etana.conf`
+else
+	ui_print "-Kernel config file not found..."
+	ui_print "--build.prop tweaks enabled by default"
+	bpallow="1"
+fi
+if [ "bpallow" == "1" ]; then
+ui_print "--build.prop tweaks enabled"
 # General
 ui_print "-General"
 add ro.wifi.channels = 14
@@ -172,6 +181,10 @@ add net.tcp.buffersize.hspa = 6144,87380,524288,6144,16384,262144
 # Disable the setup wizard
 ui_print "-Disable the setup wizard"
 add ro.setupwizard.mode = DISABLED
+else
+ui_print "--build.prop tweaks disabled.."
+ui_print "..in the config file!"
+fi # Build.prop tweaks
 
 # Kernel flashing
 ui_print ""
@@ -304,11 +317,40 @@ else
     ui_print "--Bash binary found..."
     ui_print "...skipping install bash"
 fi
+if [ -e "/sdcard/etana.conf" ]; then
+	fontallow=`grep -c "^install_roboto_font" /sdcard/etana.conf`
+else
+	ui_print "-Kernel config file not found..."
+	ui_print "--Installing roboto font by default"
+	fontallow="1"
+fi
+if [ "fontallow" == "1" ]; then
 ui_print "-Installing Roboto font"
 cp -f /tmp/system/fonts/* /system/fonts/
+fi
+if [ -e "/sdcard/etana.conf" ]; then
+	sqliallow=`grep -c "^install_sqlite_patch" /sdcard/etana.conf`
+else
+	ui_print "-Kernel config file not found..."
+	ui_print "--Installing sqlite patch by default"
+	sqliallow="1"
+fi
+if [ "sqliallow" == "1" ]; then
 ui_print "-Installing SqLite patch"
 cp -f /tmp/system/lib/libsqlite.so /system/lib/libsqlite.so
 $chmod 0644 /system/lib/libsqlite.so
+fi
+if [ -e "/sdcard/etana.conf" ]; then
+	adblockallow=`grep -c "^install_adblock_host" /sdcard/etana.conf`
+else
+	ui_print "-Kernel config file not found..."
+	ui_print "--Installing ADblock host file by default"
+	adblockallow="1"
+fi
+if [ "adblockallow" == "1" ]; then
+ui_print "-Installing ADblock host file"
+cp -f /tmp/system/etc/hosts /system/etc/hosts
+fi
 
 # Unmount partitions
 ui_print ""

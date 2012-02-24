@@ -104,19 +104,23 @@ del()
 # General
 ui_print "-General"
 add ro.wifi.channels = 14
+add dalvik.vm.heapstartsize = 5m
+add dalvik.vm.heapgrowthlimit = 48m
 add dalvik.vm.heapsize = 48m
-add ro.telephony.call_ring.delay = 1000
+add ro.telephony.call_ring.delay = 400
+add ro.HOME_APP_ADJ = 1
 # Battery save
 ui_print "-Battery save"
-add wifi.supplicant_scan_interval = 320
+add wifi.supplicant_scan_interval = 180
 add pm.sleep_mode = 1
 add ro.ril.disable.power.collapse = 0
 # Helps scrolling responsiveness
 ui_print "-Scroll hack"
-add windowsmgr.max_events_per_sec = 150
+add windowsmgr.max_events_per_sec = 200
 # Fix BSOD issue after a call
 ui_print "-Endcall BSOD workaround"
 add ro.lge.proximity.delay = 25
+add ro.lg.proximity.delay = 25
 # CM7 tweak
 if [ "$cyanogen" == "1" ]; then
 	ui_print "-CM7 specific tweaks"

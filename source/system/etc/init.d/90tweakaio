@@ -1,8 +1,8 @@
 #!/system/xbin/bash
 
-#LG Optimus 2X AIO init script 17.02.2012
+# LG Optimus 2X AIO init script 24.02.2012
 
-#cleanup
+# cleanup
 deflog="/data/tweakaio/logs/tweakaio.log"
 
 if [ -f $deflog ]; then
@@ -10,7 +10,7 @@ if [ -f $deflog ]; then
 fi
 touch $deflog
 
-#Delete compcache log
+# Delete compcache log
 complog="/data/tweakaio/logs/compcache.log"
 
 if [ -f $complog ]; then
@@ -62,9 +62,9 @@ etweak_nc()
 	fi
 }
 
-#########################################
-#Basic Memory Management and LMK Tweaks #
-#########################################
+##########################################
+# Basic Memory Management and LMK Tweaks #
+##########################################
 TOTALMEM=`free | grep Mem | awk 'BEGIN { FS = " " } ; { print $2 }'`
 
 basic_mem_tweaks()
@@ -72,7 +72,7 @@ basic_mem_tweaks()
 if [ -z "$LMKVAL" ]; then
     LMKVAL="str"
 fi
-	#Strict minfree handler tweak
+	# Strict minfree handler tweak
 	etweak /sys/module/lowmemorykiller/parameters/adj 0,1,2,4,6,15
 	lmk()
 		{
@@ -82,7 +82,7 @@ fi
 			fi
 		}
 
-	#lowmemorykiller auto management
+	# lowmemorykiller auto management
 	if [[ "${LMKVAL}" == "auto" ]]; then
 		echo "$date Using lowmemorykiller auto management mode..." >> $deflog
 			if [ "$TOTALMEM" -gt "470000" ]; then
@@ -95,7 +95,7 @@ fi
 				LMKVAL="aggr"
 			fi
 	fi
-	#Define minfree
+	# Define minfree
 	lmk def 1536,2048,4096,5120,5632,6144
 	lmk std 1536,3072,4096,7680,8960,10240
 	lmk opt 1536,2048,4096,10240,12800,15360
@@ -105,70 +105,112 @@ fi
 	lmk ult 1536,3072,4096,51200,57600,64000
 }
 
-#################
-#Network Tweaks #
-#################
+##################
+# Network Tweaks #
+##################
 network_tweaks()
 {
+	# Updated, thx for Zeppelinrox
+	etweak_nc /proc/sys/net/ipv4/ip_no_pmtu_disc 0
+	etweak_nc /proc/sys/net/ipv4/tcp_ecn 0
 	etweak_nc /proc/sys/net/ipv4/tcp_timestamps 0
 	etweak_nc /proc/sys/net/ipv4/tcp_no_metrics_save 1
+	etweak_nc /proc/sys/net/ipv4/tcp_tw_recycle 1
 	etweak_nc /proc/sys/net/ipv4/tcp_tw_reuse 1
 	etweak_nc /proc/sys/net/ipv4/tcp_sack 1
 	etweak_nc /proc/sys/net/ipv4/tcp_window_scaling 0
-	etweak_nc /proc/sys/net/ipv4/tcp_keepalive_time 1200
-	etweak_nc /proc/sys/net/ipv4/tcp_keepalive_probes 5
-	etweak_nc /proc/sys/net/ipv4/tcp_keepalive_intvl 30
-	etweak_nc /proc/sys/net/ipv4/tcp_fin_timeout 15
 	etweak_nc /proc/sys/net/ipv4/tcp_max_tw_buckets 360000
+	etweak_nc /proc/sys/net/ipv4/tcp_moderate_rcvbuf 1
 	etweak_nc /proc/sys/net/ipv4/tcp_reordering 5
+	etweak_nc /proc/sys/net/ipv4/route.flush 1
+	etweak_nc /proc/sys/net/ipv4/tcp_rfc1337 1
 	etweak_nc /proc/sys/net/ipv4/tcp_slow_start_after_idle 0
-	etweak_nc /proc/sys/net/ipv4/tcp_syn_retries 3
+	etweak_nc /proc/sys/net/ipv4/tcp_sack 1
+	etweak_nc /proc/sys/net/ipv4/tcp_fack 1
+	etweak_nc /proc/sys/net/ipv4/tcp_rmem 6144,87380,2097152
+	etweak_nc /proc/sys/net/ipv4/tcp_wmem 6144,87380,2097152
+	etweak_nc /proc/sys/net/ipv4/udp_rmem_min 6144
+	etweak_nc /proc/sys/net/ipv4/udp_wmem_min 6144
+	etweak_nc /proc/sys/net/ipv4/tcp_window_scaling 1
+	etweak_nc /proc/sys/net/ipv4/tcp_congestion_control cubic
+	etweak_nc /proc/sys/net/ipv4/tcp_syncookies 1
+	etweak_nc /proc/sys/net/ipv4/conf.all.rp_filter 1
+	etweak_nc /proc/sys/net/ipv4/conf.default.rp_filter 1
 	etweak_nc /proc/sys/net/ipv4/tcp_synack_retries 2
-	etweak_nc /proc/sys/net/ipv4/tcp_tw_recycle 1
-	etweak_nc /proc/sys/net/ipv4/tcp_rmem 6144,87380,524288
-	etweak_nc /proc/sys/net/ipv4/tcp_wmem 6144,87380,524288
-	etweak_nc /proc/sys/net/ipv4/conf/all/accept_redirects 0
+	etweak_nc /proc/sys/net/ipv4/tcp_syn_retries 2
+	etweak_nc /proc/sys/net/ipv4/tcp_max_syn_backlog 1024
+	etweak_nc /proc/sys/net/ipv4/tcp_max_tw_buckets 16384
+	etweak_nc /proc/sys/net/ipv4/icmp_echo_ignore_all 1
+	etweak_nc /proc/sys/net/ipv4/icmp_ignore_bogus_error_responses 1
+	etweak_nc /proc/sys/net/ipv4/tcp_no_metrics_save 1
+	etweak_nc /proc/sys/net/ipv4/tcp_fin_timeout 15
+	etweak_nc /proc/sys/net/ipv4/tcp_keepalive_intvl 30
+	etweak_nc /proc/sys/net/ipv4/tcp_keepalive_probes 5
+	etweak_nc /proc/sys/net/ipv4/tcp_keepalive_time 1800
+	etweak_nc /proc/sys/net/ipv4/ip_forward 0
+	etweak_nc /proc/sys/net/ipv4/conf/default/accept_source_route 0
 	etweak_nc /proc/sys/net/ipv4/conf/default/accept_redirects 0
-	etweak_nc /proc/sys/net/core/wmem_default 65535
-	etweak_nc /proc/sys/net/core/wmem_max 524288
-	etweak_nc /proc/sys/net/core/rmem_default 65535
-	etweak_nc /proc/sys/net/core/rmem_max 524288
+	etweak_nc /proc/sys/net/ipv4/conf/default/secure_redirects 0
+	etweak_nc /proc/sys/net/ipv4/conf/all/accept_source_route 0
+	etweak_nc /proc/sys/net/ipv4/conf/all/accept_redirects 0
+	etweak_nc /proc/sys/net/ipv4/conf/all/secure_redirects 0
+	etweak_nc /proc/sys/net/core/wmem_default 262144
+	etweak_nc /proc/sys/net/core/wmem_max 2097152
+	etweak_nc /proc/sys/net/core/rmem_default 262144
+	etweak_nc /proc/sys/net/core/rmem_max 2097152
 	etweak_nc /proc/sys/net/core/netdev_max_backlog 262144
 	etweak_nc /proc/sys/net/core/somaxconn 262144
+	etweak_nc /proc/sys/net/core/optmem_max 20480
+	etweak_nc /proc/sys/net/unix/max_dgram_qlen 50
 }
 
-############
-#VM Tweaks #
-############
+#############
+# VM Tweaks #
+#############
 vm_tweaks()
 {
-	#Disable normalized sleeper
+	# Disable normalized sleeper
 	mount -t debugfs none /sys/kernel/debug
 	echo NO_NORMALIZED_SLEEPER > /sys/kernel/debug/sched_features
-	#Force Enable CPU second core
+	# Allow CPU1 core
 	chmod 666 /sys/devices/system/cpu/cpu1/online
 	etweak /sys/devices/system/cpu/cpu1/online 1
 	chmod 444 /sys/devices/system/cpu/cpu1/online
-	#Memory management
-	etweak /proc/sys/vm/oom_kill_allocating_task 1
+	# Memory management, updated thx for Zeppelinrox
+	etweak /proc/sys/vm/oom_kill_allocating_task 0
+	etweak /proc/sys/vm/oom_dump_tasks 1
 	etweak /proc/sys/vm/panic_on_oom 0
 	etweak /proc/sys/vm/laptop_mode 0
-	etweak /proc/sys/vm/swappiness 10
-	etweak /proc/sys/vm/dirty_background_ratio 40
-	etweak /proc/sys/vm/dirty_ratio 70
+	etweak /proc/sys/vm/block_dump 0
+	etweak /proc/sys/vm/swappiness 0
+	etweak /proc/sys/vm/dirty_background_ratio 60
+	etweak /proc/sys/vm/dirty_ratio 95
 	etweak /proc/sys/vm/min_free_kbytes 10240
-	etweak /proc/sys/vm/vfs_cache_pressure 25
+	etweak /proc/sys/vm/vfs_cache_pressure 10
 	etweak /proc/sys/vm/overcommit_memory 1
 	etweak /proc/sys/vm/page-cluster 3
 	etweak /proc/sys/vm/min_free_order_shift 4
-	etweak /proc/sys/vm/dirty_writeback_centisecs 500
-	etweak /proc/sys/vm/dirty_expire_centisecs 3000
-	etweak /proc/sys/fs/lease-break-time 45
-	etweak_nc /proc/sys/kernel/panic 5
-	etweak_nc /proc/sys/kernel/panic_on_oops 1
-	etweak_nc /proc/sys/kernel/sched_compat_yield 1
+	etweak /proc/sys/vm/dirty_writeback_centisecs 2000
+	etweak /proc/sys/vm/dirty_expire_centisecs 1000
+	etweak /proc/sys/fs/lease-break-time 10
+	etweak /proc/sys/fs/file-max 65536
+	etweak_nc /proc/sys/kernel/panic 30
+	etweak_nc /proc/sys/kernel/panic_on_oops 0
 	etweak_nc /proc/sys/kernel/sched_child_runs_first 0
+	etweak_nc /proc/sys/kernel/sched_compat_yield 1
+	etweak_nc /proc/sys/kernel/sched_features 24189
+	etweak_nc /proc/sys/kernel/sched_latency_ns 18000000
+	etweak_nc /proc/sys/kernel/sched_min_granularity_ns 1500000
+	etweak_nc /proc/sys/kernel/sched_shares_ratelimit 256000
+	etweak_nc /proc/sys/kernel/sched_wakeup_granularity_ns 3000000
 	etweak_nc /proc/sys/kernel/threads-max 5000
+	etweak_nc /proc/sys/kernel/msgmni 2048
+	etweak_nc /proc/sys/kernel/msgmax 64000
+	etweak_nc /proc/sys/kernel/shmmni 4096
+	etweak_nc /proc/sys/kernel/shmall 2097152
+	etweak_nc /proc/sys/kernel/shmmax 268435456
+	etweak_nc /proc/sys/kernel/sem 500,512000,64,2048
+	etweak_nc /proc/sys/kernel/hung_task_timeout_secs 30
 }
 
 ccache()
@@ -182,7 +224,7 @@ fi
 if [ -z "$INTERVAL" ]; then
     INTERVAL="4"
 fi
-	#Compcache management
+	# Compcache management
 	ccache_proc()
 	{
 		zram_init()
@@ -205,7 +247,7 @@ fi
 			echo "$date drop cache" >> $complog
 			sync; sysctl -w vm.drop_caches=3 > /dev/null
 			echo "$date tweak swappiness and vfs_cache_pressure" >> $complog
-			etweak /proc/sys/vm/swappiness 90
+			etweak /proc/sys/vm/swappiness 100
 			etweak /proc/sys/vm/vfs_cache_pressure 100
 			echo "$date set zram disksize to $(($CS_SIZE))MB" >> $complog
 			echo $(($1*1024*1024)) > /sys/block/zram0/disksize
@@ -241,7 +283,7 @@ fi
 				echo "$date ERROR: zram module not loaded!" >> $complog
 			fi
 		fi
-		#Cron job for periodically cache drop
+		# Cron job for periodically cache drop
 		mkdir -p /data/cron
 		echo "* */$INTERVAL * * * sync; sysctl -w vm.drop_caches=3" > /data/cron/root
 		/system/xbin/crond -b -l 0 -c /data/cron -L /data/cron/cron.log
@@ -259,29 +301,32 @@ fi
 		fi
 }
 
-######################
-#Mount Option Tweaks #
-######################
+#######################
+# Mount Option Tweaks #
+#######################
 
 mount_tweaks()
 {
 if [ -z "$SCHEDULER" ]; then
     SCHEDULER="bfq"
 fi
-	# Remount with noatime and nodiratime
-	busybox mount -o remount,noatime,nodiratime,commit=180,noauto_da_alloc /system
-	busybox mount -o remount,noatime,nodiratime,commit=180,noauto_da_alloc /data
-	busybox mount -o remount,noatime,nodiratime,commit=180,noauto_da_alloc /cache 
+	# Remount with noatime and nodiratime, updated thx for SetiroN
+	busybox mount -o remount,noatime,nodiratime,data=writeback,barrier=0,nobh,commit=180,noauto_da_alloc /system
+	busybox mount -o remount,noatime,nodiratime,data=writeback,barrier=0,nobh,nosuid,nodev,commit=120,noauto_da_alloc /data
+	busybox mount -o remount,noatime,nodiratime,data=writeback,nobh,barrier=0,commit=150,noauto_da_alloc /cache 
+	# Updated IO tweaks, thx for Zeppelinrox
 	m0()
 	{
 		etweak /sys/block/$1/queue/rotational 0
 		etweak /sys/block/$1/queue/read_ahead_kb 2048
 		etweak /sys/block/$1/queue/iostats 0
-		etweak /sys/block/$1/queue/iosched/quantum 4
 		etweak /sys/block/$1/queue/iosched/low_latency 1
 		etweak /sys/block/$1/queue/iosched/back_seek_penalty 1
 		etweak /sys/block/$1/queue/iosched/back_seek_max 1000000000
-		etweak /sys/block/$1/queue/nr_requests 128
+		etweak /sys/block/$1/queue/iosched/slice_idle 0
+		etweak /sys/block/$1/queue/iosched/fifo_batch 1
+		etweak /sys/block/$1/queue/iosched/quantum 16
+		etweak /sys/block/$1/queue/nr_requests 512
 		etweak /sys/block/$1/queue/scheduler $SCHEDULER
 	}
 	m0 mmcblk0 && m0 mmcblk1
@@ -321,9 +366,9 @@ echo "$CPU1216UV $CPU1100UV $CPU1015UV $CPU800UV $CPU655UV $CPU503UV $CPU324UV $
 echo "$date UV shift levels are set to: "`cat /sys/devices/system/cpu/cpu0/cpufreq/UV_mV_table` >> $complog
 }
 
-######################
-#Procedures end here #
-######################
+#######################
+# Procedures end here #
+#######################
 
 sysctl -p /etc/sysctl.conf
 if [ -z "$LMKMODE" ]; then

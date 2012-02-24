@@ -40,7 +40,7 @@ etweak()
 	if [[ "${SMODE}" == "on" ]]; then
 		if [ -f $1 ]; then
 			echo "$date Original: $1 = "`cat $1` >> $deflog
-			su -c "echo `echo $2` > `echo $1`" root
+			echo $2 > $1
 			echo -e "$date Tweaked: $1 = "`cat $1`"\n" >> $deflog
 		fi
 	elif [ -f $1 ]; then
@@ -55,7 +55,7 @@ etweak_nc()
 	fi
 	if [[ "${SMODE}" == "on" ]]; then
 			echo "$date Original: $1 = "`cat $1` >> $deflog
-			su -c "echo `echo $2` > `echo $1`" root
+			echo $2 > $1
 			echo -e "$date Tweaked: $1 = "`cat $1`"\n" >> $deflog
 		else
 			echo "$date Original: $1 = "`cat $1` >> $deflog
@@ -362,7 +362,7 @@ cpuuv()
     cpuuv_shift $CPU1216MHZ CPU1216UV 1150 1120
 
 # Apply the UV values
-su -c "echo '$CPU1216UV $CPU1100UV $CPU1015UV $CPU800UV $CPU655UV $CPU503UV $CPU324UV $CPU216UV' > /sys/devices/system/cpu/cpu0/cpufreq/UV_mV_table"
+echo "$CPU1216UV $CPU1100UV $CPU1015UV $CPU800UV $CPU655UV $CPU503UV $CPU324UV $CPU216UV" > /sys/devices/system/cpu/cpu0/cpufreq/UV_mV_table
 echo "$date UV shift levels are set to: "`cat /sys/devices/system/cpu/cpu0/cpufreq/UV_mV_table` >> $deflog
 }
 

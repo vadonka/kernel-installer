@@ -283,6 +283,7 @@ else
     echo "CPU1015MHZ=\"1000"\" >> /data/tweakaio/tweakaio.conf
     echo "CPU1100MHZ=\"1050"\" >> /data/tweakaio/tweakaio.conf
     echo "CPU1216MHZ=\"1150"\" >> /data/tweakaio/tweakaio.conf
+	echo "CPU1408MHZ=\"1250"\" >> /data/tweakaio/tweakaio.conf
 fi
 cpuuv1=`$grep -c "CPU324MHZ=" /data/tweakaio/tweakaio.conf`
 if [ "$cpuuv1" -gt "0" ]; then
@@ -291,11 +292,6 @@ else
     ui_print "-Change 389Mhz to 324Mhz"
     $sed -i "s/CPU389/CPU324/g" /data/tweakaio/tweakaio.conf
 fi
-cpu1408mhz=`$grep -c "CPU1408MHZ=" /data/tweakaio/tweakaio.conf`
-if [ "$cpu1408mhz" -gt "0" ]; then
-    ui_print "-Remove 1408Mhz CPU step"
-    $sed -i "/CPU1408MHZ/d" /data/tweakaio/tweakaio.conf
-fi
 cpu655mhz=`$grep -c "CPU655MHZ=" /data/tweakaio/tweakaio.conf`
 if [ "$cpu655mhz" -gt "0" ]; then
     ui_print "-655Mhz CPU step already exsist"
@@ -303,6 +299,14 @@ else
     ui_print "-Add 655Mhz CPU step"
     cpu800mhz=`$grep "CPU800MHZ=" /data/tweakaio/tweakaio.conf`
     $sed -i "/$cpu800mhz/ i\CPU655MHZ=\"870"\" /data/tweakaio/tweakaio.conf
+fi
+cpu1408mhz=`$grep -c "CPU1408MHZ=" /data/tweakaio/tweakaio.conf`
+if [ "$cpu1408mhz" -gt "0" ]; then
+    ui_print "-1408Mhz CPU step already exsist"
+else
+    ui_print "-Add 1408Mhz CPU step"
+    cpu1216mhz=`$grep "CPU1216MHZ=" /data/tweakaio/tweakaio.conf`
+    $sed -i "/$cpu1216mhz/ a\CPU1408MHZ=\"1250"\" /data/tweakaio/tweakaio.conf
 fi
 dvcleaner=`$grep -c "DALVIK_CLEANER=" /data/tweakaio/tweakaio.conf`
 if [ "$dvcleaner" -gt "0" ]; then

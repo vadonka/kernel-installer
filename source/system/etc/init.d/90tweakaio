@@ -404,6 +404,8 @@ dalvik_cleaner()
 			if [ ! -e "/data/app/$apk" ]; then
 				echo "$date Outdated dex found for $dex removing..." >> $deflog
 				rm $dex
+			else
+			    echo "$date Outdated dex not found in /data/app" >> $deflog
 			fi
 		done
 
@@ -413,6 +415,8 @@ dalvik_cleaner()
 				if [ ! -e "/system/app/$apk" ]; then
 					echo "$date Outdated dex found for $dex removing..." >> $deflog
 					rm $dex
+				else
+				    echo "$date Outdated dex not found in /system/app" >> $deflog
 				fi
 		done
 
@@ -422,12 +426,14 @@ dalvik_cleaner()
 				if [ ! -e "/system/framework/$jar" ]; then
 					echo "$date Outdated dex found for $dex removing..." >> $deflog
 					rm $dex
+				else
+				    echo "$date Outdated dex not found in /system/framework" >> $deflog
 				fi
 		done
 	else
 		echo "$date No framework found, hopefully this is first boot." >> $deflog
 	fi	
-	mount -o remount,ro /system 
+	mount -o remount,ro /system
 }
 
 ####################
@@ -443,6 +449,7 @@ sqlidefrag()
 			for i in `find /data -iname "*.db"`; do
 				/system/xbin/sqlite3 $i 'VACUUM;';
 			done
+		echo "$date Defrag process completed." >> $deflog
 	else
 		echo "$date WARNING: SQLite3 binary not found!" >> $deflog
 		echo "$date Skipping defrag process" >> $deflog

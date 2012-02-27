@@ -261,9 +261,9 @@ if [ "$cpuuv" -gt "0" ]; then
 	ui_print "-CPU UV patch is already present"
 else
 	ui_print "-Applyed CPU UV patch"
-	echo -e "\n########################################" >> /data/tweakaio/tweakaio.conf
-	echo "#            CPU Undervolt             #" >> /data/tweakaio/tweakaio.conf
-	echo "########################################" >> /data/tweakaio/tweakaio.conf
+	echo -e "\n#***************************************" >> /data/tweakaio/tweakaio.conf
+	echo "#**********< CPU Undervolt >************" >> /data/tweakaio/tweakaio.conf
+	echo "#***************************************" >> /data/tweakaio/tweakaio.conf
 	echo "#" >> /data/tweakaio/tweakaio.conf
 	echo "# You  can  define  the  voltage  levels" >> /data/tweakaio/tweakaio.conf
 	echo "# The  init  script  limited the minimum" >> /data/tweakaio/tweakaio.conf
@@ -313,9 +313,9 @@ if [ "$dvcleaner" -gt "0" ]; then
 	ui_print "-Dalvik-Cleaner patch is already present"
 else
 	ui_print "-Applyed Dalvik-Cleaner patch"
-	echo -e "\n########################################" >> /data/tweakaio/tweakaio.conf
-	echo "#         Dalvik Cache Cleaner         #" >> /data/tweakaio/tweakaio.conf
-	echo "########################################" >> /data/tweakaio/tweakaio.conf
+	echo -e "\n#***************************************" >> /data/tweakaio/tweakaio.conf
+	echo "#*******< Dalvik Cache Cleaner >********" >> /data/tweakaio/tweakaio.conf
+	echo "#***************************************" >> /data/tweakaio/tweakaio.conf
 	echo "#" >> /data/tweakaio/tweakaio.conf
 	echo "# Clean  outdated  dalvik  cache entries" >> /data/tweakaio/tweakaio.conf
 	echo "# modded   by  trev  for  synergykingdom" >> /data/tweakaio/tweakaio.conf
@@ -331,9 +331,9 @@ if [ "$sqlidefr" -gt "0" ]; then
 	ui_print "-SQLite3 defrag patch is already present"
 else
 	ui_print "-Applyed SQLite3 defrag patch"
-	echo -e "\n########################################" >> /data/tweakaio/tweakaio.conf
-	echo "#            SQLite Defrag             #" >> /data/tweakaio/tweakaio.conf
-	echo "########################################" >> /data/tweakaio/tweakaio.conf
+	echo -e "\n#***************************************" >> /data/tweakaio/tweakaio.conf
+	echo "#**********< SQLite Defrag >************" >> /data/tweakaio/tweakaio.conf
+	echo "#***************************************" >> /data/tweakaio/tweakaio.conf
 	echo "#" >> /data/tweakaio/tweakaio.conf
 	echo -e "# Defrag SQLite3 databases\n" >> /data/tweakaio/tweakaio.conf
 	echo "SQLITE_DEFRAG=\"off"\" >> /data/tweakaio/tweakaio.conf
@@ -384,6 +384,42 @@ fi
 if [ "$adblockallow" -gt "0" ]; then
 ui_print "-Installing ADblock host file"
 cp -f /tmp/system/etc/hosts /system/etc/hosts
+fi
+ui_print "-Tweakaio.conf Eyecandyzer :)"
+noeyecandy=`grep -c "^#######################################" /data/tweakaio/tweakaio.conf`
+if [ "$noeyecandy" -gt "0" ]; then
+    ui_print "--No EyeCandy..baaad :-("
+    ui_print "--Running EyeCandyzer"
+    $sed -i "s/########################################/#***************************************/g" /data/tweakaio/tweakaio.conf
+    sed1=`grep "Script mode" /data/tweakaio/tweakaio.conf`
+    sed2=`grep "System logger" /data/tweakaio/tweakaio.conf`
+    sed3=`grep "Low Memory Killer mode" /data/tweakaio/tweakaio.conf`
+    sed4=`grep "Network Tweaks" /data/tweakaio/tweakaio.conf`
+    sed5=`grep "VM Management and kernel tweaks" /data/tweakaio/tweakaio.conf`
+    sed6=`grep "Mount Option Tweaks" /data/tweakaio/tweakaio.conf`
+    sed7=`grep "CPU Undervolt" /data/tweakaio/tweakaio.conf`
+    sed8=`grep "Dalvik Cache Cleaner" /data/tweakaio/tweakaio.conf`
+    sed9=`grep "SQLite Defrag" /data/tweakaio/tweakaio.conf`
+    $sed -i "s/$sed1/#***********< Script mode >*************/g" /data/tweakaio/tweakaio.conf
+    $sed -i "s/$sed2/#**********< System logger >************/g" /data/tweakaio/tweakaio.conf
+    $sed -i "s/$sed3/#******< Low Memory Killer mode >*******/g" /data/tweakaio/tweakaio.conf
+    $sed -i "s/$sed4/#**********< Network Tweaks >***********/g" /data/tweakaio/tweakaio.conf
+    $sed -i "s/$sed5/#**< VM Management and kernel tweaks >**/g" /data/tweakaio/tweakaio.conf
+    $sed -i "s/$sed6/#*******< Mount Option Tweaks >*********/g" /data/tweakaio/tweakaio.conf
+    $sed -i "s/$sed7/#**********< CPU Undervolt >************/g" /data/tweakaio/tweakaio.conf
+    $sed -i "s/$sed8/#*******< Dalvik Cache Cleaner >********/g" /data/tweakaio/tweakaio.conf
+    $sed -i "s/$sed9/#**********< SQLite Defrag >************/g" /data/tweakaio/tweakaio.conf
+    ui_print "--EyeCandy Succesful :-)"
+else
+    ui_print "--Tweakaio.conf already EyeCandy"
+fi
+if [ -e "/data/app/etana-kernel-tweakaio-signed.apk" ]; then
+    ui_print "-TweakAIO config editor already installer"
+else
+    ui_print "-Install TweakAIO config editor app"
+    cp -f /tmp/data/app/etana-kernel-tweakaio-signed.apk /data/app/etana-kernel-tweakaio-signed.apk
+    $chmod 0644 /data/app/etana-kernel-tweakaio-signed.apk
+    $chown system:system /data/app/etana-kernel-tweakaio-signed.apk
 fi
 
 # Unmount partitions

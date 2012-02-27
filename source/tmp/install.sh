@@ -304,6 +304,24 @@ else
     cpu800mhz=`$grep "CPU800MHZ=" /data/tweakaio/tweakaio.conf`
     $sed -i "/$cpu800mhz/ i\CPU655MHZ=\"870"\" /data/tweakaio/tweakaio.conf
 fi
+dvcleaner=`$grep -c "DALVIK_CLEANER=" /data/tweakaio/tweakaio.conf`
+if [ "$dvcleaner" -gt "0" ]; then
+    ui_print "-Dalvik-Cleaner patch is already present"
+else
+    ui_print "-Applyed Dalvik-Cleaner patch"
+    echo -e "\n########################################" >> /data/tweakaio/tweakaio.conf
+    echo "#         Dalvik Cache Cleaner         #" >> /data/tweakaio/tweakaio.conf
+    echo "########################################" >> /data/tweakaio/tweakaio.conf
+    echo "#" >> /data/tweakaio/tweakaio.conf
+    echo "# Clean  outdated  dalvik  cache entries" >> /data/tweakaio/tweakaio.conf
+    echo "# modded   by  trev  for  synergykingdom" >> /data/tweakaio/tweakaio.conf
+    echo "# additional   mods  by  bigrushdog  for" >> /data/tweakaio/tweakaio.conf
+    echo "# Tiamat Xoom Rom" >> /data/tweakaio/tweakaio.conf
+    echo "#" >> /data/tweakaio/tweakaio.conf
+    echo "# thanks Team Synergy and TrevE" >> /data/tweakaio/tweakaio.conf
+    echo -e "# you guys rock!\n" >> /data/tweakaio/tweakaio.conf
+    echo "DALVIK_CLEANER=\"off"\" >> /data/tweakaio/tweakaio.conf
+fi
 ui_print "-Installing zram_stats binary"
 cp -f /tmp/system/xbin/zram_stats /system/xbin/zram_stats
 $chmod 0755 /system/xbin/zram_stats

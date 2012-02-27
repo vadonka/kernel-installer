@@ -1,6 +1,6 @@
 #!/system/xbin/bash
 
-# LG Optimus 2X AIO init script v2.0
+# LG Optimus 2X AIO init script v2.0.1
 
 # cleanup
 deflog="/data/tweakaio/logs/tweakaio.log"
@@ -366,6 +366,56 @@ echo "$CPU1216UV $CPU1100UV $CPU1015UV $CPU800UV $CPU655UV $CPU503UV $CPU324UV $
 echo "$date UV shift levels are set to: "`cat /sys/devices/system/cpu/cpu0/cpufreq/UV_mV_table` >> $deflog
 }
 
+##################
+# Dalvik cleaner #
+##################
+
+dalvik_cleaner()
+{
+	mount -o remount,rw /system
+	mount -o remount,rw /data
+	export DALVIK=dalviknotfound
+	echo "$date Starting Dalvik Cleaner" >> $deflog
+	echo "$date Checking where dalvik exists" >> $deflog
+	if [ -e "/data/dalvik-cache/system@framework@services.jar@classes.dex" ]; then
+		export DALVIK=/data/dalvik-cache
+		echo "$date Dalvik found on Data" >> $deflog
+	fi
+
+	if [ "$DALVIK" != "dalviknotfound" ]; then
+		cd "$DALVIK"
+		echo "Checking Dex entries from /data/app" >> $deflog
+		for dex in data@app@*.dex; do
+			apk=`echo "$dex" | sed "s/data@app@//g" | sed "s/@classes.*//g"`
+			if [ ! -e "/data/app/$apk" ]; then
+				echo "Outdated dex found for $dex removing..." >> $deflog
+				rm $dex
+			fi
+		done
+
+		echo "Checking Dex entries from /system/app" >> $deflog
+		for dex in system@app@*.dex; do
+			apk=`echo "$dex" | sed "s/system@app@//g" | sed "s/@classes.*//g"`
+				if [ ! -e "/system/app/$apk" ]; then
+					echo "Outdated dex found for $dex removing..." >> $deflog
+					rm $dex
+				fi
+		done
+
+		echo "Checking Dex entries from /system/framework" >> $deflog
+		for dex in system@framework@*.dex; do
+			jar=`echo "$dex" | sed "s/system@framework@//g" | sed "s/@classes.*//g"`
+				if [ ! -e "/system/framework/$jar" ]; then
+					echo "Outdated dex found for $dex removing..." >> $deflog
+					rm $dex
+				fi
+		done
+	else
+		echo "No framework found, hopefully this is first boot." >> $deflog
+	fi	
+	mount -o remount,ro /system 
+}
+
 #######################
 # Procedures end here #
 #######################
@@ -417,6 +467,12 @@ if [ ! -z "$CPU_UV" ]; then
     fi
 else
     echo "$date CPU Undervolt is undefined, used the stock levels" >> $deflog
+fi
+
+if [ ! -z "$DALVIK_CLEANER" ]; then
+	if [[ "${DALVIK_CLEANER}" == "on" ]]; then
+	dalvik_cleaner
+	fi
 fi
 
 exit 1

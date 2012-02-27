@@ -322,6 +322,18 @@ else
     echo -e "# you guys rock!\n" >> /data/tweakaio/tweakaio.conf
     echo "DALVIK_CLEANER=\"off"\" >> /data/tweakaio/tweakaio.conf
 fi
+sqlidefr=`$grep -c "SQLITE_DEFRAG=" /data/tweakaio/tweakaio.conf`
+if [ "$sqlidefr" -gt "0" ]; then
+    ui_print "-SQLite3 defrag patch is already present"
+else
+    ui_print "-Applyed SQLite3 defrag patch"
+    echo -e "\n########################################" >> /data/tweakaio/tweakaio.conf
+    echo "#            SQLite Defrag             #" >> /data/tweakaio/tweakaio.conf
+    echo "########################################" >> /data/tweakaio/tweakaio.conf
+    echo "#" >> /data/tweakaio/tweakaio.conf
+    echo -e "# Defrag SQLite3 databases\n" >> /data/tweakaio/tweakaio.conf
+    echo "SQLITE_DEFRAG=\"off"\" >> /data/tweakaio/tweakaio.conf
+fi
 ui_print "-Installing zram_stats binary"
 cp -f /tmp/system/xbin/zram_stats /system/xbin/zram_stats
 $chmod 0755 /system/xbin/zram_stats

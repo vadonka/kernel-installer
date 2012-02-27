@@ -1,6 +1,7 @@
 #!/system/xbin/bash
 
 # LG Optimus 2X AIO init script v2.0.1
+# Copyright (c) by vadonka 2012
 
 # cleanup
 deflog="/data/tweakaio/logs/tweakaio.log"
@@ -304,7 +305,6 @@ fi
 #######################
 # Mount Option Tweaks #
 #######################
-
 mount_tweaks()
 {
 if [ -z "$SCHEDULER" ]; then
@@ -336,7 +336,6 @@ fi
 ######################
 #   CPU undervolt    #
 ######################
-
 cpuuv()
 {
     cpuuv_shift()
@@ -369,7 +368,6 @@ echo "$date UV shift levels are set to: "`cat /sys/devices/system/cpu/cpu0/cpufr
 ##################
 # Dalvik cleaner #
 ##################
-
 dalvik_cleaner()
 {
 	mount -o remount,rw /system
@@ -416,6 +414,25 @@ dalvik_cleaner()
 	mount -o remount,ro /system 
 }
 
+####################
+# SQLite defragger #
+####################
+sqlidefrag()
+{
+	ui_print "$date SQLite Defragger Start" >> $deflog
+	if [ -e /system/xbin/sqlite3 -o \
+		 -e /system/bin/sqlite3 ]; then
+		ui_print "$date SQLite3 binary found!" >> $deflog
+		ui_print "$date Starting defrag process..." >> $deflog
+			for i in `find /data -iname "*.db"`; do
+				/system/xbin/sqlite3 $i 'VACUUM;';
+			done
+	else
+		ui_print "$date WARNING: SQLite3 binary not found!" >> $deflog
+		ui_print "$date Skipping defrag process" >> $deflog
+	fi
+}
+ 
 #######################
 # Procedures end here #
 #######################
@@ -472,6 +489,12 @@ fi
 if [ ! -z "$DALVIK_CLEANER" ]; then
 	if [[ "${DALVIK_CLEANER}" == "on" ]]; then
 	dalvik_cleaner
+	fi
+fi
+
+if [ ! -z "$SQLITE_DEFRAG" ]; then
+	if [[ "${SQLITE_DEFRAG}" == "on" ]]; then
+	sqlidefrag
 	fi
 fi
 

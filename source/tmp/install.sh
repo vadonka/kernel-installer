@@ -5,10 +5,10 @@ device=LGP990
 romflags="cyanogen miui GRJ22"
 
 ui_print() {
-    echo ui_print "$@" 1>&$UPDATE_CMD_PIPE;
-    if [ -n "$@" ]; then
-        echo ui_print 1>&$UPDATE_CMD_PIPE;
-    fi
+	echo ui_print "$@" 1>&$UPDATE_CMD_PIPE;
+	if [ -n "$@" ]; then
+		echo ui_print 1>&$UPDATE_CMD_PIPE;
+	fi
 }
 log () { echo "$@"; }
 fatal() { ui_print "$@"; exit 1; }
@@ -23,15 +23,15 @@ chown="$BB chown"
 tr="$BB tr"
 
 ui_print "################################"
-ui_print "#    LGE Kernel Installer      #"
-ui_print "#    rewrited by  vadonka      #"
-ui_print "#   UI is optimized for the    #"
-ui_print "#       New Touch CWM          #"
+ui_print "#      LGE Kernel Installer    #"
+ui_print "#      rewrited by  vadonka    #"
+ui_print "#     UI is optimized for the  #"
+ui_print "#         New Touch CWM        #"
 ui_print "################################"
 ui_print ""
 ui_print "** Installing LGE kernel Kang **"
 ui_print "**  Based on lge-kernel-star  **"
-ui_print "**      by the CM team        **"
+ui_print "**       by the CM team       **"
 ui_print ""
 ui_print "** compiled and cherry picked **"
 ui_print "**         by vadonka         **"
@@ -43,9 +43,9 @@ ui_print "************"
 romflagsnums=`echo $romflags | $tr -s ' ' '\n' | $grep -c "."`
 romtest="0"
 for a in `seq 1 $romflagsnums`; do
-    romflag=`echo $romflags | $awk 'BEGIN {FS=" "} {print $'$a'}'`
-    romflagtrue=`$grep -c $romflag /system/build.prop`
-    let romtest=$romtest+$romflagtrue
+	romflag=`echo $romflags | $awk 'BEGIN {FS=" "} {print $'$a'}'`
+	romflagtrue=`$grep -c $romflag /system/build.prop`
+	let romtest=$romtest+$romflagtrue
 done
 
 if [ "$romtest" == "0" ]; then
@@ -195,7 +195,7 @@ $BB dd if=/dev/zero of=/dev/block/mmcblk0p5
 ui_print "-write boot.img"
 $BB dd if=$bd/boot.img of=/dev/block/mmcblk0p5
 if [ "$?" -ne 0 ]; then
-    fatal "ERROR: Flashing kernel failed!"
+	fatal "ERROR: Flashing kernel failed!"
 else
 	ui_print "* Kernel flashed Succesfully! *"
 fi
@@ -235,12 +235,12 @@ if [ "$cyanogen" == "1" ]; then
 	$chmod 0755 /system/etc/init.d/*
 	mkdir -p /data/tweakaio/logs
 	if [ ! -f /data/tweakaio/tweakaio.conf ]; then
-	    ui_print "--TweakAIO params file not found!"
-	    ui_print "--Installing new params file"
-	    cp -f /tmp/data/tweakaio/tweakaio.conf /data/tweakaio/
+		ui_print "--TweakAIO params file not found!"
+		ui_print "--Installing new params file"
+		cp -f /tmp/data/tweakaio/tweakaio.conf /data/tweakaio/
 	else
-	    ui_print "--TweakAIO params file found..."
-	    ui_print "...skipping install param file"
+		ui_print "--TweakAIO params file found..."
+		ui_print "...skipping install param file"
 	fi
 else
 	ui_print "-Installing AIO tweak"
@@ -248,108 +248,108 @@ else
 	$chmod 0755 /system/etc/init.d/90tweakaio
 	mkdir -p /data/tweakaio/logs
 	if [ ! -f /data/tweakaio/tweakaio.conf ]; then
-	    ui_print "--TweakAIO params file not found!"
-	    ui_print "--Installing new params file"
-	    cp -f /tmp/data/tweakaio/tweakaio.conf /data/tweakaio/
+		ui_print "--TweakAIO params file not found!"
+		ui_print "--Installing new params file"
+		cp -f /tmp/data/tweakaio/tweakaio.conf /data/tweakaio/
 	else
-	    ui_print "--TweakAIO params file found..."
-	    ui_print "...skipping install param file"
+		ui_print "--TweakAIO params file found..."
+		ui_print "...skipping install param file"
 	fi
 fi
 cpuuv=`$grep -c "CPU_UV=" /data/tweakaio/tweakaio.conf`
 if [ "$cpuuv" -gt "0" ]; then
-    ui_print "-CPU UV patch is already present"
+	ui_print "-CPU UV patch is already present"
 else
-    ui_print "-Applyed CPU UV patch"
-    echo -e "\n########################################" >> /data/tweakaio/tweakaio.conf
-    echo "#            CPU Undervolt             #" >> /data/tweakaio/tweakaio.conf
-    echo "########################################" >> /data/tweakaio/tweakaio.conf
-    echo "#" >> /data/tweakaio/tweakaio.conf
-    echo "# You  can  define  the  voltage  levels" >> /data/tweakaio/tweakaio.conf
-    echo "# The  init  script  limited the minimum" >> /data/tweakaio/tweakaio.conf
-    echo "# voltage   levels   for  safety  reason" >> /data/tweakaio/tweakaio.conf
-    echo "# so   you   cant  undervolt  too  much." >> /data/tweakaio/tweakaio.conf
-    echo "#" >> /data/tweakaio/tweakaio.conf
-    echo "# The  first value is the CPU freq level" >> /data/tweakaio/tweakaio.conf
-    echo "# The   second   is  the  voltage  level" >> /data/tweakaio/tweakaio.conf
-    echo "#" >> /data/tweakaio/tweakaio.conf
-    echo -e "# CPU  undervolt  is disabled by default\n" >> /data/tweakaio/tweakaio.conf
-    echo "CPU_UV=\"off"\" >> /data/tweakaio/tweakaio.conf
-    echo -e "\nCPU216MHZ=\"780"\" >> /data/tweakaio/tweakaio.conf
-    echo "CPU324MHZ=\"790"\" >> /data/tweakaio/tweakaio.conf
-    echo "CPU503MHZ=\"840"\" >> /data/tweakaio/tweakaio.conf
-    echo "CPU655MHZ=\"870"\" >> /data/tweakaio/tweakaio.conf
-    echo "CPU800MHZ=\"900"\" >> /data/tweakaio/tweakaio.conf
-    echo "CPU1015MHZ=\"1000"\" >> /data/tweakaio/tweakaio.conf
-    echo "CPU1100MHZ=\"1050"\" >> /data/tweakaio/tweakaio.conf
-    echo "CPU1216MHZ=\"1150"\" >> /data/tweakaio/tweakaio.conf
+	ui_print "-Applyed CPU UV patch"
+	echo -e "\n########################################" >> /data/tweakaio/tweakaio.conf
+	echo "#            CPU Undervolt             #" >> /data/tweakaio/tweakaio.conf
+	echo "########################################" >> /data/tweakaio/tweakaio.conf
+	echo "#" >> /data/tweakaio/tweakaio.conf
+	echo "# You  can  define  the  voltage  levels" >> /data/tweakaio/tweakaio.conf
+	echo "# The  init  script  limited the minimum" >> /data/tweakaio/tweakaio.conf
+	echo "# voltage   levels   for  safety  reason" >> /data/tweakaio/tweakaio.conf
+	echo "# so   you   cant  undervolt  too  much." >> /data/tweakaio/tweakaio.conf
+	echo "#" >> /data/tweakaio/tweakaio.conf
+	echo "# The  first value is the CPU freq level" >> /data/tweakaio/tweakaio.conf
+	echo "# The   second   is  the  voltage  level" >> /data/tweakaio/tweakaio.conf
+	echo "#" >> /data/tweakaio/tweakaio.conf
+	echo -e "# CPU  undervolt  is disabled by default\n" >> /data/tweakaio/tweakaio.conf
+	echo "CPU_UV=\"off"\" >> /data/tweakaio/tweakaio.conf
+	echo -e "\nCPU216MHZ=\"780"\" >> /data/tweakaio/tweakaio.conf
+	echo "CPU324MHZ=\"790"\" >> /data/tweakaio/tweakaio.conf
+	echo "CPU503MHZ=\"840"\" >> /data/tweakaio/tweakaio.conf
+	echo "CPU655MHZ=\"870"\" >> /data/tweakaio/tweakaio.conf
+	echo "CPU800MHZ=\"900"\" >> /data/tweakaio/tweakaio.conf
+	echo "CPU1015MHZ=\"1000"\" >> /data/tweakaio/tweakaio.conf
+	echo "CPU1100MHZ=\"1050"\" >> /data/tweakaio/tweakaio.conf
+	echo "CPU1216MHZ=\"1150"\" >> /data/tweakaio/tweakaio.conf
 	echo "CPU1408MHZ=\"1250"\" >> /data/tweakaio/tweakaio.conf
 fi
 cpuuv1=`$grep -c "CPU324MHZ=" /data/tweakaio/tweakaio.conf`
 if [ "$cpuuv1" -gt "0" ]; then
-    ui_print "-389Mhz already modifyed to 324Mhz"
+	ui_print "-389Mhz already modifyed to 324Mhz"
 else
-    ui_print "-Change 389Mhz to 324Mhz"
-    $sed -i "s/CPU389/CPU324/g" /data/tweakaio/tweakaio.conf
+	ui_print "-Change 389Mhz to 324Mhz"
+	$sed -i "s/CPU389/CPU324/g" /data/tweakaio/tweakaio.conf
 fi
 cpu655mhz=`$grep -c "CPU655MHZ=" /data/tweakaio/tweakaio.conf`
 if [ "$cpu655mhz" -gt "0" ]; then
-    ui_print "-655Mhz CPU step already exsist"
+	ui_print "-655Mhz CPU step already exsist"
 else
-    ui_print "-Add 655Mhz CPU step"
-    cpu800mhz=`$grep "CPU800MHZ=" /data/tweakaio/tweakaio.conf`
-    $sed -i "/$cpu800mhz/ i\CPU655MHZ=\"870"\" /data/tweakaio/tweakaio.conf
+	ui_print "-Add 655Mhz CPU step"
+	cpu800mhz=`$grep "CPU800MHZ=" /data/tweakaio/tweakaio.conf`
+	$sed -i "/$cpu800mhz/ i\CPU655MHZ=\"870"\" /data/tweakaio/tweakaio.conf
 fi
 cpu1408mhz=`$grep -c "CPU1408MHZ=" /data/tweakaio/tweakaio.conf`
 if [ "$cpu1408mhz" -gt "0" ]; then
-    ui_print "-1408Mhz CPU step already exsist"
+	ui_print "-1408Mhz CPU step already exsist"
 else
-    ui_print "-Add 1408Mhz CPU step"
-    cpu1216mhz=`$grep "CPU1216MHZ=" /data/tweakaio/tweakaio.conf`
-    $sed -i "/$cpu1216mhz/ a\CPU1408MHZ=\"1250"\" /data/tweakaio/tweakaio.conf
+	ui_print "-Add 1408Mhz CPU step"
+	cpu1216mhz=`$grep "CPU1216MHZ=" /data/tweakaio/tweakaio.conf`
+	$sed -i "/$cpu1216mhz/ a\CPU1408MHZ=\"1250"\" /data/tweakaio/tweakaio.conf
 fi
 dvcleaner=`$grep -c "DALVIK_CLEANER=" /data/tweakaio/tweakaio.conf`
 if [ "$dvcleaner" -gt "0" ]; then
-    ui_print "-Dalvik-Cleaner patch is already present"
+	ui_print "-Dalvik-Cleaner patch is already present"
 else
-    ui_print "-Applyed Dalvik-Cleaner patch"
-    echo -e "\n########################################" >> /data/tweakaio/tweakaio.conf
-    echo "#         Dalvik Cache Cleaner         #" >> /data/tweakaio/tweakaio.conf
-    echo "########################################" >> /data/tweakaio/tweakaio.conf
-    echo "#" >> /data/tweakaio/tweakaio.conf
-    echo "# Clean  outdated  dalvik  cache entries" >> /data/tweakaio/tweakaio.conf
-    echo "# modded   by  trev  for  synergykingdom" >> /data/tweakaio/tweakaio.conf
-    echo "# additional   mods  by  bigrushdog  for" >> /data/tweakaio/tweakaio.conf
-    echo "# Tiamat Xoom Rom" >> /data/tweakaio/tweakaio.conf
-    echo "#" >> /data/tweakaio/tweakaio.conf
-    echo "# thanks Team Synergy and TrevE" >> /data/tweakaio/tweakaio.conf
-    echo -e "# you guys rock!\n" >> /data/tweakaio/tweakaio.conf
-    echo "DALVIK_CLEANER=\"off"\" >> /data/tweakaio/tweakaio.conf
+	ui_print "-Applyed Dalvik-Cleaner patch"
+	echo -e "\n########################################" >> /data/tweakaio/tweakaio.conf
+	echo "#         Dalvik Cache Cleaner         #" >> /data/tweakaio/tweakaio.conf
+	echo "########################################" >> /data/tweakaio/tweakaio.conf
+	echo "#" >> /data/tweakaio/tweakaio.conf
+	echo "# Clean  outdated  dalvik  cache entries" >> /data/tweakaio/tweakaio.conf
+	echo "# modded   by  trev  for  synergykingdom" >> /data/tweakaio/tweakaio.conf
+	echo "# additional   mods  by  bigrushdog  for" >> /data/tweakaio/tweakaio.conf
+	echo "# Tiamat Xoom Rom" >> /data/tweakaio/tweakaio.conf
+	echo "#" >> /data/tweakaio/tweakaio.conf
+	echo "# thanks Team Synergy and TrevE" >> /data/tweakaio/tweakaio.conf
+	echo -e "# you guys rock!\n" >> /data/tweakaio/tweakaio.conf
+	echo "DALVIK_CLEANER=\"off"\" >> /data/tweakaio/tweakaio.conf
 fi
 sqlidefr=`$grep -c "SQLITE_DEFRAG=" /data/tweakaio/tweakaio.conf`
 if [ "$sqlidefr" -gt "0" ]; then
-    ui_print "-SQLite3 defrag patch is already present"
+	ui_print "-SQLite3 defrag patch is already present"
 else
-    ui_print "-Applyed SQLite3 defrag patch"
-    echo -e "\n########################################" >> /data/tweakaio/tweakaio.conf
-    echo "#            SQLite Defrag             #" >> /data/tweakaio/tweakaio.conf
-    echo "########################################" >> /data/tweakaio/tweakaio.conf
-    echo "#" >> /data/tweakaio/tweakaio.conf
-    echo -e "# Defrag SQLite3 databases\n" >> /data/tweakaio/tweakaio.conf
-    echo "SQLITE_DEFRAG=\"off"\" >> /data/tweakaio/tweakaio.conf
+	ui_print "-Applyed SQLite3 defrag patch"
+	echo -e "\n########################################" >> /data/tweakaio/tweakaio.conf
+	echo "#            SQLite Defrag             #" >> /data/tweakaio/tweakaio.conf
+	echo "########################################" >> /data/tweakaio/tweakaio.conf
+	echo "#" >> /data/tweakaio/tweakaio.conf
+	echo -e "# Defrag SQLite3 databases\n" >> /data/tweakaio/tweakaio.conf
+	echo "SQLITE_DEFRAG=\"off"\" >> /data/tweakaio/tweakaio.conf
 fi
 ui_print "-Installing zram_stats binary"
 cp -f /tmp/system/xbin/zram_stats /system/xbin/zram_stats
 $chmod 0755 /system/xbin/zram_stats
 ui_print "-Checking bash..."
 if [ ! -f /system/xbin/bash ]; then
-    ui_print "--Bash binary not found!"
-    ui_print "--Installing Bash"
-    cp -f /tmp/system/xbin/bash /system/xbin/bash
-    $chmod 0755 /system/xbin/bash
+	ui_print "--Bash binary not found!"
+	ui_print "--Installing Bash"
+	cp -f /tmp/system/xbin/bash /system/xbin/bash
+	$chmod 0755 /system/xbin/bash
 else
-    ui_print "--Bash binary found..."
-    ui_print "...skipping install bash"
+	ui_print "--Bash binary found..."
+	ui_print "...skipping install bash"
 fi
 if [ -e "/sdcard/etana.conf" ]; then
 	fontallow=`grep -c "^install_roboto_font" /sdcard/etana.conf`

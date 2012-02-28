@@ -256,6 +256,8 @@ else
 		ui_print "...skipping install param file"
 	fi
 fi
+ui_print "-Fix tweakaio.conf permission"
+$chmod 0777 /data/tweakaio/tweakaio.conf
 cpuuv=`$grep -c "CPU_UV=" /data/tweakaio/tweakaio.conf`
 if [ "$cpuuv" -gt "0" ]; then
 	ui_print "-CPU UV patch is already present"

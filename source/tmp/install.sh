@@ -1,5 +1,6 @@
 #!/sbin/sh
 device=LGP990
+TIMESTAMP=1330525007
 
 # Supported ROM flags separated with one space(!)
 romflags="cyanogen miui GRJ22"
@@ -240,7 +241,23 @@ if [ "$cyanogen" == "1" ]; then
 		cp -f /tmp/data/tweakaio/tweakaio.conf /data/tweakaio/
 	else
 		ui_print "--TweakAIO params file found..."
-		ui_print "...skipping install param file"
+		checknew=`$grep -c "TIMESTAMP" /data/tweakaio/tweakaio.conf`
+		if [ "$checknew" -gt "0" ]; then
+			tstamp=`$grep "TIMESTAMP" /data/tweakaio/tweakaio.conf | $sed "s/[^0-9]//g"`
+			if [[ "$tstamp" == "$TIMESTAMP" ]]; then
+				ui_print "--No need to update params file"
+			else
+				ui_print "--Backup OLD params file"
+				mv /data/tweakaio/tweakaio.conf /data/tweakaio/tweakaio.conf.old
+				ui_print "--Installing new params file"
+				cp -f /tmp/data/tweakaio/tweakaio.conf /data/tweakaio/
+			fi
+		else
+			ui_print "--Backup OLD params file"
+			mv /data/tweakaio/tweakaio.conf /data/tweakaio/tweakaio.conf.old
+			ui_print "--Installing new params file"
+			cp -f /tmp/data/tweakaio/tweakaio.conf /data/tweakaio/
+		fi
 	fi
 else
 	ui_print "-Installing AIO tweak"
@@ -253,93 +270,29 @@ else
 		cp -f /tmp/data/tweakaio/tweakaio.conf /data/tweakaio/
 	else
 		ui_print "--TweakAIO params file found..."
-		ui_print "...skipping install param file"
+		checknew=`$grep -c "TIMESTAMP" /data/tweakaio/tweakaio.conf`
+		if [ "$checknew" -gt "0" ]; then
+			tstamp=`$grep "TIMESTAMP" /data/tweakaio/tweakaio.conf | sed "s/[^0-9]//g"`
+			if [[ "$tstamp" == "$TIMESTAMP" ]]; then
+				ui_print "--No need to update params file"
+			else
+				ui_print "--Backup OLD params file"
+				mv /data/tweakaio/tweakaio.conf /data/tweakaio/tweakaio.conf.old
+				ui_print "--Installing new params file"
+				cp -f /tmp/data/tweakaio/tweakaio.conf /data/tweakaio/
+			fi
+		else
+			ui_print "--Backup OLD params file"
+			mv /data/tweakaio/tweakaio.conf /data/tweakaio/tweakaio.conf.old
+			ui_print "--Installing new params file"
+			cp -f /tmp/data/tweakaio/tweakaio.conf /data/tweakaio/
+		fi
 	fi
 fi
 ui_print "-Fix tweakaio.conf permission"
 $chmod 0777 /data/tweakaio/tweakaio.conf
-cpuuv=`$grep -c "CPU_UV=" /data/tweakaio/tweakaio.conf`
-if [ "$cpuuv" -gt "0" ]; then
-	ui_print "-CPU UV patch is already present"
-else
-	ui_print "-Applyed CPU UV patch"
-	echo -e "\n#***************************************" >> /data/tweakaio/tweakaio.conf
-	echo "#**********< CPU Undervolt >************" >> /data/tweakaio/tweakaio.conf
-	echo "#***************************************" >> /data/tweakaio/tweakaio.conf
-	echo "#" >> /data/tweakaio/tweakaio.conf
-	echo "# You  can  define  the  voltage  levels" >> /data/tweakaio/tweakaio.conf
-	echo "# The  init  script  limited the minimum" >> /data/tweakaio/tweakaio.conf
-	echo "# voltage   levels   for  safety  reason" >> /data/tweakaio/tweakaio.conf
-	echo "# so   you   cant  undervolt  too  much." >> /data/tweakaio/tweakaio.conf
-	echo "#" >> /data/tweakaio/tweakaio.conf
-	echo "# The  first value is the CPU freq level" >> /data/tweakaio/tweakaio.conf
-	echo "# The   second   is  the  voltage  level" >> /data/tweakaio/tweakaio.conf
-	echo "#" >> /data/tweakaio/tweakaio.conf
-	echo -e "# CPU  undervolt  is disabled by default\n" >> /data/tweakaio/tweakaio.conf
-	echo "CPU_UV=\"off"\" >> /data/tweakaio/tweakaio.conf
-	echo -e "\nCPU216MHZ=\"780"\" >> /data/tweakaio/tweakaio.conf
-	echo "CPU324MHZ=\"790"\" >> /data/tweakaio/tweakaio.conf
-	echo "CPU503MHZ=\"840"\" >> /data/tweakaio/tweakaio.conf
-	echo "CPU655MHZ=\"870"\" >> /data/tweakaio/tweakaio.conf
-	echo "CPU800MHZ=\"900"\" >> /data/tweakaio/tweakaio.conf
-	echo "CPU1015MHZ=\"1000"\" >> /data/tweakaio/tweakaio.conf
-	echo "CPU1100MHZ=\"1050"\" >> /data/tweakaio/tweakaio.conf
-	echo "CPU1216MHZ=\"1150"\" >> /data/tweakaio/tweakaio.conf
-	echo "CPU1408MHZ=\"1250"\" >> /data/tweakaio/tweakaio.conf
-fi
-cpuuv1=`$grep -c "CPU324MHZ=" /data/tweakaio/tweakaio.conf`
-if [ "$cpuuv1" -gt "0" ]; then
-	ui_print "-389Mhz already modifyed to 324Mhz"
-else
-	ui_print "-Change 389Mhz to 324Mhz"
-	$sed -i "s/CPU389/CPU324/g" /data/tweakaio/tweakaio.conf
-fi
-cpu655mhz=`$grep -c "CPU655MHZ=" /data/tweakaio/tweakaio.conf`
-if [ "$cpu655mhz" -gt "0" ]; then
-	ui_print "-655Mhz CPU step already exsist"
-else
-	ui_print "-Add 655Mhz CPU step"
-	cpu800mhz=`$grep "CPU800MHZ=" /data/tweakaio/tweakaio.conf`
-	$sed -i "/$cpu800mhz/ i\CPU655MHZ=\"870"\" /data/tweakaio/tweakaio.conf
-fi
-cpu1408mhz=`$grep -c "CPU1408MHZ=" /data/tweakaio/tweakaio.conf`
-if [ "$cpu1408mhz" -gt "0" ]; then
-	ui_print "-1408Mhz CPU step already exsist"
-else
-	ui_print "-Add 1408Mhz CPU step"
-	cpu1216mhz=`$grep "CPU1216MHZ=" /data/tweakaio/tweakaio.conf`
-	$sed -i "/$cpu1216mhz/ a\CPU1408MHZ=\"1250"\" /data/tweakaio/tweakaio.conf
-fi
-dvcleaner=`$grep -c "DALVIK_CLEANER=" /data/tweakaio/tweakaio.conf`
-if [ "$dvcleaner" -gt "0" ]; then
-	ui_print "-Dalvik-Cleaner patch is already present"
-else
-	ui_print "-Applyed Dalvik-Cleaner patch"
-	echo -e "\n#***************************************" >> /data/tweakaio/tweakaio.conf
-	echo "#*******< Dalvik Cache Cleaner >********" >> /data/tweakaio/tweakaio.conf
-	echo "#***************************************" >> /data/tweakaio/tweakaio.conf
-	echo "#" >> /data/tweakaio/tweakaio.conf
-	echo "# Clean  outdated  dalvik  cache entries" >> /data/tweakaio/tweakaio.conf
-	echo "# modded   by  trev  for  synergykingdom" >> /data/tweakaio/tweakaio.conf
-	echo "# additional   mods  by  bigrushdog  for" >> /data/tweakaio/tweakaio.conf
-	echo "# Tiamat Xoom Rom" >> /data/tweakaio/tweakaio.conf
-	echo "#" >> /data/tweakaio/tweakaio.conf
-	echo "# thanks Team Synergy and TrevE" >> /data/tweakaio/tweakaio.conf
-	echo -e "# you guys rock!\n" >> /data/tweakaio/tweakaio.conf
-	echo "DALVIK_CLEANER=\"off"\" >> /data/tweakaio/tweakaio.conf
-fi
-sqlidefr=`$grep -c "SQLITE_DEFRAG=" /data/tweakaio/tweakaio.conf`
-if [ "$sqlidefr" -gt "0" ]; then
-	ui_print "-SQLite3 defrag patch is already present"
-else
-	ui_print "-Applyed SQLite3 defrag patch"
-	echo -e "\n#***************************************" >> /data/tweakaio/tweakaio.conf
-	echo "#**********< SQLite Defrag >************" >> /data/tweakaio/tweakaio.conf
-	echo "#***************************************" >> /data/tweakaio/tweakaio.conf
-	echo "#" >> /data/tweakaio/tweakaio.conf
-	echo -e "# Defrag SQLite3 databases\n" >> /data/tweakaio/tweakaio.conf
-	echo "SQLITE_DEFRAG=\"off"\" >> /data/tweakaio/tweakaio.conf
-fi
+ui_print "-Installing TweakAIO help file"
+cp -f /tmp/data/tweakaio/tweakaio_hlp.txt /data/tweakaio/
 ui_print "-Installing zram_stats binary"
 cp -f /tmp/system/xbin/zram_stats /system/xbin/zram_stats
 $chmod 0755 /system/xbin/zram_stats
@@ -386,34 +339,6 @@ fi
 if [ "$adblockallow" -gt "0" ]; then
 ui_print "-Installing ADblock host file"
 cp -f /tmp/system/etc/hosts /system/etc/hosts
-fi
-ui_print "-Tweakaio.conf Eyecandyzer :)"
-noeyecandy=`grep -c "^#######################################" /data/tweakaio/tweakaio.conf`
-if [ "$noeyecandy" -gt "0" ]; then
-    ui_print "--No EyeCandy..baaad :-("
-    ui_print "--Running EyeCandyzer"
-    $sed -i "s/########################################/#***************************************/g" /data/tweakaio/tweakaio.conf
-    sed1=`grep "Script mode" /data/tweakaio/tweakaio.conf`
-    sed2=`grep "System logger" /data/tweakaio/tweakaio.conf`
-    sed3=`grep "Low Memory Killer mode" /data/tweakaio/tweakaio.conf`
-    sed4=`grep "Network Tweaks" /data/tweakaio/tweakaio.conf`
-    sed5=`grep "VM Management and kernel tweaks" /data/tweakaio/tweakaio.conf`
-    sed6=`grep "Mount Option Tweaks" /data/tweakaio/tweakaio.conf`
-    sed7=`grep "CPU Undervolt" /data/tweakaio/tweakaio.conf`
-    sed8=`grep "Dalvik Cache Cleaner" /data/tweakaio/tweakaio.conf`
-    sed9=`grep "SQLite Defrag" /data/tweakaio/tweakaio.conf`
-    $sed -i "s/$sed1/#***********< Script mode >*************/g" /data/tweakaio/tweakaio.conf
-    $sed -i "s/$sed2/#**********< System logger >************/g" /data/tweakaio/tweakaio.conf
-    $sed -i "s/$sed3/#******< Low Memory Killer mode >*******/g" /data/tweakaio/tweakaio.conf
-    $sed -i "s/$sed4/#**********< Network Tweaks >***********/g" /data/tweakaio/tweakaio.conf
-    $sed -i "s/$sed5/#**< VM Management and kernel tweaks >**/g" /data/tweakaio/tweakaio.conf
-    $sed -i "s/$sed6/#*******< Mount Option Tweaks >*********/g" /data/tweakaio/tweakaio.conf
-    $sed -i "s/$sed7/#**********< CPU Undervolt >************/g" /data/tweakaio/tweakaio.conf
-    $sed -i "s/$sed8/#*******< Dalvik Cache Cleaner >********/g" /data/tweakaio/tweakaio.conf
-    $sed -i "s/$sed9/#**********< SQLite Defrag >************/g" /data/tweakaio/tweakaio.conf
-    ui_print "--EyeCandy Succesful :-)"
-else
-    ui_print "--Tweakaio.conf already EyeCandy"
 fi
 if [ -e "/data/app/etana-kernel-tweakaio-signed.apk" ]; then
     ui_print "-TweakAIO config editor already installer"

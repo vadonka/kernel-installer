@@ -614,7 +614,7 @@ spicaotf()
 			echo "650000" > /proc/spica/vdefreq
 			echo "$date VDE Freq set to 650000 by default" >> $deflog
 		fi
-		# GPU Frew
+		# GPU Freq
 		if [ "$GPU_FREQ" -gt "279999" -a "$GPU_FREQ" -lt "350001" ]; then
 			echo "$date GPU Freq within the acceptable range" >> $deflog
 			echo $GPU_FREQ > /proc/spica/gpufreq

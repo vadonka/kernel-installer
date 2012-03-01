@@ -686,12 +686,10 @@ spicaotf()
 			echo "$date LPDDR2 MINIMUM FREQUENCY set to 18000 by default" >> $deflog
 		fi
 		# On The Fly part
-		if [ -d  "/data/spica" ]; then
-			ln -s /proc/spica /data/spica
-		else
-			mkdir -p /data/spica
-			ln -s /proc/spica /data/spica
+		if [ -d  "/proc/spica" ]; then
+			rm -rf /data/spica
 		fi
+		ln -s /proc/spica /data/spica
 	else
 		echo "$date WARNING: Spica OTF is unsupported by this kernel!" >> $deflog
 	fi

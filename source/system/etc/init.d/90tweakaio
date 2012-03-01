@@ -68,7 +68,7 @@ export LPDDR2_MIN_KHZ=`grep "^LPDDR2 Min KHz" $parfile | awk 'BEGIN {FS="="} {pr
 }
 
 if [ -f /data/tweakaio/tweakaio.conf ]; then
-    echo -e "$date Params file found\n" >> $deflog
+	echo -e "$date Params file found\n" >> $deflog
 	echo "$date Reading variables from the parfile..." >> $deflog
 	readvar
 else
@@ -147,7 +147,7 @@ LPDDR2 Min KHz="18000"
 
 EOF
 if [ -f /data/tweakaio/tweakaio.conf ]; then
-    echo -e "$date Params file created\n" >> $deflog
+	echo -e "$date Params file created\n" >> $deflog
 	echo "$date Reading variables from the parfile..." >> $deflog
 	readvar
 else
@@ -166,18 +166,18 @@ fi
 
 etweak()
 {
-		if [ -f $1 ]; then
-			echo "$date Original: $1 = "`cat $1` >> $deflog
-			echo $2 > $1
-			echo -e "$date Tweaked: $1 = "`cat $1`"\n" >> $deflog
-		fi
+	if [ -f $1 ]; then
+		echo "$date Original: $1 = "`cat $1` >> $deflog
+		echo $2 > $1
+		echo -e "$date Tweaked: $1 = "`cat $1`"\n" >> $deflog
+	fi
 }
 
 sysctl_proc()
 {
-			echo "$date Original: "`sysctl -e $1` >> $deflog
-			sysctl -w $1=$2
-			echo -e "$date Tweaked: "`sysctl -e $1`"\n" >> $deflog
+	echo "$date Original: "`sysctl -e $1` >> $deflog
+	sysctl -w $1=$2
+	echo -e "$date Tweaked: "`sysctl -e $1`"\n" >> $deflog
 }
 
 ##########################################
@@ -188,7 +188,7 @@ TOTALMEM=`free | grep Mem | awk 'BEGIN { FS = " " } ; { print $2 }'`
 basic_mem_tweaks()
 {
 if [ -z "$LMK_MODE" ]; then
-    LMK_MODE="str"
+	LMK_MODE="str"
 fi
 	# Strict minfree handler tweak
 	etweak /sys/module/lowmemorykiller/parameters/adj 0,1,2,4,6,15
@@ -334,13 +334,13 @@ vm_tweaks()
 ccache()
 {
 if [ -z "$COMPCACHE_SIZE" ]; then
-    COMPCACHE_SIZE="50"
+	COMPCACHE_SIZE="50"
 fi
 if [ -z "$COMPCACHE_RATIO" ]; then
-    COMPCACHE_RATIO="20"
+	COMPCACHE_RATIO="20"
 fi
 if [ -z "$CACHE_DROP_INTERVAL" ]; then
-    CACHE_DROP_INTERVAL="4"
+	CACHE_DROP_INTERVAL="4"
 fi
 	# COMPCACHE management
 	ccache_proc()
@@ -389,8 +389,8 @@ fi
 			zram_init $COMPCACHE_SIZE
 		# check zram is a module?
 		elif [ -f "/system/lib/modules/zram.ko" -a \
-			   -f "/system/lib/modules/lzo_compress.ko" -a \
-			   -f "/system/lib/modules/lzo_decompress.ko" ]; then
+			-f "/system/lib/modules/lzo_compress.ko" -a \
+			-f "/system/lib/modules/lzo_decompress.ko" ]; then
 			echo "$date zram device not found, trying to load from module..." >> $complog
 			modprobe zram num_devices=2 && sleep 1
 			if [ -b "/dev/block/zram0" ]; then
@@ -425,7 +425,7 @@ fi
 mount_tweaks()
 {
 if [ -z "$SCHEDULER" ]; then
-    SCHEDULER="bfq"
+	SCHEDULER="bfq"
 fi
 	# Remount with noatime and nodiratime, updated thx for SetiroN
 	busybox mount -o remount,noatime,nodiratime,data=writeback,barrier=0,nobh,commit=180,noauto_da_alloc /system
@@ -455,17 +455,17 @@ fi
 ######################
 cpuuv()
 {
-    cpuuv_shift()
-    {
-	# Define UV shift
-	if [ -z "$1" ]; then
-	    export $2="0"
-	elif [ "$1" -gt "$4" ]; then
-	    export $2=$(($3-$1))
-	else
-		export $2=$(($3-$4))
-	fi
-    }
+	cpuuv_shift()
+	{
+		# Define UV shift
+		if [ -z "$1" ]; then
+			export $2="0"
+			elif [ "$1" -gt "$4" ]; then
+			export $2=$(($3-$1))
+		else
+			export $2=$(($3-$4))
+		fi
+	}
 
     # Call the procedure
 	cpumaxfreq=`cat /sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq`
@@ -473,14 +473,14 @@ cpuuv()
 	cpuuv_shift $CPU324MHZ CPU324UV 790 770
 	cpuuv_shift $CPU503MHZ CPU503UV 840 780
 	if [[ "${cpumaxfreq}" == "1216000" ]]; then
-	cpuuv_shift $CPU655MHZ CPU655UV 870 800
+		cpuuv_shift $CPU655MHZ CPU655UV 870 800
 	fi
 	cpuuv_shift $CPU800MHZ CPU800UV 900 820
 	cpuuv_shift $CPU1015MHZ CPU1015UV 1000 920
 	cpuuv_shift $CPU1100MHZ CPU1100UV 1050 1020
 	cpuuv_shift $CPU1216MHZ CPU1216UV 1150 1120
 	if [[ "${cpumaxfreq}" == "1408000" ]]; then
-	cpuuv_shift $CPU1408MHZ CPU1408UV 1250 1220
+		cpuuv_shift $CPU1408MHZ CPU1408UV 1250 1220
 	fi
 
 # Apply the UV values
@@ -581,6 +581,7 @@ spicaotf()
 	echo "$date Checking Spica OTF kernel support..." >> $deflog
 	if [ -d  "/proc/spica" ]; then
 		echo "$date Spica OTF is supported by the kernel" >> $deflog
+		# Initialization & Boot time part
 		# VDE Freq
 		if [ "$VDE_FREQ" -gt "599999" -a "$VDE_FREQ" -lt "700001" ]; then
 			echo "$date VDE Freq within the acceptable range" >> $deflog
@@ -642,7 +643,7 @@ spicaotf()
 			echo "$date WARNING: Your POWERSAVE flag is out of the safe range!" >> $deflog
 			echo "0" > /proc/spica/powersave
 			echo "$date POWERSAVE flag set to 0 by default" >> $deflog
-		fi	
+		fi
 		# Nitro flag check
 		if [ "$ENABLE_NITRO" == "on" ]; then
 			if [ "$POWERSAVE" == "0" ]; then
@@ -684,40 +685,47 @@ spicaotf()
 			echo "18000" > /proc/spica/lpddr2_min_khz
 			echo "$date LPDDR2 MINIMUM FREQUENCY set to 18000 by default" >> $deflog
 		fi
+		# On The Fly part
+		if [ -d  "/data/spica" ]; then
+			ln -s /proc/spica /data/spica
+		else
+			mkdir -p /data/spica
+			ln -s /proc/spica /data/spica
+		fi
 	else
 		echo "$date WARNING: Spica OTF is unsupported by this kernel!" >> $deflog
 	fi
 }
-			
+
 #######################
 # Procedures end here #
 #######################
 
 sysctl -p /etc/sysctl.conf
 if [ "$ENABLE_LMK_TWEAK" == "on" ]; then
-    basic_mem_tweaks
+	basic_mem_tweaks
 fi
 if [ "$ENABLE_NET_TWEAKS" == "on" ]; then
-    network_tweaks
+	network_tweaks
 fi
 if [ "$ENABLE_VM_TWEAKS" == "on" ]; then
-    vm_tweaks
+	vm_tweaks
 fi
 if [ "$ENABLE_MOUNT_TWEAKS" == "on" ]; then
-    mount_tweaks
+	mount_tweaks
 fi
 if [ "$ENABLE_COMPCACHE" == "on" ]; then
 	ccache
 else
-    setprop persist.compcache.user 0
-    setprop persist.service.compcache 0
+	setprop persist.compcache.user 0
+	setprop persist.service.compcache 0
 fi
 if [ "$ENABLE_LOGGER" == "off" -a -e /dev/log/main ]; then
-		rm /dev/log/main
+	rm /dev/log/main
 fi
 if [ "$ENABLE_CPU_UNDERVOLT" == "on" ]; then
 	echo "$date CPU Undervolt enabled" >> $deflog
-		cpuuv
+	cpuuv
 else
 	echo "$date CPU Undervolt disabled, used the stock levels" >> $deflog
 fi

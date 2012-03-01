@@ -1,6 +1,6 @@
-#!/system/xbin/bash
+#!/system/bin/sh
 
-# LG Optimus 2X AIO init script v2.1.0
+# LG Optimus 2X AIO init script v2.1.1
 # Copyright (c) by vadonka 2012
 TIMESTAMP=1330525007
 
@@ -27,9 +27,50 @@ echo -e "##Kernel version: "`uname -r`"\n" >> $deflog
 
 date=`date +%Y.%m.%d-%H.%M.%S`
 
+readvar()
+{
+export parfile="/data/tweakaio/tweakaio.conf"
+export SCRIPT_ENABLE=`grep "^Script Enabled" $parfile | awk 'BEGIN {FS="="} {print $2}' | sed "s/[\"\]//g"`
+export ENABLE_LOGGER=`grep "^Logger Enabled" $parfile | awk 'BEGIN {FS="="} {print $2}' | sed "s/[\"\]//g"`
+export ENABLE_LMK_TWEAK=`grep "^LMK Tweaks Enabled" $parfile | awk 'BEGIN {FS="="} {print $2}' | sed "s/[\"\]//g"`
+export LMK_MODE=`grep "^LMK Mode" $parfile | awk 'BEGIN {FS="="} {print $2}' | sed "s/[\"\]//g"`
+export ENABLE_NET_TWEAKS=`grep "^Network Tweaks Enabled" $parfile | awk 'BEGIN {FS="="} {print $2}' | sed "s/[\"\]//g"`
+export ENABLE_VM_TWEAKS=`grep "^Memory Management Tweaks Enabled" $parfile | awk 'BEGIN {FS="="} {print $2}' | sed "s/[\"\]//g"`
+export ENABLE_COMPCACHE=`grep "^Compcache Enabled" $parfile | awk 'BEGIN {FS="="} {print $2}' | sed "s/[\"\]//g"`
+export COMPCACHE_SIZE=`grep "^Compcache Size" $parfile | awk 'BEGIN {FS="="} {print $2}' | sed "s/[\"\]//g"`
+export COMPCACHE_RATIO=`grep "^Compcache Ratio" $parfile | awk 'BEGIN {FS="="} {print $2}' | sed "s/[\"\]//g"`
+export CACHE_DROP_INTERVAL=`grep "^Cache Drop Interval Time" $parfile | awk 'BEGIN {FS="="} {print $2}' | sed "s/[\"\]//g"`
+export ENABLE_MOUNT_TWEAKS=`grep "^Mount Tweaks Enabled" $parfile | awk 'BEGIN {FS="="} {print $2}' | sed "s/[\"\]//g"`
+export SCHEDULER=`grep "^IO Scheduler" $parfile | awk 'BEGIN {FS="="} {print $2}' | sed "s/[\"\]//g"`
+export ENABLE_CPU_UNDERVOLT=`grep "^CPU Undervolt Enabled" $parfile | awk 'BEGIN {FS="="} {print $2}' | sed "s/[\"\]//g"`
+export CPU216MHZ=`grep "^216 MHZ" $parfile | awk 'BEGIN {FS="="} {print $2}' | sed "s/[\"\]//g"`
+export CPU324MHZ=`grep "^324 MHZ" $parfile | awk 'BEGIN {FS="="} {print $2}' | sed "s/[\"\]//g"`
+export CPU503MHZ=`grep "^503 MHZ" $parfile | awk 'BEGIN {FS="="} {print $2}' | sed "s/[\"\]//g"`
+export CPU655MHZ=`grep "^655 MHZ" $parfile | awk 'BEGIN {FS="="} {print $2}' | sed "s/[\"\]//g"`
+export CPU800MHZ=`grep "^800 MHZ" $parfile | awk 'BEGIN {FS="="} {print $2}' | sed "s/[\"\]//g"`
+export CPU1015MHZ=`grep "^1015 MHZ" $parfile | awk 'BEGIN {FS="="} {print $2}' | sed "s/[\"\]//g"`
+export CPU1100MHZ=`grep "^1100 MHZ" $parfile | awk 'BEGIN {FS="="} {print $2}' | sed "s/[\"\]//g"`
+export CPU1216MHZ=`grep "^1216 MHZ" $parfile | awk 'BEGIN {FS="="} {print $2}' | sed "s/[\"\]//g"`
+export CPU1408MHZ=`grep "^1408 MHZ" $parfile | awk 'BEGIN {FS="="} {print $2}' | sed "s/[\"\]//g"`
+export ENABLE_DALVIK_CLEANER=`grep "^Dalvik Cache Cleaner Enabled" $parfile | awk 'BEGIN {FS="="} {print $2}' | sed "s/[\"\]//g"`
+export ENABLE_SQLITE_DEFRAG=`grep "^SQLite3 Defrag Enabled" $parfile | awk 'BEGIN {FS="="} {print $2}' | sed "s/[\"\]//g"`
+export ENABLE_SPICA_OTF=`grep "^Spica OTF Tweaks Enabled" $parfile | awk 'BEGIN {FS="="} {print $2}' | sed "s/[\"\]//g"`
+export VDE_FREQ=`grep "^VDE Frequency" $parfile | awk 'BEGIN {FS="="} {print $2}' | sed "s/[\"\]//g"`
+export GPU_FREQ=`grep "^GPU Frequency" $parfile | awk 'BEGIN {FS="="} {print $2}' | sed "s/[\"\]//g"`
+export MIN_CPU1_ON=`grep "^Min CPU1 On Frequency" $parfile | awk 'BEGIN {FS="="} {print $2}' | sed "s/[\"\]//g"`
+export MAX_CPU1_OFF=`grep "^Max CPU1 Off Frequency" $parfile | awk 'BEGIN {FS="="} {print $2}' | sed "s/[\"\]//g"`
+export SUSPEND_CORE_MV=`grep "^Suspend Core Voltage" $parfile | awk 'BEGIN {FS="="} {print $2}' | sed "s/[\"\]//g"`
+export POWERSAVE=`grep "^PowerSave Mode" $parfile | awk 'BEGIN {FS="="} {print $2}' | sed "s/[\"\]//g"`
+export ENABLE_NITRO=`grep "^NITRO Enabled" $parfile | awk 'BEGIN {FS="="} {print $2}' | sed "s/[\"\]//g"`
+export SCREEN_OFF_MAX_FREQ=`grep "^Screen Off Max Frequency" $parfile | awk 'BEGIN {FS="="} {print $2}' | sed "s/[\"\]//g"`
+export DDR2_MIN_KHZ=`grep "^DDR2 Min KHz" $parfile | awk 'BEGIN {FS="="} {print $2}' | sed "s/[\"\]//g"`
+export LPDDR2_MIN_KHZ=`grep "^LPDDR2 Min KHz" $parfile | awk 'BEGIN {FS="="} {print $2}' | sed "s/[\"\]//g"`
+}
+
 if [ -f /data/tweakaio/tweakaio.conf ]; then
     echo -e "$date Params file found\n" >> $deflog
-    source "/data/tweakaio/tweakaio.conf"
+	echo "$date Reading variables from the parfile..." >> $deflog
+	readvar
 else
 echo "$date WARNING! Params file not found! Creating now..." >> $deflog
 cat > /data/tweakaio/tweakaio.conf <<EOF
@@ -38,77 +79,77 @@ cat > /data/tweakaio/tweakaio.conf <<EOF
 # to the tweakaio_hlp.txt
 # TIMESTAMP 1330585739
 
-SCRIPT_ENABLE="on"
-ENABLE_LOGGER="on"
+Script Enabled="on"
+Logger Enabled="on"
 
 # LOW MEMORY KILLER MODE (aka LMK)
-ENABLE_LMK_TWEAK="on"
+LMK Tweaks Enabled="on"
 # LMK Values are:
 # auto, def, std, opt, str, aggr, extr, ult
-LMK_MODE="str"
+LMK Mode="str"
 
-ENABLE_NET_TWEAKS="on"
-ENABLE_VM_TWEAKS="on"
-ENABLE_COMPCACHE="off"
-COMPCACHE_SIZE="100"
-COMPCACHE_RATIO="20"
-CACHE_DROP_INTERVAL="4"
+Network Tweaks Enabled="on"
+Memory Management Tweaks Enabled="on"
+Compcache Enabled="off"
+Compcache Size (in MB)="100"
+Compcache Ratio (in %)="20"
+Cache Drop Interval Time (in hour)="4"
 
-ENABLE_MOUNT_TWEAKS="on"
-# supported: noop deadline cfq bfq sio
-SCHEDULER="bfq"
+Mount Tweaks Enabled="on"
+# example: noop deadline cfq bfq sio
+IO Scheduler="bfq"
 
-ENABLE_CPU_UNDERVOLT="off"
-# VOLTAGE LEVELS
-CPU216MHZ="780"
-CPU324MHZ="790"
-CPU503MHZ="840"
-CPU655MHZ="870"
-CPU800MHZ="900"
-CPU1015MHZ="1000"
-CPU1100MHZ="1050"
-CPU1216MHZ="1150"
-CPU1408MHZ="1250"
+CPU Undervolt Enabled="off"
+# VOLTAGE LEVELS (in mV)
+216 MHZ="780"
+324 MHZ="790"
+503 MHZ="840"
+655 MHZ="870"
+800 MHZ="900"
+1015 MHZ="1000"
+1100 MHZ="1050"
+1216 MHZ="1150"
+1408 MHZ="1250"
 
-ENABLE_DALVIK_CLEANER="off"
-ENABLE_SQLITE_DEFRAG="off"
+Dalvik Cache Cleaner Enabled="off"
+SQLite3 Defrag Enabled="off"
 
-ENABLE_SPICA_OTF="on"
+Spica OTF Tweaks Enabled="on"
 
-VDE_FREQ="650000"
+VDE Frequency="650000"
 # Accepted range: 600000-700000
 
-GPU_FREQ="300000"
+GPU Frequency="300000"
 # Accepted range: 280000-350000
 
-MIN_CPU1_ON="655000"
+Min CPU1 On Frequency="655000"
 # Accepted range: 216000-1100000
 
-MAX_CPU1_OFF="610000"
+Max CPU1 Off Frequency="610000"
 # Accepted range: 216000-1100000
 
-SUSPEND_CORE_MV="1000"
+Suspend Core Voltage (in mV)="1000"
 # Accepted range: 600-1000
 
-POWERSAVE="0"
+PowerSave Mode="0"
 # Accepted range: 0-6
 
-ENABLE_NITRO="off"
+NITRO Enabled="off"
 
-SCREEN_OFF_MAX_FREQ="503000"
+Screen Off Max Frequency="503000"
 # Accepted range: 216000-999000
 
-DDR2_MIN_KHZ="50000"
+DDR2 Min KHz="50000"
 # Accepted range: 10000-50000
 
-LPDDR2_MIN_KHZ="18000"
+LPDDR2 Min KHz="18000"
 # Accepted range: 1000-18000
 
 EOF
 if [ -f /data/tweakaio/tweakaio.conf ]; then
     echo -e "$date Params file created\n" >> $deflog
-	echo "$date Reading params file..." >> $deflog
-    source "/data/tweakaio/tweakaio.conf"
+	echo "$date Reading variables from the parfile..." >> $deflog
+	readvar
 else
 	echo "$date Something is really wrong" >> $deflog
 	echo "$date ERROR: param file creation error!" >> $deflog
@@ -117,9 +158,10 @@ fi
 fi
 
 # Checking Script Mode
-if [[ "${SCRIPT_ENABLE}" == "off" ]]; then
+if [ ! "$SCRIPT_ENABLE" == "on" ]; then
 	echo "$date Script is disabled in the params file!" >> $deflog
 	echo "$date WARNING: PROGRAM EXIT NOW!" >> $deflog
+	exit 1
 fi
 
 etweak()
@@ -152,15 +194,15 @@ fi
 	etweak /sys/module/lowmemorykiller/parameters/adj 0,1,2,4,6,15
 	lmk()
 		{
-			if [[ "${LMK_MODE}" == "$1" ]]; then
+			if [ "$LMK_MODE" == "$1" ]; then
 				echo "$date Lowmemorykiller mode is: $LMK_MODE" >> $deflog
 				etweak /sys/module/lowmemorykiller/parameters/minfree $2
 			fi
 		}
 
 	# lowmemorykiller auto management
-	if [[ "${LMK_MODE}" == "auto" ]]; then
-		echo "$date Using lowmemorykiller auto management mode..." >> $deflog
+	if [ "$LMK_MODE" == "auto" ]; then
+		echo "$date Using LowMemoryKiller Auto management mode..." >> $deflog
 			if [ "$TOTALMEM" -gt "470000" ]; then
 				LMK_MODE="std"
 			elif [ "$TOTALMEM" -gt "440000" ]; then
@@ -305,40 +347,40 @@ fi
 	{
 		zram_init()
 		{
-			echo "$date disable swap" >> $complog
+			echo "$date Disable swap" >> $complog
 			swapoff /dev/block/zram0
-			echo "$date reset swap state" >> $complog
+			echo "$date Reset swap state" >> $complog
 			echo 1 > /sys/block/zram0/reset
-			echo "$date enable system property" >> $complog
+			echo "$date Enable system property" >> $complog
 			setprop persist.compcache.user 1
 			setprop persist.service.compcache 1
 			COMPUS=`getprop persist.compcache.user`
 			COMPSER=`getprop persist.service.compcache`
-			echo "$date verify system property" >> $complog
+			echo "$date Verify system property" >> $complog
 			if [ "$COMPUS" == "1" -a "$COMPSER" == "1" ]; then
-				echo "$date system property setup complete" >> $complog
+				echo "$date System property setup complete" >> $complog
 			else
-				echo "$date ERROR: system property setup is incomplete!" >> $complog
+				echo "$date ERROR: System property setup is incomplete!" >> $complog
 			fi
 			echo "$date drop cache" >> $complog
 			sync; sysctl -w vm.drop_caches=3 > /dev/null
-			echo "$date tweak swappiness and vfs_cache_pressure" >> $complog
+			echo "$date Tweak swappiness and vfs_cache_pressure" >> $complog
 			etweak /proc/sys/vm/swappiness 100
 			etweak /proc/sys/vm/vfs_cache_pressure 100
-			echo "$date set zram disksize to $(($COMPCACHE_SIZE))MB" >> $complog
+			echo "$date Set zram disksize to $(($COMPCACHE_SIZE))MB" >> $complog
 			echo $(($1*1024*1024)) > /sys/block/zram0/disksize
-			echo "$date verify disksize..." >> $complog
+			echo "$date Verify disksize..." >> $complog
 			COMPCACHE_SIZE_SET=$((`cat /sys/block/zram0/disksize`/1024/1024))
 			if [ "$COMPCACHE_SIZE_SET" == "$COMPCACHE_SIZE" ]; then
-				echo "$date compcache size is match" >> $complog
+				echo "$date Compcache size is match" >> $complog
 			else
-				echo "$date ERROR: compcache size not match!" >> $complog
+				echo "$date ERROR: Compcache size not match!" >> $complog
 			fi
 			echo "$date format swap" >> $complog
 			mkswap /dev/block/zram0 > /dev/null
 			echo "$date enable swap" >> $complog
 			swapon /dev/block/zram0
-			echo "$date compcache initialization successfully completed!" >> $complog
+			echo "$date Compcache initialization successfully completed!" >> $complog
 		}
 		#check zram is a block device?
 		if [ -b "/dev/block/zram0" ]; then
@@ -364,15 +406,15 @@ fi
 		echo "* */$CACHE_DROP_INTERVAL * * * sync; sysctl -w vm.drop_caches=3" > /data/cron/root
 		/system/xbin/crond -b -l 0 -c /data/cron -L /data/cron/cron.log
 	}
-		if [[ "${COMPCACHE_SIZE}" == "auto" ]]; then
+		if [ "$COMPCACHE_SIZE" == "auto" ]; then
 			COMPCACHE_SIZE=$(($TOTALMEM*$COMPCACHE_RATIO/102400))
-			echo "$date Using compcache auto management mode..." >> $complog
-			echo "$date compcache ratio is $(($COMPCACHE_RATIO))%" >> $complog
+			echo "$date Using Compcache auto management mode..." >> $complog
+			echo "$date Compcache ratio is $(($COMPCACHE_RATIO))%" >> $complog
 			echo "$date Total memory is $(($TOTALMEM/1024))MB" >> $complog
-			echo "$date Used compcache size is $(($COMPCACHE_SIZE))MB" >> $complog
+			echo "$date Used Compcache size is $(($COMPCACHE_SIZE))MB" >> $complog
 			ccache_proc
 		else
-			echo "$date compcache in static mode size is $(($COMPCACHE_SIZE))MB" >> $complog
+			echo "$date Compcache in static mode size is $(($COMPCACHE_SIZE))MB" >> $complog
 			ccache_proc
 		fi
 }
@@ -421,7 +463,7 @@ cpuuv()
 	elif [ "$1" -gt "$4" ]; then
 	    export $2=$(($3-$1))
 	else
-	    export $2=$(($3-$4))
+		export $2=$(($3-$4))
 	fi
     }
 
@@ -442,13 +484,13 @@ cpuuv()
 	fi
 
 # Apply the UV values
-if [[ "${cpumaxfreq}" == "1216000" ]]; then
+if [ "$cpumaxfreq" == "1216000" ]; then
 	echo "$date CPU max freq is $cpumaxfreq" >> $deflog
 	echo "$date Applying UV..." >> $deflog
 	echo "$CPU1216UV $CPU1100UV $CPU1015UV $CPU800UV $CPU655UV $CPU503UV $CPU324UV $CPU216UV" > /sys/devices/system/cpu/cpu0/cpufreq/UV_mV_table
 	echo "$date UV shift levels are set to: "`cat /sys/devices/system/cpu/cpu0/cpufreq/UV_mV_table` >> $deflog
 fi
-if [[ "${cpumaxfreq}" == "1408000" ]]; then
+if [ "$cpumaxfreq" == "1408000" ]; then
 	echo "$date CPU max freq is $cpumaxfreq" >> $deflog
 	echo "$date Applying UV..." >> $deflog
 	echo "$CPU1408UV $CPU1216UV $CPU1100UV $CPU1015UV $CPU800UV $CPU503UV $CPU324UV $CPU216UV" > /sys/devices/system/cpu/cpu0/cpufreq/UV_mV_table
@@ -463,11 +505,11 @@ dalvik_cleaner()
 {
 	mount -o remount,rw /system
 	mount -o remount,rw /data
-	export DALVIK=dalviknotfound
+	DALVIK=dalviknotfound
 	echo "$date Starting Dalvik Cleaner" >> $deflog
 	echo "$date Checking where dalvik exists" >> $deflog
 	if [ -e "/data/dalvik-cache/system@framework@services.jar@classes.dex" ]; then
-		export DALVIK=/data/dalvik-cache
+		DALVIK=/data/dalvik-cache
 		echo "$date Dalvik found on Data" >> $deflog
 	fi
 
@@ -602,8 +644,8 @@ spicaotf()
 			echo "$date POWERSAVE flag set to 0 by default" >> $deflog
 		fi	
 		# Nitro flag check
-		if [[ "${ENABLE_NITRO}" == "on" ]]; then
-			if [[ "${POWERSAVE}" == "0" ]]; then
+		if [ "$ENABLE_NITRO" == "on" ]; then
+			if [ "$POWERSAVE" == "0" ]; then
 				echo "$date NITRO mode enabled! Battery drain is highly increased for sure!" >> $deflog
 				echo "1" > /proc/spica/nitros
 			else
@@ -652,70 +694,41 @@ spicaotf()
 #######################
 
 sysctl -p /etc/sysctl.conf
-if [ -z "$ENABLE_LMK_TWEAK" ]; then
-    basic_mem_tweaks
-elif [[ "${ENABLE_LMK_TWEAK}" == "on" ]]; then
+if [ "$ENABLE_LMK_TWEAK" == "on" ]; then
     basic_mem_tweaks
 fi
-if [ -z "$ENABLE_NET_TWEAKS" ]; then
-    network_tweaks
-elif [[ "${ENABLE_NET_TWEAKS}" == "on" ]]; then
+if [ "$ENABLE_NET_TWEAKS" == "on" ]; then
     network_tweaks
 fi
-if [ -z "$ENABLE_VM_TWEAKS" ]; then
-    vm_tweaks
-elif [[ "${ENABLE_VM_TWEAKS}" == "on" ]]; then
+if [ "$ENABLE_VM_TWEAKS" == "on" ]; then
     vm_tweaks
 fi
-if [ -z "$ENABLE_MOUNT_TWEAKS" ]; then
-    mount_tweaks
-elif [[ "${ENABLE_MOUNT_TWEAKS}" == "on" ]]; then
+if [ "$ENABLE_MOUNT_TWEAKS" == "on" ]; then
     mount_tweaks
 fi
-if [ ! -z "$ENABLE_COMPCACHE" ]; then
-    if [[ "${ENABLE_COMPCACHE}" == "on" ]]; then
+if [ "$ENABLE_COMPCACHE" == "on" ]; then
 	ccache
-    fi
 else
     setprop persist.compcache.user 0
     setprop persist.service.compcache 0
 fi
-if [ ! -z "$ENABLE_LOGGER" ]; then
-    if [[ "${ENABLE_LOGGER}" == "off" ]]; then
-	if [ -e /dev/log/main ]; then
+if [ "$ENABLE_LOGGER" == "off" -a -e /dev/log/main ]; then
 		rm /dev/log/main
-	fi
-    fi
 fi
-
-if [ ! -z "$ENABLE_CPU_UNDERVOLT" ]; then
-	echo "$date ENABLE_CPU_UNDERVOLT defined" >> $deflog
-    if [[ "${ENABLE_CPU_UNDERVOLT}" == "on" ]]; then
-		echo "$date CPU Undervolt enabled" >> $deflog
+if [ "$ENABLE_CPU_UNDERVOLT" == "on" ]; then
+	echo "$date CPU Undervolt enabled" >> $deflog
 		cpuuv
-	else
-		echo "$date CPU Undervolt defined but its disabled" >> $deflog
-    fi
 else
-    echo "$date CPU Undervolt is undefined, used the stock levels" >> $deflog
+	echo "$date CPU Undervolt disabled, used the stock levels" >> $deflog
 fi
-
-if [ ! -z "$ENABLE_DALVIK_CLEANER" ]; then
-	if [[ "${ENABLE_DALVIK_CLEANER}" == "on" ]]; then
+if [ "$ENABLE_DALVIK_CLEANER" == "on" ]; then
 	dalvik_cleaner
-	fi
 fi
-
-if [ ! -z "$ENABLE_SQLITE_DEFRAG" ]; then
-	if [[ "${ENABLE_SQLITE_DEFRAG}" == "on" ]]; then
+if [ "$ENABLE_SQLITE_DEFRAG" == "on" ]; then
 	sqlidefrag
-	fi
 fi
-
-if [ ! -z "ENABLE_SPICA_OTF" ]; then
-	if [[ "${ENABLE_SPICA_OTF}" == "on" ]]; then
+if [ "$ENABLE_SPICA_OTF" == "on" ]; then
 	spicaotf
-	fi
 fi
 
 exit 1

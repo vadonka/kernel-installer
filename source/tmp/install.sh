@@ -272,7 +272,7 @@ else
 		ui_print "--TweakAIO params file found..."
 		checknew=`$grep -c "TIMESTAMP" /data/tweakaio/tweakaio.conf`
 		if [ "$checknew" -gt "0" ]; then
-			tstamp=`$grep "TIMESTAMP" /data/tweakaio/tweakaio.conf | sed "s/[^0-9]//g"`
+			tstamp=`$grep "TIMESTAMP" /data/tweakaio/tweakaio.conf | $sed "s/[^0-9]//g"`
 			if [[ "$tstamp" == "$TIMESTAMP" ]]; then
 				ui_print "--No need to update params file"
 			else

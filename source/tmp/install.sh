@@ -248,13 +248,13 @@ if [ "$cyanogen" == "1" ]; then
 				ui_print "--No need to update params file"
 			else
 				ui_print "--Backup OLD params file"
-				mv /data/tweakaio/tweakaio.conf /data/tweakaio/tweakaio.conf.old
+				mv /data/tweakaio/tweakaio.conf /data/tweakaio/tweakaio.conf.`date +%d%m%Y`
 				ui_print "--Installing new params file"
 				cp -f /tmp/data/tweakaio/tweakaio.conf /data/tweakaio/
 			fi
 		else
 			ui_print "--Backup OLD params file"
-			mv /data/tweakaio/tweakaio.conf /data/tweakaio/tweakaio.conf.old
+			mv /data/tweakaio/tweakaio.conf /data/tweakaio/tweakaio.conf.`date +%d%m%Y`
 			ui_print "--Installing new params file"
 			cp -f /tmp/data/tweakaio/tweakaio.conf /data/tweakaio/
 		fi
@@ -277,13 +277,13 @@ else
 				ui_print "--No need to update params file"
 			else
 				ui_print "--Backup OLD params file"
-				mv /data/tweakaio/tweakaio.conf /data/tweakaio/tweakaio.conf.old
+				mv /data/tweakaio/tweakaio.conf /data/tweakaio/tweakaio.conf.`date +%d%m%Y`
 				ui_print "--Installing new params file"
 				cp -f /tmp/data/tweakaio/tweakaio.conf /data/tweakaio/
 			fi
 		else
 			ui_print "--Backup OLD params file"
-			mv /data/tweakaio/tweakaio.conf /data/tweakaio/tweakaio.conf.old
+			mv /data/tweakaio/tweakaio.conf /data/tweakaio/tweakaio.conf.`date +%d%m%Y`
 			ui_print "--Installing new params file"
 			cp -f /tmp/data/tweakaio/tweakaio.conf /data/tweakaio/
 		fi

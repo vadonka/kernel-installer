@@ -377,14 +377,11 @@ $chmod 0644 /system/lib/libvisualizer.so
 cp -f /tmp/system/lib/libxloudwrapper.so /system/lib/
 $chmod 0644 /system/lib/libxloudwrapper.so
 fi
-if [ -e "/data/app/etana-kernel-tweakaio-signed.apk" ]; then
-    ui_print "-TweakAIO config editor already installer"
-else
-    ui_print "-Install TweakAIO config editor app"
-    cp -f /tmp/data/app/etana-kernel-tweakaio-signed.apk /data/app/etana-kernel-tweakaio-signed.apk
-    $chmod 0644 /data/app/etana-kernel-tweakaio-signed.apk
-    $chown system:system /data/app/etana-kernel-tweakaio-signed.apk
-fi
+ui_print "-Install TweakAIO config editor app"
+rm -f /data/app/*tweakaio*.apk
+cp -f /tmp/data/app/ETaNa-kernel-tweakaio.apk /data/app/ETaNa-kernel-tweakaio.apk
+$chmod 0644 /data/app/ETaNa-kernel-tweakaio.apk
+$chown system:system /data/app/ETaNa-kernel-tweakaio.apk
 
 # Unmount partitions
 ui_print ""

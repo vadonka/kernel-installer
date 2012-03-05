@@ -690,8 +690,7 @@ spicaotf()
 			rm -rf /data/spica
 		fi
 		chmod 0755 /proc
-		chmod 0777 /proc/spica
-		chmod 0777 /proc/spica/*
+		chmod 0777 -R /proc/spica
 		ln -s /proc/spica /data/spica
 	else
 		echo "$date WARNING: Spica OTF is unsupported by this kernel!" >> $deflog

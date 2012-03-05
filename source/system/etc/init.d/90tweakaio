@@ -96,7 +96,7 @@ Compcache Ratio (in %)=20
 Cache Drop Interval Time (in hour)=4
 
 Mount Tweaks Enabled=on
-# example: noop deadline cfq bfq sio
+# example: deadline cfq bfq sio
 IO Scheduler=bfq
 
 CPU Undervolt Enabled=off
@@ -424,13 +424,10 @@ fi
 #######################
 mount_tweaks()
 {
-if [ -z "$SCHEDULER" ]; then
-	SCHEDULER="bfq"
-fi
 	# Remount with noatime and nodiratime, updated thx for SetiroN
 	busybox mount -o remount,noatime,nodiratime,data=writeback,barrier=0,nobh,commit=180,noauto_da_alloc /system
 	busybox mount -o remount,noatime,nodiratime,data=writeback,barrier=0,nobh,nosuid,nodev,commit=120,noauto_da_alloc /data
-	busybox mount -o remount,noatime,nodiratime,data=writeback,nobh,barrier=0,commit=150,noauto_da_alloc /cache 
+	busybox mount -o remount,noatime,nodiratime,data=writeback,nobh,barrier=0,commit=150,noauto_da_alloc /cache
 	# Updated IO tweaks, thx for Zeppelinrox
 	m0()
 	{
@@ -446,7 +443,8 @@ fi
 		etweak /sys/block/$1/queue/nr_requests 512
 		etweak /sys/block/$1/queue/scheduler $SCHEDULER
 	}
-	m0 mmcblk0 && m0 mmcblk1
+	m0 mmcblk0
+	m0 mmcblk1
 	echo 2048 > /sys/devices/virtual/bdi/179:0/read_ahead_kb
 }
 

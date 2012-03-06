@@ -1,8 +1,8 @@
 #!/system/bin/sh
 
-# LG Optimus 2X AIO init script v2.1.1
+# LG Optimus 2X AIO init script v2.1.2
 # Copyright (c) by vadonka 2012
-TIMESTAMP=1330525007
+TIMESTAMP=1330992824
 
 # cleanup
 deflog="/data/tweakaio/logs/tweakaio.log"
@@ -55,11 +55,11 @@ export CPU1408MHZ=`grep "^1408 MHZ" $parfile | awk 'BEGIN {FS="="} {print $2}'`
 export ENABLE_DALVIK_CLEANER=`grep "^Dalvik Cache Cleaner Enabled" $parfile | awk 'BEGIN {FS="="} {print $2}'`
 export ENABLE_SQLITE_DEFRAG=`grep "^SQLite3 Defrag Enabled" $parfile | awk 'BEGIN {FS="="} {print $2}'`
 export ENABLE_SPICA_OTF=`grep "^Spica OTF Tweaks Enabled" $parfile | awk 'BEGIN {FS="="} {print $2}'`
+export AVP_FREQ=`grep "^AVP Frequency" $parfile | awk 'BEGIN {FS="="} {print $2}'`
 export VDE_FREQ=`grep "^VDE Frequency" $parfile | awk 'BEGIN {FS="="} {print $2}'`
 export GPU_FREQ=`grep "^GPU Frequency" $parfile | awk 'BEGIN {FS="="} {print $2}'`
 export MIN_CPU1_ON=`grep "^Min CPU1 On Frequency" $parfile | awk 'BEGIN {FS="="} {print $2}'`
 export MAX_CPU1_OFF=`grep "^Max CPU1 Off Frequency" $parfile | awk 'BEGIN {FS="="} {print $2}'`
-export SUSPEND_CORE_MV=`grep "^Suspend Core Voltage" $parfile | awk 'BEGIN {FS="="} {print $2}'`
 export POWERSAVE=`grep "^PowerSave Mode" $parfile | awk 'BEGIN {FS="="} {print $2}'`
 export ENABLE_NITRO=`grep "^NITRO Enabled" $parfile | awk 'BEGIN {FS="="} {print $2}'`
 export SCREEN_OFF_MAX_FREQ=`grep "^Screen Off Max Frequency" $parfile | awk 'BEGIN {FS="="} {print $2}'`
@@ -116,6 +116,9 @@ SQLite3 Defrag Enabled=off
 
 Spica OTF Tweaks Enabled=on
 
+AVP Frequency=240000
+# Accepted range: 200000-250000
+
 VDE Frequency=650000
 # Accepted range: 600000-700000
 
@@ -127,9 +130,6 @@ Min CPU1 On Frequency=655000
 
 Max CPU1 Off Frequency=610000
 # Accepted range: 216000-1100000
-
-Suspend Core Voltage (in mV)=1000
-# Accepted range: 600-1000
 
 PowerSave Mode=0
 # Accepted range: 0-6
@@ -580,6 +580,16 @@ spicaotf()
 	if [ -d  "/proc/spica" ]; then
 		echo "$date Spica OTF is supported by the kernel" >> $deflog
 		# Initialization & Boot time part
+		# AVP Freq
+		if [ "$AVP_FREQ" -gt "199999" -a "$AVP_FREQ" -lt "250001" ]; then
+			echo "$date AVP Freq within the acceptable range" >> $deflog
+			echo $AVP_FREQ > /proc/spica/avpfreq
+			echo "$date AVP Freq = "`cat /proc/spica/avpfreq` >> $deflog
+		else
+			echo "$date WARNING: Your AVP Freq is out of the safe range!" >> $deflog
+			echo "240000" > /proc/spica/avpfreq
+			echo "$date AVP Freq set to 240000 by default" >> $deflog
+		fi
 		# VDE Freq
 		if [ "$VDE_FREQ" -gt "599999" -a "$VDE_FREQ" -lt "700001" ]; then
 			echo "$date VDE Freq within the acceptable range" >> $deflog

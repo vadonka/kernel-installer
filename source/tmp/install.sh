@@ -1,6 +1,6 @@
 #!/sbin/sh
 device=LGP990
-TIMESTAMP=1330585739
+TIMESTAMP=1330992824
 
 # Supported ROM flags separated with one space(!)
 romflags="cyanogen miui GRJ22"

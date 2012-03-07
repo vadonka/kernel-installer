@@ -109,8 +109,8 @@ For safety concern no values except in range will be accepted.
 
 On-the-fly GPUFREQ change support.
 Responsible file is located in /proc/spica/gpufreq.
-Default value is 300000.
-Supported Values in between 280000-350000.
+Default value is 340000.
+Supported Values in between 280000-400000.
 Any values above 300000 will OC it w/o increasing supplying voltage.
 For safety concern no values except in range will be accepted.
 

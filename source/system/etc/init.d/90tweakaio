@@ -467,18 +467,18 @@ cpuuv()
 
     # Call the procedure
 	cpumaxfreq=`cat /sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq`
-	cpuuv_shift $CPU216MHZ CPU216UV 780 770
-	cpuuv_shift $CPU324MHZ CPU324UV 790 770
-	cpuuv_shift $CPU503MHZ CPU503UV 840 780
+	cpuuv_shift $CPU216MHZ CPU216UV 790 770
+	cpuuv_shift $CPU324MHZ CPU324UV 830 770
+	cpuuv_shift $CPU503MHZ CPU503UV 880 780
 	if [[ "${cpumaxfreq}" == "1216000" ]]; then
-		cpuuv_shift $CPU655MHZ CPU655UV 870 800
+		cpuuv_shift $CPU655MHZ CPU655UV 900 800
 	fi
-	cpuuv_shift $CPU800MHZ CPU800UV 900 820
+	cpuuv_shift $CPU800MHZ CPU800UV 930 820
 	cpuuv_shift $CPU1015MHZ CPU1015UV 1000 920
-	cpuuv_shift $CPU1100MHZ CPU1100UV 1050 1020
-	cpuuv_shift $CPU1216MHZ CPU1216UV 1150 1120
+	cpuuv_shift $CPU1100MHZ CPU1100UV 1055 1020
+	cpuuv_shift $CPU1216MHZ CPU1216UV 1155 1120
 	if [[ "${cpumaxfreq}" == "1408000" ]]; then
-		cpuuv_shift $CPU1408MHZ CPU1408UV 1250 1220
+		cpuuv_shift $CPU1408MHZ CPU1408UV 1255 1220
 	fi
 
 # Apply the UV values

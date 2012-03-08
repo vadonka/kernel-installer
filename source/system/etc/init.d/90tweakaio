@@ -609,8 +609,8 @@ spicaotf()
 			echo "$date GPU Freq = "`cat /proc/spica/gpufreq` >> $deflog
 		else
 			echo "$date WARNING: Your GPU Freq is out of the safe range!" >> $deflog
-			echo "340000" > /proc/spica/gpufreq
-			echo "$date GPU Freq set to 340000 by default" >> $deflog
+			echo "350000" > /proc/spica/gpufreq
+			echo "$date GPU Freq set to 350000 by default" >> $deflog
 		fi
 		# CPU1 activation threshold
 		if [ "$MIN_CPU1_ON" -gt "215999" -a "$MIN_CPU1_ON" -lt "1099999" ]; then

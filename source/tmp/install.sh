@@ -296,6 +296,11 @@ cp -f /tmp/data/tweakaio/tweakaio_hlp.txt /data/tweakaio/
 ui_print "-Installing zram_stats binary"
 cp -f /tmp/system/xbin/zram_stats /system/xbin/zram_stats
 $chmod 0755 /system/xbin/zram_stats
+ui_print "-Installing Kernel image tools"
+cp -f /tmp/system/xbin/mkbootimg /system/xbin/mkbootimg
+cp -f /tmp/system/xbin/unpackbootimg /system/xbin/unpackbootimg
+$chmod 0755 /system/xbin/mkbootimg
+$chmod 0755 /system/xbin/unpackbootimg
 ui_print "-Checking bash..."
 if [ ! -f /system/xbin/bash ]; then
 	ui_print "--Bash binary not found!"

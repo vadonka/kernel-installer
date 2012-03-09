@@ -1,0 +1,130 @@
+#!/system/bin/sh
+
+# Basedir
+bd=/cache
+
+process()
+{
+echo ""
+echo "- Checking kernel tool binary files..."
+if [ ! -f /system/xbin/mkbootimg -a ! -f /system/xbin/unpackbootimg ]; then
+	echo "ERROR: Kernel tools not found"
+	echo "Program will exit now"
+	exit 1
+else
+	echo "- Found kernel tool files"
+fi
+echo "- Searching for the old files..."
+rm -rf $bd/boot.img*
+echo "- Clean process completed"
+echo "- Dumping kernel image..."
+bimg=$bd/boot.img
+dd if=/dev/block/mmcblk0p5 of=$bimg > /dev/null 2>&1
+if [ ! -f $bimg ]; then
+	echo "ERROR: Kernel image dump failed"
+	echo "Program will exit now."
+	exit 1
+else
+	echo "- Kernel image dumped succesfuly"
+fi
+echo "- Unpacking kernel image..."
+unpackbootimg -i $bimg -o $bd -p 0x800 > /dev/null 2>&1
+rd="$bd/boot.img-ramdisk.gz"
+zim="$bd/boot.img-zImage"
+if [ "$?" -ne 0 -o ! -f $rd ] && [ "$?" -ne 0 -o ! -f $zim ]; then
+    echo "ERROR: kernel image unpacking failed"
+	echo "Program will exit now."
+	exit 1
+else
+	rdsize=`ls -la $bd | grep boot.img-ramdisk.gz | awk 'BEGIN {-F " "} {print $5}'`
+	zimsize=`ls -la $bd | grep boot.img-zImage | awk 'BEGIN {-F " "} {print $5}'`
+	if [ "$rdsize" -gt "180000" -a "$zimsize" -gt "1800000" ]; then
+		echo "- Kernel image unpacked succesfuly"
+		echo "- Removing old image file..."
+		rm -rf $bimg
+	else
+		echo "zImage and ramdisk size probably mismatch"
+		echo "Program will exit now."
+		exit 1
+	fi
+fi
+echo "- Building kernel image..."
+mkbootimg --kernel $zim --ramdisk $rd --cmdline "mem=$((512-(128-$hack)-1))M@0M nvmem=$((128-$hack))M@$((512-(128-$hack)))M loglevel=0 muic_state=1 lpj=9994240 CRC=3010002a8e458d7 vmalloc=256M brdrev=1.0 video=tegrafb console=ttyS0,115200n8 usbcore.old_scheme_first=1 tegraboot=sdmmc tegrapart=recovery:35e00:2800:800,linux:34700:1000:800,mbr:400:200:800,system:600:2bc00:800,cache:2c200:8000:800,misc:34200:400:800,userdata:38700:c0000:800 androidboot.hardware=p990" -o $bimg --base 0x10000000 > /dev/null 2>&1
+if [ "$?" -ne 0 -o ! -f $bimg ]; then
+    echo "ERROR: Building kernel failed!"
+	echo "Program will exit now"
+	exit 1
+else
+	imgsize=`ls -la $bd | grep boot.img$ | awk 'BEGIN {-F " "} {print $5}'`
+	if [ "$imgsize" -gt "1800000" ]; then
+		echo "- New kernel image created succesfuly"
+	else
+		echo "ERROR: Building kernel failed!"
+		echo "Program will exit now"
+		exit 1
+	fi
+fi
+echo "- Flashing the kernel..."
+dd if=/dev/zero of=/dev/block/mmcblk0p5 > /dev/null 2>&1
+dd if=$bimg of=/dev/block/mmcblk0p5 > /dev/null 2>&1
+if [ "$?" -ne 0 ]; then
+    echo "ERROR: Kernel flashing failed!"
+	echo "Try again! Dont reboot!"
+	exit 1
+else
+	echo "- Kernel image flashed succesfuly"
+fi
+echo "- Clean up..."
+rm -rf $bimg*
+echo ""
+echo "*** Program completed succesfuly ***"
+exit 1
+}
+
+while :
+do
+ echo "**********************************"
+ echo "*******< Ramhack changer >********"
+ echo "******< Writed by vadonka >*******"
+ echo "****< Select the ramhack size >***"
+ echo "**********************************"
+ echo ""
+ echo "1. 0MB  use  128MB RAM for the GPU"
+ echo "2. 32MB leave 96MB RAM for the GPU"
+ echo "3. 48MB leave 80MB RAM for the GPU"
+ echo "4. 64MB leave 64MB RAM for the GPU"
+ echo "5. 80MB leave 48MB RAM for the GPU"
+ echo "6. 96MB leave 32MB RAM for the GPU"
+ echo ""
+ echo "7. Exit the program"
+ echo ""
+ echo -n "Please enter an option [1 - 7]: "
+ read opt
+ case $opt in
+  1) echo "Selected ramhack: 0MB";
+     hack=0;
+	 process;;
+  2) echo "Selected ramhack: 32MB";
+     hack=32;
+	 process;;
+  3) echo "Selected ramhack: 48MB";
+     hack=48;
+	 process;;
+  4) echo "Selected ramhack: 64MB";
+     hack=64;
+	 process;;
+  5) echo "Selected ramhack: 80MB";
+     hack=80;
+	 process;;
+  6) echo "Selected ramhack: 96MB"
+     hack=96;
+	 process;;
+  7) echo "Program will exit now."
+     exit 1;;
+  *) echo "$opt is an invaild option. Please select option between 1-6 only";
+     echo "Press [enter] key to continue. . .";
+     read enterKey;;
+esac
+done
+
+exit 1

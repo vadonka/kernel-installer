@@ -582,6 +582,16 @@ spicaotf()
 	if [ -d  "/proc/spica" ]; then
 		echo "$date Spica OTF is supported by the kernel" >> $deflog
 		# Initialization & Boot time part
+		# GPU RAM Size
+		if [ "$gpuramsize" == "128" -o "$gpuramsize" == "96" -o "$gpuramsize" == "80" -o "$gpuramsize" == "64" -o "$gpuramsize" == "48" -o "$gpuramsize" == "32" ]; then
+			echo "$date GPU RAM size accepted" >> $deflog
+			echo $gpuramsize > /proc/spica/gpuramsize
+			echo "$date GPU RAM size = "`cat /proc/spica/gpuramsize` >> $deflog
+		else
+			echo "$date WARNING: Your GPU RAM size is invalid!" >> $deflog
+			echo "128" > /proc/spica/gpuramsize
+			echo "$date GPU RAM size set to 128MB by default" >> $deflog
+		fi
 		# AVP Freq
 		if [ "$AVP_FREQ" -gt "199999" -a "$AVP_FREQ" -lt "250001" ]; then
 			echo "$date AVP Freq within the acceptable range" >> $deflog

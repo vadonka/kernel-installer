@@ -299,8 +299,10 @@ $chmod 0755 /system/xbin/zram_stats
 ui_print "-Installing Kernel image tools"
 cp -f /tmp/system/xbin/mkbootimg /system/xbin/mkbootimg
 cp -f /tmp/system/xbin/unpackbootimg /system/xbin/unpackbootimg
+cp -f /tmp/system/xbin/rh /system/xbin/rh
 $chmod 0755 /system/xbin/mkbootimg
 $chmod 0755 /system/xbin/unpackbootimg
+$chmod 0755 /system/xbin/rh
 ui_print "-Checking bash..."
 if [ ! -f /system/xbin/bash ]; then
 	ui_print "--Bash binary not found!"

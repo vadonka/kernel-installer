@@ -1,6 +1,6 @@
 #!/sbin/sh
 device=LGP990
-TIMESTAMP=1331132291
+TIMESTAMP=1331556120
 
 # Supported ROM flags separated with one space(!)
 romflags="cyanogen miui GRJ22"
@@ -53,7 +53,7 @@ if [ "$romtest" == "0" ]; then
 	ui_print "This ROM is not supported!"
 	fatal "Aborting..."
 else
-	ui_print "** Installing on MIUI/CM7 **"
+	ui_print "** Installing on MIUI/CM9 **"
 fi
 
 if [ -e /system/build.prop.aiotweak ]; then
@@ -131,9 +131,9 @@ add windowsmgr.max_events_per_sec = 200
 ui_print "-Endcall BSOD workaround"
 add ro.lge.proximity.delay = 25
 add ro.lg.proximity.delay = 25
-# CM7 tweak
+# CM9 tweak
 if [ "$cyanogen" == "1" ]; then
-	ui_print "-CM7 specific tweaks"
+	ui_print "-CM9 specific tweaks"
 	add persist.sys.use_dithering = 0
 	add persist.sys.purgeable_assets = 1
 fi
@@ -207,11 +207,6 @@ ui_print "Cleaning up"
 ui_print "***********"
 ui_print "-Clean up modules folder"
 rm /system/lib/modules/*
-if [ "$cyanogen" == "1" ]; then
-	ui_print "-CM7 found!"
-	ui_print "--Clean up the init.d folder"
-	rm /system/etc/init.d/*
-fi
 ui_print "-Cleaning the dalvik-cache"
 rm -rf /data/dalvik-cache/*
 ui_print "-Cleaning the cache partition"
@@ -228,65 +223,32 @@ ui_print "################################"
 ui_print "-Copying modules"
 cp /tmp/system/lib/modules/* /system/lib/modules/
 $chmod 0644 /system/lib/modules/*
-if [ "$cyanogen" == "1" ]; then
-	ui_print "-Cyanogenmod found!"
-	ui_print "--Installing CM7 init scripts"
-	ui_print "--Installing AIO tweak"
-	cp -f /tmp/system/etc/init.d/* /system/etc/init.d/
-	$chmod 0755 /system/etc/init.d/*
-	mkdir -p /data/tweakaio/logs
-	if [ ! -f /data/tweakaio/tweakaio.conf ]; then
-		ui_print "--TweakAIO params file not found!"
-		ui_print "--Installing new params file"
-		cp -f /tmp/data/tweakaio/tweakaio.conf /data/tweakaio/
-	else
-		ui_print "--TweakAIO params file found..."
-		checknew=`$grep -c "TIMESTAMP" /data/tweakaio/tweakaio.conf`
-		if [ "$checknew" -gt "0" ]; then
-			tstamp=`$grep "TIMESTAMP" /data/tweakaio/tweakaio.conf | $sed "s/[^0-9]//g"`
-			if [[ "$tstamp" == "$TIMESTAMP" ]]; then
-				ui_print "--No need to update params file"
-			else
-				ui_print "--Backup OLD params file"
-				mv /data/tweakaio/tweakaio.conf /data/tweakaio/tweakaio.conf.`date +%d%m%Y`
-				ui_print "--Installing new params file"
-				cp -f /tmp/data/tweakaio/tweakaio.conf /data/tweakaio/
-			fi
-		else
-			ui_print "--Backup OLD params file"
-			mv /data/tweakaio/tweakaio.conf /data/tweakaio/tweakaio.conf.`date +%d%m%Y`
-			ui_print "--Installing new params file"
-			cp -f /tmp/data/tweakaio/tweakaio.conf /data/tweakaio/
-		fi
-	fi
+ui_print "-Installing AIO tweak"
+cp -f /tmp/system/etc/init.d/90tweakaio /system/etc/init.d/
+$chmod 0755 /system/etc/init.d/90tweakaio
+mkdir -p /data/tweakaio/logs
+if [ ! -f /data/tweakaio/tweakaio.conf ]; then
+	ui_print "--TweakAIO params file not found!"
+	ui_print "--Installing new params file"
+	cp -f /tmp/data/tweakaio/tweakaio.conf /data/tweakaio/
 else
-	ui_print "-Installing AIO tweak"
-	cp -f /tmp/system/etc/init.d/90tweakaio /system/etc/init.d/
-	$chmod 0755 /system/etc/init.d/90tweakaio
-	mkdir -p /data/tweakaio/logs
-	if [ ! -f /data/tweakaio/tweakaio.conf ]; then
-		ui_print "--TweakAIO params file not found!"
-		ui_print "--Installing new params file"
-		cp -f /tmp/data/tweakaio/tweakaio.conf /data/tweakaio/
-	else
-		ui_print "--TweakAIO params file found..."
-		checknew=`$grep -c "TIMESTAMP" /data/tweakaio/tweakaio.conf`
-		if [ "$checknew" -gt "0" ]; then
-			tstamp=`$grep "TIMESTAMP" /data/tweakaio/tweakaio.conf | $sed "s/[^0-9]//g"`
-			if [[ "$tstamp" == "$TIMESTAMP" ]]; then
-				ui_print "--No need to update params file"
-			else
-				ui_print "--Backup OLD params file"
-				mv /data/tweakaio/tweakaio.conf /data/tweakaio/tweakaio.conf.`date +%d%m%Y`
-				ui_print "--Installing new params file"
-				cp -f /tmp/data/tweakaio/tweakaio.conf /data/tweakaio/
-			fi
+	ui_print "--TweakAIO params file found..."
+	checknew=`$grep -c "TIMESTAMP" /data/tweakaio/tweakaio.conf`
+	if [ "$checknew" -gt "0" ]; then
+		tstamp=`$grep "TIMESTAMP" /data/tweakaio/tweakaio.conf | $sed "s/[^0-9]//g"`
+		if [[ "$tstamp" == "$TIMESTAMP" ]]; then
+			ui_print "--No need to update params file"
 		else
 			ui_print "--Backup OLD params file"
 			mv /data/tweakaio/tweakaio.conf /data/tweakaio/tweakaio.conf.`date +%d%m%Y`
 			ui_print "--Installing new params file"
 			cp -f /tmp/data/tweakaio/tweakaio.conf /data/tweakaio/
 		fi
+	else
+		ui_print "--Backup OLD params file"
+		mv /data/tweakaio/tweakaio.conf /data/tweakaio/tweakaio.conf.`date +%d%m%Y`
+		ui_print "--Installing new params file"
+		cp -f /tmp/data/tweakaio/tweakaio.conf /data/tweakaio/
 	fi
 fi
 ui_print "-Fix tweakaio.conf permission"
@@ -313,77 +275,6 @@ else
 	ui_print "--Bash binary found..."
 	ui_print "...skipping install bash"
 fi
-if [ -e "/sdcard/etana.conf" ]; then
-	fontallow=`grep -c "^install_roboto_font" /sdcard/etana.conf`
-else
-	ui_print "-Kernel config file not found..."
-	ui_print "--Installing roboto font by default"
-	fontallow="1"
-fi
-if [ "$fontallow" -gt "0" ]; then
-ui_print "-Installing Roboto font"
-cp -f /tmp/system/fonts/* /system/fonts/
-fi
-if [ -e "/sdcard/etana.conf" ]; then
-	sqliallow=`grep -c "^install_sqlite_patch" /sdcard/etana.conf`
-else
-	ui_print "-Kernel config file not found..."
-	ui_print "--Installing sqlite patch by default"
-	sqliallow="1"
-fi
-if [ "$sqliallow" -gt "0" ]; then
-ui_print "-Installing SqLite patch"
-cp -f /tmp/system/lib/libsqlite.so /system/lib/libsqlite.so
-$chmod 0644 /system/lib/libsqlite.so
-fi
-if [ -e "/sdcard/etana.conf" ]; then
-	adblockallow=`grep -c "^install_adblock_host" /sdcard/etana.conf`
-else
-	ui_print "-Kernel config file not found..."
-	ui_print "--Installing ADblock host file by default"
-	adblockallow="1"
-fi
-if [ "$adblockallow" -gt "0" ]; then
-ui_print "-Installing ADblock host file"
-cp -f /tmp/system/etc/hosts /system/etc/hosts
-fi
-if [ -e "/sdcard/etana.conf" ]; then
-	beatsaudio=`grep -c "^install_beats_audio" /sdcard/etana.conf`
-else
-	ui_print "-Kernel config file not found..."
-	ui_print "--Skipping install Beats Audio by default"
-	beatsaudio="0"
-fi
-if [ "$beatsaudio" -gt "0" ]; then
-ui_print "-Installing Beats Audio"
-cp -f /tmp/system/bin/*ibeats*.bin /system/bin/
-$chown root:shell /system/bin/*ibeats*.bin
-$chmod 0755 /system/bin/*ibeats*.bin
-cp -f /tmp/system/etc/AudioBTID.csv /system/etc/
-cp -f /tmp/system/etc/AudioFilter*.csv /system/etc/
-cp -f /tmp/system/etc/AutoVolumeControl.txt /system/etc/
-cp -f /tmp/system/etc/eqfilter.txt /system/etc/
-cp -f /tmp/system/etc/HP_Audio.csv /system/etc/
-cp -f /tmp/system/etc/HP_Video.csv /system/etc/
-cp -f /tmp/system/etc/pvplayer.cfg /system/etc/
-cp -f /tmp/system/etc/soundbooster.txt /system/etc/
-mkdir -p /system/etc/audio
-cp -f /tmp/system/etc/audio/* /system/etc/audio/
-cp -f /tmp/system/lib/libbeatsbass.so /system/lib/
-$chmod 0644 /system/lib/libbeatsbass.so
-cp -f /tmp/system/lib/libbundlewrapper.so /system/lib/
-$chmod 0644 /system/lib/libbundlewrapper.so
-cp -f /tmp/system/lib/libcyanogen-dsp.so /system/lib/
-$chmod 0644 /system/lib/libcyanogen-dsp.so
-cp -f /tmp/system/lib/libreverbwrapper.so /system/lib/
-$chmod 0644 /system/lib/libreverbwrapper.so
-cp -f /tmp/system/lib/libsrsfx.so /system/lib/
-$chmod 0644 /system/lib/libsrsfx.so
-cp -f /tmp/system/lib/libvisualizer.so /system/lib/
-$chmod 0644 /system/lib/libvisualizer.so
-cp -f /tmp/system/lib/libxloudwrapper.so /system/lib/
-$chmod 0644 /system/lib/libxloudwrapper.so
-fi
 ui_print "-Install TweakAIO config editor app"
 rm -f /data/app/*tweakaio*.apk
 cp -f /tmp/data/app/ETaNa-kernel-tweakaio.apk /data/app/ETaNa-kernel-tweakaio.apk
@@ -398,5 +289,5 @@ umount /data
 umount /system
 ui_print ""
 ui_print "################################"
-ui_print "#   CM7 Kang Kernel is ready!  #"
+ui_print "#   ICS Kang Kernel is ready!  #"
 ui_print "################################"

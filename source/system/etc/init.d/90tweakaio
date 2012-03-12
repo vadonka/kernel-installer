@@ -2,7 +2,7 @@
 
 # LG Optimus 2X AIO init script v2.1.2
 # Copyright (c) by vadonka 2012
-TIMESTAMP=1330992824
+TIMESTAMP=1331556120
 date=`date +%Y.%m.%d-%H.%M.%S`
 
 # cleanup

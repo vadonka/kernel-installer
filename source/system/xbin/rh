@@ -1,5 +1,9 @@
 #!/system/bin/sh
 
+# This script is using the mkbootimg and the unpackbootimg binaries for unpacking and packing the kernel.
+# Im using the "official" syntax. Its NOT taking from an another kernel!
+# All credits for the kernel image tools author.
+
 # Basedir
 bd=/cache
 
@@ -68,7 +72,7 @@ echo "- Flashing the kernel..."
 dd if=/dev/zero of=/dev/block/mmcblk0p5 > /dev/null 2>&1
 dd if=$bimg of=/dev/block/mmcblk0p5 > /dev/null 2>&1
 if [ "$?" -ne 0 ]; then
-    echo "ERROR: Kernel flashing failed!"
+	echo "ERROR: Kernel flashing failed!"
 	echo "Try again! Dont reboot!"
 	exit 1
 else
@@ -103,22 +107,22 @@ do
  case $opt in
   1) echo "Selected ramhack: 0MB";
      hack=0;
-	 process;;
+    process;;
   2) echo "Selected ramhack: 32MB";
      hack=32;
-	 process;;
+    process;;
   3) echo "Selected ramhack: 48MB";
      hack=48;
-	 process;;
+    process;;
   4) echo "Selected ramhack: 64MB";
      hack=64;
-	 process;;
+    process;;
   5) echo "Selected ramhack: 80MB";
      hack=80;
-	 process;;
+     process;;
   6) echo "Selected ramhack: 96MB"
      hack=96;
-	 process;;
+     process;;
   7) echo "Program will exit now."
      exit 1;;
   *) echo "$opt is an invaild option. Please select option between 1-6 only";

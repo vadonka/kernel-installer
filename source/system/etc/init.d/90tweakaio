@@ -483,7 +483,7 @@ cpuuv()
 		cpuuv_shift $CPU655MHZ CPU655UV 900 800
 	fi
 	cpuuv_shift $CPU800MHZ CPU800UV 930 820
-	cpuuv_shift $CPU1015MHZ CPU1015UV 1000 920
+	cpuuv_shift $CPU1015MHZ CPU1015UV 1020 920
 	cpuuv_shift $CPU1100MHZ CPU1100UV 1055 1020
 	cpuuv_shift $CPU1216MHZ CPU1216UV 1155 1120
 	if [[ "${cpumaxfreq}" == "1408000" ]]; then

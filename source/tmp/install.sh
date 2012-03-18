@@ -299,6 +299,7 @@ $chmod 0755 /system/xbin/zram_stats
 ui_print "-Installing v20q nvrm daemon binary"
 cp -f /tmp/system/bin/nvrm_daemon_v20q /system/bin/nvrm_daemon
 $chmod 0755 /system/bin/nvrm_daemon
+$chown root:shell /system/bin/nvrm_daemon
 ui_print "-Installing Kernel image tools"
 cp -f /tmp/system/xbin/mkbootimg /system/xbin/mkbootimg
 cp -f /tmp/system/xbin/unpackbootimg /system/xbin/unpackbootimg

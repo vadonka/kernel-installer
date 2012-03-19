@@ -191,9 +191,48 @@ fi # Build.prop tweaks
 ui_print ""
 ui_print "Flashing the kernel"
 ui_print "*******************"
+if [ -e "/sdcard/etana.conf" ]; then
+	hack=`$grep "^ramhack" /sdcard/etana.conf | $awk 'BEGIN {FS="="} {print $2}'`
+	if [ "$hack" == "0" -o "$hack" == "32" -o "$hack" == "48" -o "$hack" == "64" -o "$hack" == "80" -o "$hack" == "96" ]; then
+		ui_print "-ramhack size is $hack MB"
+	else
+		ui_print "-invalid ramhack size!"
+		ui_print "-ramhack is disabled by default"
+		hack=0
+	fi
+else
+	ui_print "-kernel config file not found..."
+	ui_print "-ramhack is disabled by default"
+	hack=0
+fi
+ui_print "-dumping the old kernel..."
+$BB dd if=/dev/block/mmcblk0p5 of=$bd/boot.orig
+if [ ! -f $bd/boot.orig ]; then
+	fatal "ERROR: Old kernel image dumping failed"
+fi
+ui_print "-pulling initrd..."
+rd="$bd/boot.orig-ramdisk.gz"
+$chmod 0777 $bd/unpackbootimg
+$bd/unpackbootimg -i $bd/boot.orig -o $bd/ -p 0x800
+if [ "$?" -ne 0 -o ! -f $rd ]; then
+    fatal "ERROR: Pulling initrd failed"
+fi
+ui_print "-building the new kernel..."
+$chmod 0777 $bd/mkbootimg
+$bd/mkbootimg --kernel $bd/zImage --ramdisk $bd/boot.orig-ramdisk.gz --cmdline "mem=$((512-(128-$hack)-1))M@0M nvmem=$((128-$hack))M@$((512-(128-$hack)))M loglevel=0 muic_state=1 lpj=9994240 CRC=3010002a8e458d7 vmalloc=256M brdrev=1.0 video=tegrafb console=ttyS0,115200n8 usbcore.old_scheme_first=1 tegraboot=sdmmc tegrapart=recovery:35e00:2800:800,linux:34700:1000:800,mbr:400:200:800,system:600:2bc00:800,cache:2c200:8000:800,misc:34200:400:800,userdata:38700:c0000:800 androidboot.hardware=p990" -o $bd/boot.img --base 0x10000000
+if [ "$?" -ne 0 -o ! -f $bd/boot.img ]; then
+    fatal "ERROR: Packing kernel failed!"
+else
+	imgsize=`ls -la $bd | grep boot.img$ | awk 'BEGIN {-F " "} {print $5}'`
+	if [ "$imgsize" -gt "1800000" ]; then
+		echo "-New kernel image created succesfuly"
+	else
+		fatal "-ERROR: Building kernel failed!"
+	fi
+fi
 ui_print "-zeroed mmcblk0p5"
 $BB dd if=/dev/zero of=/dev/block/mmcblk0p5
-ui_print "-write boot.img"
+ui_print "-writing kernel..."
 $BB dd if=$bd/boot.img of=/dev/block/mmcblk0p5
 if [ "$?" -ne 0 ]; then
 	fatal "ERROR: Flashing kernel failed!"

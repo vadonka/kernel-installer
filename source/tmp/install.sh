@@ -205,21 +205,9 @@ else
 	ui_print "-ramhack is disabled by default"
 	hack=0
 fi
-ui_print "-dumping the old kernel..."
-$BB dd if=/dev/block/mmcblk0p5 of=$bd/boot.orig
-if [ ! -f $bd/boot.orig ]; then
-	fatal "ERROR: Old kernel image dumping failed"
-fi
-ui_print "-pulling initrd..."
-rd="$bd/boot.orig-ramdisk.gz"
-$chmod 0777 $bd/unpackbootimg
-$bd/unpackbootimg -i $bd/boot.orig -o $bd/ -p 0x800
-if [ "$?" -ne 0 -o ! -f $rd ]; then
-    fatal "ERROR: Pulling initrd failed"
-fi
 ui_print "-building the new kernel..."
 $chmod 0777 $bd/mkbootimg
-$bd/mkbootimg --kernel $bd/zImage --ramdisk $bd/boot.orig-ramdisk.gz --cmdline "mem=$((512-(128-$hack)-1))M@0M nvmem=$((128-$hack))M@$((512-(128-$hack)))M loglevel=0 muic_state=1 lpj=9994240 CRC=3010002a8e458d7 vmalloc=256M brdrev=1.0 video=tegrafb console=ttyS0,115200n8 usbcore.old_scheme_first=1 tegraboot=sdmmc tegrapart=recovery:35e00:2800:800,linux:34700:1000:800,mbr:400:200:800,system:600:2bc00:800,cache:2c200:8000:800,misc:34200:400:800,userdata:38700:c0000:800 androidboot.hardware=p990" -o $bd/boot.img --base 0x10000000
+$bd/mkbootimg --kernel $bd/zImage --ramdisk $bd/initrd.img --cmdline "mem=$((383+$hack))M@0M nvmem=$((128-$hack))M@$((384+$hack))M loglevel=0 muic_state=1 lpj=9994240 CRC=3010002a8e458d7 vmalloc=256M brdrev=1.0 video=tegrafb console=ttyS0,115200n8 usbcore.old_scheme_first=1 tegraboot=sdmmc tegrapart=recovery:35e00:2800:800,linux:34700:1000:800,mbr:400:200:800,system:600:2bc00:800,cache:2c200:8000:800,misc:34200:400:800,userdata:38700:c0000:800 androidboot.hardware=p990" -o $bd/boot.img --base 0x10000000
 if [ "$?" -ne 0 -o ! -f $bd/boot.img ]; then
     fatal "ERROR: Packing kernel failed!"
 else
@@ -232,7 +220,7 @@ else
 fi
 ui_print "-zeroed mmcblk0p5"
 $BB dd if=/dev/zero of=/dev/block/mmcblk0p5
-ui_print "-writing kernel..."
+ui_print "-writing the kernel..."
 $BB dd if=$bd/boot.img of=/dev/block/mmcblk0p5
 if [ "$?" -ne 0 ]; then
 	fatal "ERROR: Flashing kernel failed!"

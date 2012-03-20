@@ -196,7 +196,7 @@ if [ -e "/sdcard/etana.conf" ]; then
 	if [ "$hack" == "0" -o "$hack" == "32" -o "$hack" == "48" -o "$hack" == "64" -o "$hack" == "80" -o "$hack" == "96" ]; then
 		ui_print "-ramhack size is $hack MB"
 	else
-		ui_print "-invalid ramhack size!"
+		ui_print "-invalid/undefined ramhack size!"
 		ui_print "-ramhack is disabled by default"
 		hack=0
 	fi

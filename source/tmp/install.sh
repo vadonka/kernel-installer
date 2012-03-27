@@ -378,43 +378,6 @@ if [ "$adblockallow" -gt "0" ]; then
 ui_print "-Installing ADblock host file"
 cp -f /tmp/system/etc/hosts /system/etc/hosts
 fi
-if [ -e "/sdcard/etana.conf" ]; then
-	beatsaudio=`grep -c "^install_beats_audio" /sdcard/etana.conf`
-else
-	ui_print "-Kernel config file not found..."
-	ui_print "--Skipping install Beats Audio by default"
-	beatsaudio="0"
-fi
-if [ "$beatsaudio" -gt "0" ]; then
-ui_print "-Installing Beats Audio"
-cp -f /tmp/system/bin/*ibeats*.bin /system/bin/
-$chown root:shell /system/bin/*ibeats*.bin
-$chmod 0755 /system/bin/*ibeats*.bin
-cp -f /tmp/system/etc/AudioBTID.csv /system/etc/
-cp -f /tmp/system/etc/AudioFilter*.csv /system/etc/
-cp -f /tmp/system/etc/AutoVolumeControl.txt /system/etc/
-cp -f /tmp/system/etc/eqfilter.txt /system/etc/
-cp -f /tmp/system/etc/HP_Audio.csv /system/etc/
-cp -f /tmp/system/etc/HP_Video.csv /system/etc/
-cp -f /tmp/system/etc/pvplayer.cfg /system/etc/
-cp -f /tmp/system/etc/soundbooster.txt /system/etc/
-mkdir -p /system/etc/audio
-cp -f /tmp/system/etc/audio/* /system/etc/audio/
-cp -f /tmp/system/lib/libbeatsbass.so /system/lib/
-$chmod 0644 /system/lib/libbeatsbass.so
-cp -f /tmp/system/lib/libbundlewrapper.so /system/lib/
-$chmod 0644 /system/lib/libbundlewrapper.so
-cp -f /tmp/system/lib/libcyanogen-dsp.so /system/lib/
-$chmod 0644 /system/lib/libcyanogen-dsp.so
-cp -f /tmp/system/lib/libreverbwrapper.so /system/lib/
-$chmod 0644 /system/lib/libreverbwrapper.so
-cp -f /tmp/system/lib/libsrsfx.so /system/lib/
-$chmod 0644 /system/lib/libsrsfx.so
-cp -f /tmp/system/lib/libvisualizer.so /system/lib/
-$chmod 0644 /system/lib/libvisualizer.so
-cp -f /tmp/system/lib/libxloudwrapper.so /system/lib/
-$chmod 0644 /system/lib/libxloudwrapper.so
-fi
 ui_print "-Install TweakAIO config editor app"
 rm -f /data/app/*tweakaio*.apk
 cp -f /tmp/data/app/ETaNa-kernel-tweakaio.apk /data/app/ETaNa-kernel-tweakaio.apk

@@ -433,10 +433,10 @@ fi
 #######################
 mount_tweaks()
 {
-	# Remount with noatime and nodiratime, updated thx for SetiroN
-	busybox mount -o remount,noatime,nodiratime,data=writeback,barrier=0,nobh,commit=180,noauto_da_alloc /system
-	busybox mount -o remount,noatime,nodiratime,data=writeback,barrier=0,nobh,nosuid,nodev,commit=120,noauto_da_alloc /data
-	busybox mount -o remount,noatime,nodiratime,data=writeback,nobh,barrier=0,commit=150,noauto_da_alloc /cache
+	# Remount with noatime and nodiratime
+	busybox mount -o remount,ro,noauto_da_alloc /system /system
+	busybox mount -o remount,noatime,noauto_da_alloc,nosuid,nodev,nodiratime,barrier=0,nobh /data /data
+	busybox mount -o remount,noatime,noauto_da_alloc,nosuid,nodev,nodiratime,barrier=0,nobh /cache /cache
 	# Updated IO tweaks, thx for Zeppelinrox
 	m0()
 	{

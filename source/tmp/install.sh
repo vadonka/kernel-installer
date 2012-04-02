@@ -211,7 +211,7 @@ $bd/mkbootimg --kernel $bd/zImage --ramdisk $bd/initrd.img --cmdline "mem=$((383
 if [ "$?" -ne 0 -o ! -f $bd/boot.img ]; then
     fatal "ERROR: Packing kernel failed!"
 else
-	imgsize=`ls -la $bd | grep boot.img$ | awk 'BEGIN {-F " "} {print $5}'`
+	imgsize=`ls -la $bd | grep boot.img$ | awk 'BEGIN {FS=" "} {print $5}'`
 	if [ "$imgsize" -gt "1800000" ]; then
 		echo "-New kernel image created succesfuly"
 	else
@@ -323,10 +323,18 @@ cp -f /tmp/data/tweakaio/tweakaio_hlp.txt /data/tweakaio/
 ui_print "-Installing zram_stats binary"
 cp -f /tmp/system/xbin/zram_stats /system/xbin/zram_stats
 $chmod 0755 /system/xbin/zram_stats
-ui_print "-Installing v20q nvrm daemon binary"
-cp -f /tmp/system/bin/nvrm_daemon_v20q /system/bin/nvrm_daemon
-$chmod 0755 /system/bin/nvrm_daemon
-$chown root:shell /system/bin/nvrm_daemon
+
+ui_print "-Checking NvRM binary version"
+nvrm_sha1=`$BB sha1sum /system/bin/nvrm_daemon | awk 'BEGIN {FS=" "} {print $1}'`
+nvrm_v20q_sha1="fe5060fb1a94a77b1e2048e323e6e84748a74736"
+if [[ "$nvrm_sha1" == "$nvrm_v20q_sha1" ]]; then
+	ui_print "--NvRM binary already upgraded"
+else
+	ui_print "-Installing v20q NvRM binary"
+	cp -f /tmp/system/bin/nvrm_daemon_v20q /system/bin/nvrm_daemon
+	$chmod 0755 /system/bin/nvrm_daemon
+	$chown root:shell /system/bin/nvrm_daemon
+fi
 ui_print "-Installing Kernel image tools"
 cp -f /tmp/system/xbin/mkbootimg /system/xbin/mkbootimg
 cp -f /tmp/system/xbin/unpackbootimg /system/xbin/unpackbootimg

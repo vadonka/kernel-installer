@@ -54,6 +54,7 @@ export COMPCACHE_SIZE=`grep "^Compcache Size" $parfile | awk 'BEGIN {FS="="} {pr
 export COMPCACHE_RATIO=`grep "^Compcache Ratio" $parfile | awk 'BEGIN {FS="="} {print $2}'`
 export CACHE_DROP_INTERVAL=`grep "^Cache Drop Interval Time" $parfile | awk 'BEGIN {FS="="} {print $2}'`
 export ENABLE_MOUNT_TWEAKS=`grep "^Mount Tweaks Enabled" $parfile | awk 'BEGIN {FS="="} {print $2}'`
+export ENABLE_FS_CHECK=`grep "^Filesystem Status Check" $parfile | awk 'BEGIN {FS="="} {print $2}'`
 export SCHEDULER=`grep "^IO Scheduler" $parfile | awk 'BEGIN {FS="="} {print $2}'`
 export ENABLE_CPU_UNDERVOLT=`grep "^CPU Undervolt Enabled" $parfile | awk 'BEGIN {FS="="} {print $2}'`
 export CPU216MHZ=`grep "^216 MHZ" $parfile | awk 'BEGIN {FS="="} {print $2}'`
@@ -86,6 +87,7 @@ if [ -f /data/tweakaio/tweakaio.conf ]; then
 	readvar
 else
 echo "$date WARNING! Params file not found! Creating now..." >> $deflog
+mkdir -p /data/tweakaio/logs
 cat > /data/tweakaio/tweakaio.conf <<EOF
 # ATTENTION!
 # Detailed information moved
@@ -109,6 +111,7 @@ Compcache Ratio (in %)=20
 Cache Drop Interval Time (in hour)=4
 
 Mount Tweaks Enabled=on
+Filesystem Status Check=off
 # example: deadline cfq bfq sio
 IO Scheduler=bfq
 
@@ -431,12 +434,52 @@ fi
 #######################
 # Mount Option Tweaks #
 #######################
+fscheck()
+{
+	fschkproc()
+	{
+		mount="busybox mount"
+		umount="busybox umount"
+		if [ "$2" == "data" ]; then
+			tmplog="/cache/tweakaio_tmp.log"
+			rm -rf $tmplog
+			touch $tmplog
+		else
+			tmplog=$deflog
+		fi
+		echo "$date Checking $2 partition for errors..." >> $tmplog
+		$umount /dev/block/mmcblk0p$1
+		umountflag=`$mount | grep -c "/dev/block/mmcblk0p$1"`
+		if [ "$umountflag" == "0" ]; then
+			echo "$date $2 partition is not mounted. This is normal." >> $tmplog
+			echo "$date Running e2fsck..." >> $tmplog
+			e2fsck -fy /dev/block/mmcblk0p$1
+			echo "$date Mounting $2 partition..." >> $tmplog
+			$mount /dev/block/mmcblk0p$1 /$2
+			mountflag=`$mount | grep -c "/dev/block/mmcblk0p$1"`
+			if [ "$mountflag" == "1" ]; then
+				echo -e "$date $2 partition has mounted\n" >> $tmplog
+			else
+				echo -e "$date ERROR: $2 partition cant be mount!\n" >> $tmplog
+			fi
+		else
+			echo -e "$date WARNING: $2 partition is busy, cant be umount now\n" >> $tmplog
+		fi
+		if [ "$2" == "data" ]; then
+			cat $tmplog >> $deflog
+			rm -rf $tmplog
+		fi
+	}
+	fschkproc 2 cache
+	fschkproc 8 data
+}
+
 mount_tweaks()
 {
 	# Remount with noatime and nodiratime
 	busybox mount -o remount,ro,noauto_da_alloc /system /system
-	busybox mount -o remount,noatime,noauto_da_alloc,nosuid,nodev,nodiratime,barrier=0,nobh /data /data
-	busybox mount -o remount,noatime,noauto_da_alloc,nosuid,nodev,nodiratime,barrier=0,nobh /cache /cache
+	busybox mount -o remount,rw,noatime,noauto_da_alloc,nosuid,nodev,nodiratime,barrier=0,nobh /data /data
+	busybox mount -o remount,rw,noatime,noauto_da_alloc,nosuid,nodev,nodiratime,barrier=0,nobh /cache /cache
 	# Updated IO tweaks, thx for Zeppelinrox
 	m0()
 	{
@@ -639,18 +682,6 @@ spicaotf()
 			echo "610000" > /proc/spica/maxcpu1off
 			echo "$date CPU1 deactivation threshold freq set to 610000 by default" >> $deflog
 		fi
-		# Suspend Core Voltage
-#		if [ "$SUSPEND_CORE_MV" -gt "599" -a "$SUSPEND_CORE_MV" -lt "1001" ]; then
-#			echo "$date SUSPENDED CORE VOLTAGE SUPPLY within the acceptable range" >> $deflog
-#			echo $SUSPEND_CORE_MV > /proc/spica/suspend_core_mv
-#			echo "$date SUSPENDED CORE VOLTAGE SUPPLY = "`cat /proc/spica/suspend_core_mv` >> $deflog
-#		else
-#			echo "$date WARNING: Your SUSPENDED CORE VOLTAGE SUPPLY is out of the safe range!" >> $deflog
-#			echo "1000" > /proc/spica/suspend_core_mv
-#			echo "$date SUSPENDED CORE VOLTAGE SUPPLY set to 1000 by default" >> $deflog
-#		fi
-		echo "1000" > /proc/spica/suspend_core_mv
-		echo "$date SUSPENDED CORE VOLTAGE SUPPLY set to 1000 for safety (for now...)" >> $deflog
 		# PowerSave flag Check
 		if [ "$POWERSAVE" -gt "-1" -a "$POWERSAVE" -lt "7" ]; then
 			echo "$date POWERSAVE flag within the acceptable range" >> $deflog
@@ -727,6 +758,9 @@ if [ "$ENABLE_NET_TWEAKS" == "on" ]; then
 fi
 if [ "$ENABLE_VM_TWEAKS" == "on" ]; then
 	vm_tweaks
+fi
+if [ "$ENABLE_FS_CHECK" == "on" ]; then
+	fscheck
 fi
 if [ "$ENABLE_MOUNT_TWEAKS" == "on" ]; then
 	mount_tweaks

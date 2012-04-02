@@ -225,7 +225,7 @@ $BB dd if=$bd/boot.img of=/dev/block/mmcblk0p5
 if [ "$?" -ne 0 ]; then
 	fatal "ERROR: Flashing kernel failed!"
 else
-	ui_print "* Kernel flashed Succesfully! *"
+	ui_print "* Kernel flashed Succesfuly! *"
 fi
 
 # Cleanup process

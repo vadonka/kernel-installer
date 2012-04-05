@@ -29,17 +29,6 @@ echo "#########################################" >> $deflog
 echo "##Kernel version: "`uname -r` >> $deflog
 echo -e "##Kernel CMDline GPU memory size: $gpuramsize MB\n" >> $deflog
 
-# GPU RAM Size
-if [ "$gpuramsize" == "128" -o "$gpuramsize" == "96" -o "$gpuramsize" == "80" -o "$gpuramsize" == "64" -o "$gpuramsize" == "48" -o "$gpuramsize" == "32" ]; then
-	echo "$date GPU RAM size accepted" >> $deflog
-	echo $gpuramsize > /proc/spica/gpuramsize
-	echo "$date GPU RAM size = "`cat /proc/spica/gpuramsize` >> $deflog
-else
-	echo "$date WARNING: Your GPU RAM size is invalid!" >> $deflog
-	echo "128" > /proc/spica/gpuramsize
-	echo "$date GPU RAM size set to 128MB by default" >> $deflog
-fi
-
 readvar()
 {
 export parfile="/data/tweakaio/tweakaio.conf"
@@ -54,7 +43,6 @@ export COMPCACHE_SIZE=`grep "^Compcache Size" $parfile | awk 'BEGIN {FS="="} {pr
 export COMPCACHE_RATIO=`grep "^Compcache Ratio" $parfile | awk 'BEGIN {FS="="} {print $2}'`
 export CACHE_DROP_INTERVAL=`grep "^Cache Drop Interval Time" $parfile | awk 'BEGIN {FS="="} {print $2}'`
 export ENABLE_MOUNT_TWEAKS=`grep "^Mount Tweaks Enabled" $parfile | awk 'BEGIN {FS="="} {print $2}'`
-export ENABLE_FS_CHECK=`grep "^Filesystem Status Check" $parfile | awk 'BEGIN {FS="="} {print $2}'`
 export SCHEDULER=`grep "^IO Scheduler" $parfile | awk 'BEGIN {FS="="} {print $2}'`
 export ENABLE_CPU_UNDERVOLT=`grep "^CPU Undervolt Enabled" $parfile | awk 'BEGIN {FS="="} {print $2}'`
 export CPU216MHZ=`grep "^216 MHZ" $parfile | awk 'BEGIN {FS="="} {print $2}'`
@@ -111,9 +99,8 @@ Compcache Ratio (in %)=20
 Cache Drop Interval Time (in hour)=4
 
 Mount Tweaks Enabled=on
-Filesystem Status Check=off
-# example: deadline cfq bfq sio
-IO Scheduler=bfq
+# example: deadline cfq sio
+IO Scheduler=sio
 
 CPU Undervolt Enabled=off
 # VOLTAGE LEVELS (in mV)
@@ -434,46 +421,6 @@ fi
 #######################
 # Mount Option Tweaks #
 #######################
-fscheck()
-{
-	fschkproc()
-	{
-		mount="busybox mount"
-		umount="busybox umount"
-		if [ "$2" == "data" ]; then
-			tmplog="/cache/tweakaio_tmp.log"
-			rm -rf $tmplog
-			touch $tmplog
-		else
-			tmplog=$deflog
-		fi
-		echo "$date Checking $2 partition for errors..." >> $tmplog
-		$umount /dev/block/mmcblk0p$1
-		umountflag=`$mount | grep -c "/dev/block/mmcblk0p$1"`
-		if [ "$umountflag" == "0" ]; then
-			echo "$date $2 partition is not mounted. This is normal." >> $tmplog
-			echo "$date Running e2fsck..." >> $tmplog
-			e2fsck -fy /dev/block/mmcblk0p$1
-			echo "$date Mounting $2 partition..." >> $tmplog
-			$mount /dev/block/mmcblk0p$1 /$2
-			mountflag=`$mount | grep -c "/dev/block/mmcblk0p$1"`
-			if [ "$mountflag" == "1" ]; then
-				echo -e "$date $2 partition has mounted\n" >> $tmplog
-			else
-				echo -e "$date ERROR: $2 partition cant be mount!\n" >> $tmplog
-			fi
-		else
-			echo -e "$date WARNING: $2 partition is busy, cant be umount now\n" >> $tmplog
-		fi
-		if [ "$2" == "data" ]; then
-			cat $tmplog >> $deflog
-			rm -rf $tmplog
-		fi
-	}
-	fschkproc 2 cache
-	fschkproc 8 data
-}
-
 mount_tweaks()
 {
 	# Remount with noatime and nodiratime
@@ -758,9 +705,6 @@ if [ "$ENABLE_NET_TWEAKS" == "on" ]; then
 fi
 if [ "$ENABLE_VM_TWEAKS" == "on" ]; then
 	vm_tweaks
-fi
-if [ "$ENABLE_FS_CHECK" == "on" ]; then
-	fscheck
 fi
 if [ "$ENABLE_MOUNT_TWEAKS" == "on" ]; then
 	mount_tweaks

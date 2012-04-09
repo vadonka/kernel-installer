@@ -9,6 +9,8 @@ bd=/cache
 
 process()
 {
+echo "Asking root access..."
+su
 echo ""
 echo "- Checking kernel tool binary files..."
 if [ ! -f /system/xbin/mkbootimg -a ! -f /system/xbin/unpackbootimg ]; then

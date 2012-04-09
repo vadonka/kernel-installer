@@ -2,7 +2,7 @@
 
 # LG Optimus 2X AIO init script v2.1.2
 # Copyright (c) by vadonka 2012
-TIMESTAMP=1330992824
+TIMESTAMP=1333994133
 date=`date +%Y.%m.%d-%H.%M.%S`
 
 # cleanup
@@ -51,7 +51,7 @@ export CPU503MHZ=`grep "^503 MHZ" $parfile | awk 'BEGIN {FS="="} {print $2}'`
 export CPU655MHZ=`grep "^655 MHZ" $parfile | awk 'BEGIN {FS="="} {print $2}'`
 export CPU800MHZ=`grep "^800 MHZ" $parfile | awk 'BEGIN {FS="="} {print $2}'`
 export CPU1015MHZ=`grep "^1015 MHZ" $parfile | awk 'BEGIN {FS="="} {print $2}'`
-export CPU1100MHZ=`grep "^1100 MHZ" $parfile | awk 'BEGIN {FS="="} {print $2}'`
+#export CPU1100MHZ=`grep "^1100 MHZ" $parfile | awk 'BEGIN {FS="="} {print $2}'`
 export CPU1216MHZ=`grep "^1216 MHZ" $parfile | awk 'BEGIN {FS="="} {print $2}'`
 export CPU1408MHZ=`grep "^1408 MHZ" $parfile | awk 'BEGIN {FS="="} {print $2}'`
 export ENABLE_DALVIK_CLEANER=`grep "^Dalvik Cache Cleaner Enabled" $parfile | awk 'BEGIN {FS="="} {print $2}'`
@@ -104,13 +104,12 @@ IO Scheduler=sio
 
 CPU Undervolt Enabled=off
 # VOLTAGE LEVELS (in mV)
-216 MHZ=780
-324 MHZ=790
-503 MHZ=840
-655 MHZ=870
-800 MHZ=900
-1015 MHZ=1000
-1100 MHZ=1050
+216 MHZ=775
+324 MHZ=800
+503 MHZ=825
+655 MHZ=850
+800 MHZ=875
+1015 MHZ=975
 1216 MHZ=1150
 1408 MHZ=1250
 
@@ -120,7 +119,7 @@ SQLite3 Defrag Enabled=off
 Spica OTF Tweaks Enabled=on
 
 AVP Frequency=240000
-# Accepted range: 200000-250000
+# Accepted range: 200000-280000
 
 VDE Frequency=650000
 # Accepted range: 600000-700000
@@ -139,7 +138,7 @@ PowerSave Mode=0
 
 NITRO Enabled=off
 
-Screen Off Max Frequency=503000
+Screen Off Max Frequency=324000
 # Accepted range: 216000-999000
 
 DDR2 Min KHz=50000
@@ -469,30 +468,17 @@ cpuuv()
 	cpuuv_shift $CPU216MHZ CPU216UV 790 770
 	cpuuv_shift $CPU324MHZ CPU324UV 830 770
 	cpuuv_shift $CPU503MHZ CPU503UV 880 780
-	if [[ "${cpumaxfreq}" == "1216000" ]]; then
-		cpuuv_shift $CPU655MHZ CPU655UV 900 800
-	fi
+	cpuuv_shift $CPU655MHZ CPU655UV 900 800
 	cpuuv_shift $CPU800MHZ CPU800UV 930 820
 	cpuuv_shift $CPU1015MHZ CPU1015UV 1020 920
-	cpuuv_shift $CPU1100MHZ CPU1100UV 1055 1020
 	cpuuv_shift $CPU1216MHZ CPU1216UV 1155 1120
-	if [[ "${cpumaxfreq}" == "1408000" ]]; then
-		cpuuv_shift $CPU1408MHZ CPU1408UV 1255 1220
-	fi
+	cpuuv_shift $CPU1408MHZ CPU1408UV 1255 1220
 
 # Apply the UV values
-if [ "$cpumaxfreq" == "1216000" ]; then
 	echo "$date CPU max freq is $cpumaxfreq" >> $deflog
 	echo "$date Applying UV..." >> $deflog
-	echo "$CPU1216UV $CPU1100UV $CPU1015UV $CPU800UV $CPU655UV $CPU503UV $CPU324UV $CPU216UV" > /sys/devices/system/cpu/cpu0/cpufreq/UV_mV_table
+	echo "$CPU1408UV $CPU1216UV $CPU1015UV $CPU800UV $CPU655UV $CPU503UV $CPU324UV $CPU216UV" > /sys/devices/system/cpu/cpu0/cpufreq/UV_mV_table
 	echo "$date UV shift levels are set to: "`cat /sys/devices/system/cpu/cpu0/cpufreq/UV_mV_table` >> $deflog
-fi
-if [ "$cpumaxfreq" == "1408000" ]; then
-	echo "$date CPU max freq is $cpumaxfreq" >> $deflog
-	echo "$date Applying UV..." >> $deflog
-	echo "$CPU1408UV $CPU1216UV $CPU1100UV $CPU1015UV $CPU800UV $CPU503UV $CPU324UV $CPU216UV" > /sys/devices/system/cpu/cpu0/cpufreq/UV_mV_table
-	echo "$date UV shift levels are set to: "`cat /sys/devices/system/cpu/cpu0/cpufreq/UV_mV_table` >> $deflog
-fi
 }
 
 ##################
@@ -580,7 +566,7 @@ spicaotf()
 		echo "$date Spica OTF is supported by the kernel" >> $deflog
 		# Initialization & Boot time part
 		# AVP Freq
-		if [ "$AVP_FREQ" -gt "199999" -a "$AVP_FREQ" -lt "250001" ]; then
+		if [ "$AVP_FREQ" -gt "199999" -a "$AVP_FREQ" -lt "280001" ]; then
 			echo "$date AVP Freq within the acceptable range" >> $deflog
 			echo $AVP_FREQ > /proc/spica/avpfreq
 			echo "$date AVP Freq = "`cat /proc/spica/avpfreq` >> $deflog
@@ -600,7 +586,7 @@ spicaotf()
 			echo "$date VDE Freq set to 650000 by default" >> $deflog
 		fi
 		# GPU Freq
-		if [ "$GPU_FREQ" -gt "279999" -a "$GPU_FREQ" -lt "400001" ]; then
+		if [ "$GPU_FREQ" -gt "279999" -a "$GPU_FREQ" -lt "350001" ]; then
 			echo "$date GPU Freq within the acceptable range" >> $deflog
 			echo $GPU_FREQ > /proc/spica/gpufreq
 			echo "$date GPU Freq = "`cat /proc/spica/gpufreq` >> $deflog

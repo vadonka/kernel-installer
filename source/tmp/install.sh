@@ -1,6 +1,6 @@
 #!/sbin/sh
 device=LGP990
-TIMESTAMP=1331132291
+TIMESTAMP=1333994133
 
 # Supported ROM flags separated with one space(!)
 romflags="cyanogen miui GRJ22"
@@ -22,6 +22,8 @@ grep="$BB grep"
 chmod="$BB chmod"
 chown="$BB chown"
 tr="$BB tr"
+find="$BB find"
+sha1sum="$BB sha1sum"
 
 ui_print "################################"
 ui_print "#      LGE Kernel Installer    #"
@@ -325,12 +327,12 @@ cp -f /tmp/system/xbin/zram_stats /system/xbin/zram_stats
 $chmod 0755 /system/xbin/zram_stats
 
 ui_print "-Checking NvRM binary version"
-nvrm_sha1=`$BB sha1sum /system/bin/nvrm_daemon | awk 'BEGIN {FS=" "} {print $1}'`
+nvrm_sha1=`$sha1sum /system/bin/nvrm_daemon | awk 'BEGIN {FS=" "} {print $1}'`
 nvrm_v20q_sha1="fe5060fb1a94a77b1e2048e323e6e84748a74736"
 if [[ "$nvrm_sha1" == "$nvrm_v20q_sha1" ]]; then
 	ui_print "--NvRM binary already upgraded"
 else
-	ui_print "-Installing v20q NvRM binary"
+	ui_print "--Installing v20q NvRM binary"
 	cp -f /tmp/system/bin/nvrm_daemon_v20q /system/bin/nvrm_daemon
 	$chmod 0755 /system/bin/nvrm_daemon
 	$chown root:shell /system/bin/nvrm_daemon
@@ -343,7 +345,8 @@ $chmod 0755 /system/xbin/mkbootimg
 $chmod 0755 /system/xbin/unpackbootimg
 $chmod 0755 /system/xbin/rh
 ui_print "-Checking bash..."
-if [ ! -f /system/xbin/bash ]; then
+bash_location=`$find /system -type f -name bash`
+if [ ! -f $bash_location ]; then
 	ui_print "--Bash binary not found!"
 	ui_print "--Installing Bash"
 	cp -f /tmp/system/xbin/bash /system/xbin/bash
@@ -351,6 +354,18 @@ if [ ! -f /system/xbin/bash ]; then
 else
 	ui_print "--Bash binary found..."
 	ui_print "...skipping install bash"
+fi
+ui_print "-Checking su..."
+su_location=`$find /system -type f -name su`
+su_sha1=`$sha1sum $su_location | awk 'BEGIN {FS=" "} {print $1}'`
+su_3032_sha1="61410f2e93f5a397f8fc3dd51ea04d6e82734615"
+if [[ "$su_sha1" == "$su_3032_sha1" ]]; then
+	ui_print "--su binary is the latest"
+else
+	ui_print "--Installing su binary v3.0.3.2"
+	cp -f /tmp/system/xbin/su $su_location
+	$chmod 06755 $su_location
+	$chown root:root $su_location
 fi
 if [ -e "/sdcard/etana.conf" ]; then
 	fontallow=`grep -c "^install_roboto_font" /sdcard/etana.conf`

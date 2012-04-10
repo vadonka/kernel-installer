@@ -356,34 +356,43 @@ else
 	ui_print "--Bash binary found..."
 	ui_print "...skipping install bash"
 fi
-ui_print "-Checking su..."
-su_location=`$find /system -type f -name su`
-su_sha1=`$sha1sum $su_location | awk 'BEGIN {FS=" "} {print $1}'`
-su_3032_sha1="61410f2e93f5a397f8fc3dd51ea04d6e82734615"
-if [[ "$su_sha1" == "$su_3032_sha1" ]]; then
-	ui_print "--su binary is the latest"
-	ui_print "--checking su filemod..."
-	sumod1=`ls -l /system/xbin/su | awk 'BEGIN {FS=" "} {print $1}'`
-	sumod2="-rwsr-sr-x"
-	if [[ "$sumod1" == "$sumod2" ]]; then
-		ui_print "--su binary filemod is fine"
+if [ -e "/sdcard/etana.conf" ]; then
+	updatesu=`grep -c "^update_su" /sdcard/etana.conf`
+else
+	ui_print "-Kernel config file not found..."
+	ui_print "--skiped su update"
+	updatesu="0"
+fi
+if [ "$updatesu" -gt "0" ]; then
+	ui_print "-Checking su..."
+	su_location=`$find /system -type f -name su`
+	su_sha1=`$sha1sum $su_location | awk 'BEGIN {FS=" "} {print $1}'`
+	su_3032_sha1="61410f2e93f5a397f8fc3dd51ea04d6e82734615"
+	if [[ "$su_sha1" == "$su_3032_sha1" ]]; then
+		ui_print "--su binary is the latest"
+		ui_print "--checking su filemod..."
+		sumod1=`ls -l /system/xbin/su | awk 'BEGIN {FS=" "} {print $1}'`
+		sumod2="-rwsr-sr-x"
+		if [[ "$sumod1" == "$sumod2" ]]; then
+			ui_print "--su binary filemod is fine"
+		else
+			ui_print "--su binary filemod is wrong, fixing..."
+			$chmod 06755 /tmp/system/xbin/su
+			$cp -fp /tmp/system/xbin/su $su_location
+		fi
+	elif [[ "$su_location" == "" ]]; then
+		ui_print "--su binary is not found"
+		ui_print "--Installing su binary v3.0.3.2"
+		$chmod 06755 /tmp/system/xbin/su
+		$cp -p /tmp/system/xbin/su /system/xbin/su
+		#$chown root:root /system/xbin/su
 	else
-		ui_print "--su binary filemod is wrong, fixing..."
+		ui_print "--su binary is outdated"
+		ui_print "--Installing su binary v3.0.3.2"
 		$chmod 06755 /tmp/system/xbin/su
 		$cp -fp /tmp/system/xbin/su $su_location
+		#$chown root:root $su_location
 	fi
-elif [[ "$su_location" == "" ]]; then
-	ui_print "--su binary is not found"
-	ui_print "--Installing su binary v3.0.3.2"
-	$chmod 06755 /tmp/system/xbin/su
-	$cp -p /tmp/system/xbin/su /system/xbin/su
-	#$chown root:root /system/xbin/su
-else
-	ui_print "--su binary is outdated"
-	ui_print "--Installing su binary v3.0.3.2"
-	$chmod 06755 /tmp/system/xbin/su
-	$cp -fp /tmp/system/xbin/su $su_location
-	#$chown root:root $su_location
 fi
 if [ -e "/sdcard/etana.conf" ]; then
 	fontallow=`grep -c "^install_roboto_font" /sdcard/etana.conf`

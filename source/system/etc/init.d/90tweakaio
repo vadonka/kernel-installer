@@ -242,7 +242,6 @@ network_tweaks()
 	sysctl_proc net.ipv4.tcp_max_tw_buckets 360000
 	sysctl_proc net.ipv4.tcp_moderate_rcvbuf 1
 	sysctl_proc net.ipv4.tcp_reordering 5
-	sysctl_proc net.ipv4.route.flush 1
 	sysctl_proc net.ipv4.tcp_rfc1337 1
 	sysctl_proc net.ipv4.tcp_slow_start_after_idle 0
 	sysctl_proc net.ipv4.tcp_sack 1
@@ -253,7 +252,6 @@ network_tweaks()
 	sysctl_proc net.ipv4.udp_wmem_min 6144
 	sysctl_proc net.ipv4.tcp_window_scaling 1
 	sysctl_proc net.ipv4.tcp_congestion_control cubic
-	sysctl_proc net.ipv4.tcp_syncookies 1
 	sysctl_proc net.ipv4.conf.all.rp_filter 1
 	sysctl_proc net.ipv4.conf.default.rp_filter 1
 	sysctl_proc net.ipv4.tcp_synack_retries 2
@@ -314,20 +312,7 @@ vm_tweaks()
 	sysctl_proc kernel.panic 30
 	sysctl_proc kernel.panic_on_oops 0
 	sysctl_proc kernel.sched_child_runs_first 0
-	sysctl_proc kernel.sched_compat_yield 1
-	sysctl_proc kernel.sched_features 24189
-	sysctl_proc kernel.sched_latency_ns 18000000
-	sysctl_proc kernel.sched_min_granularity_ns 1500000
-	sysctl_proc kernel.sched_shares_ratelimit 256000
-	sysctl_proc kernel.sched_wakeup_granularity_ns 3000000
 	sysctl_proc kernel.threads-max 5000
-	sysctl_proc kernel.msgmni 2048
-	sysctl_proc kernel.msgmax 64000
-	sysctl_proc kernel.shmmni 4096
-	sysctl_proc kernel.shmall 2097152
-	sysctl_proc kernel.shmmax 268435456
-	sysctl_proc kernel.sem 500,512000,64,2048
-	sysctl_proc kernel.hung_task_timeout_secs 30
 }
 
 ccache()
@@ -437,8 +422,7 @@ mount_tweaks()
 		etweak /sys/block/$1/queue/iosched/back_seek_penalty 1
 		etweak /sys/block/$1/queue/iosched/back_seek_max 1000000000
 		etweak /sys/block/$1/queue/iosched/slice_idle 0
-		etweak /sys/block/$1/queue/iosched/fifo_batch 1
-		etweak /sys/block/$1/queue/iosched/quantum 16
+		etweak /sys/block/$1/queue/iosched/fifo_batch 2
 		etweak /sys/block/$1/queue/nr_requests 512
 		etweak /sys/block/$1/queue/scheduler $SCHEDULER
 	}

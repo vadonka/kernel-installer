@@ -9,8 +9,6 @@ bd=/cache
 
 process()
 {
-echo "Asking root access..."
-echo ""
 echo "- Checking kernel tool binary files..."
 if [ ! -f /system/xbin/mkbootimg -a ! -f /system/xbin/unpackbootimg ]; then
 	echo "ERROR: Kernel tools not found"

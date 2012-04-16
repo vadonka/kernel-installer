@@ -3,7 +3,7 @@ device=LGP990
 TIMESTAMP=1333994133
 
 # Supported ROM flags separated with one space(!)
-romflags="cyanogen miui GRJ22"
+romflags="cyanogen miui GRJ22 grj22"
 
 ui_print() {
 	echo ui_print "$@" 1>&$UPDATE_CMD_PIPE;

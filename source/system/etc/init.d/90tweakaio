@@ -279,7 +279,7 @@ network_tweaks()
 	sysctl_proc net.core.netdev_max_backlog 262144
 	sysctl_proc net.core.somaxconn 262144
 	sysctl_proc net.core.optmem_max 20480
-	sysctl_proc net.core.bpf_jit_enable 1
+	#sysctl_proc net.core.bpf_jit_enable 1
 	sysctl_proc net.unix.max_dgram_qlen 50
 }
 

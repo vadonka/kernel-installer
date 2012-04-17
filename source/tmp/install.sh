@@ -53,8 +53,8 @@ for a in `seq 1 $romflagsnums`; do
 done
 
 if [ "$romtest" == "0" ]; then
-	ui_print "This ROM is not supported!"
-	fatal "Aborting..."
+	ui_print "WARNING: This ROM is maybe not supported!"
+	sleep 2
 else
 	ui_print "** Installing on MIUI/CM7 **"
 fi

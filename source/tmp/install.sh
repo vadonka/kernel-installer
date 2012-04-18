@@ -2,9 +2,6 @@
 device=LGP990
 TIMESTAMP=1333994133
 
-# Supported ROM flags separated with one space(!)
-romflags="cyanogen miui GRJ22 grj22"
-
 ui_print() {
 	echo ui_print "$@" 1>&$UPDATE_CMD_PIPE;
 	if [ -n "$@" ]; then
@@ -41,23 +38,7 @@ ui_print "** compiled and cherry picked **"
 ui_print "**         by vadonka         **"
 ui_print ""
 
-ui_print "Checking ROM"
-ui_print "************"
-
-romflagsnums=`echo $romflags | $tr -s ' ' '\n' | $grep -c "."`
-romtest="0"
-for a in `seq 1 $romflagsnums`; do
-	romflag=`echo $romflags | $awk 'BEGIN {FS=" "} {print $'$a'}'`
-	romflagtrue=`$grep -c $romflag /system/build.prop`
-	let romtest=$romtest+$romflagtrue
-done
-
-if [ "$romtest" == "0" ]; then
-	ui_print "WARNING: This ROM is maybe not supported!"
-	sleep 2
-else
-	ui_print "** Installing on MIUI/CM7 **"
-fi
+ui_print "** Installing on MIUI/CM7 **"
 
 if [ -e /system/build.prop.aiotweak ]; then
 	ui_print ""
@@ -155,24 +136,6 @@ ui_print "-Fix some application issues"
 add ro.kernel.android.checkjni = 0
 # Network speed tweak
 ui_print "-Network speed tweak"
-ui_print "-Battery friendly 3G"
-add ro.ril.hsxpa = 2
-add ro.ril.gprsclass = 10
-add ro.ril.hep = 1
-add ro.ril.hsdpa.category = 8
-add ro.ril.enable.3g.prefix = 1
-add ro.ril.htcmaskw1.bitmask = 4294967295
-add ro.ril.htcmaskw1 = 14449
-add ro.ril.hsupa.category = 6
-add ro.ril.def.agps.mode = 2
-add ro.ril.def.agps.feature = 1
-add ro.ril.enable.sdr = 1
-add ro.ril.enable.gea3 = 1
-add ro.ril.enable.fd.plmn.prefix = 23402,23410,23411
-add ro.ril.disable.power.collapse = 0
-add ro.ril.enable.a52 = 0
-add ro.ril.enable.a53 = 0
-add ro.ril.enable.dtm = 0
 add net.tcp.buffersize.default = 6144,87380,1048576,6144,87380,1048576
 add net.tcp.buffersize.wifi = 87380,1048576,2097152,87380,1048576,2097152
 add net.tcp.buffersize.lte = 87380,524288,1048576,87380,524288,1048576

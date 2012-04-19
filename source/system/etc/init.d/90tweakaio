@@ -313,6 +313,8 @@ vm_tweaks()
 	sysctl_proc kernel.panic_on_oops 0
 	sysctl_proc kernel.sched_child_runs_first 0
 	sysctl_proc kernel.threads-max 5000
+	# Activate Kernel Samepage Merging
+	etweak /sys/kernel/mm/ksm/run 1
 }
 
 ccache()

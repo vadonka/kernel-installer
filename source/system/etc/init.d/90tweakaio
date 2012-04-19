@@ -424,7 +424,7 @@ mount_tweaks()
 		etweak /sys/block/$1/queue/iosched/back_seek_penalty 1
 		etweak /sys/block/$1/queue/iosched/back_seek_max 1000000000
 		etweak /sys/block/$1/queue/iosched/slice_idle 0
-		etweak /sys/block/$1/queue/iosched/fifo_batch 2
+		etweak /sys/block/$1/queue/iosched/fifo_batch 8
 		etweak /sys/block/$1/queue/nr_requests 512
 		etweak /sys/block/$1/queue/scheduler $SCHEDULER
 	}

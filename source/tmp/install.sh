@@ -105,9 +105,9 @@ add ro.telephony.call_ring.delay = 400
 add ro.HOME_APP_ADJ = 1
 # Battery save
 ui_print "-Battery save"
-add wifi.supplicant_scan_interval = 180
+add wifi.supplicant_scan_interval = 120
 add pm.sleep_mode = 1
-add ro.ril.disable.power.collapse = 0
+add ro.ril.disable.power.collapse = 1
 # Helps scrolling responsiveness
 ui_print "-Scroll hack"
 add windowsmgr.max_events_per_sec = 200
@@ -136,15 +136,9 @@ ui_print "-Fix some application issues"
 add ro.kernel.android.checkjni = 0
 # Network speed tweak
 ui_print "-Network speed tweak"
-add net.tcp.buffersize.default = 6144,87380,1048576,6144,87380,1048576
-add net.tcp.buffersize.wifi = 87380,1048576,2097152,87380,1048576,2097152
-add net.tcp.buffersize.lte = 87380,524288,1048576,87380,524288,1048576
-add net.tcp.buffersize.hsdpa = 6144,87380,1048576,6144,87380,1048576
-add net.tcp.buffersize.evdo_b = 6144,87380,1048576,6144,87380,1048576
-add net.tcp.buffersize.umts = 6144,87380,1048576,6144,87380,1048576
-add net.tcp.buffersize.gprs = 6144,87380,1048576,6144,87380,1048576
-add net.tcp.buffersize.edge = 6144,87380,524288,6144,16384,262144
-add net.tcp.buffersize.hspa = 6144,87380,524288,6144,16384,262144
+add net.tcp.buffersize.default = 4096,87380,174760,4096,16384,131072
+add net.tcp.buffersize.wifi = 4096,87380,174760,4096,16384,131072
+add net.tcp.buffersize.umts = 4094,87380,174760,4096,16384,131072
 # Disable the setup wizard
 ui_print "-Disable the setup wizard"
 add ro.setupwizard.mode = DISABLED

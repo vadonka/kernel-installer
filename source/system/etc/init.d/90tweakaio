@@ -246,8 +246,8 @@ network_tweaks()
 	sysctl_proc net.ipv4.tcp_slow_start_after_idle 0
 	sysctl_proc net.ipv4.tcp_sack 1
 	sysctl_proc net.ipv4.tcp_fack 1
-	sysctl_proc net.ipv4.tcp_rmem 6144,87380,2097152
-	sysctl_proc net.ipv4.tcp_wmem 6144,87380,2097152
+	echo 4096 87380 174760 > /proc/sys/net/ipv4/tcp_rmem
+	echo 4096 16384 131072 > /proc/sys/net/ipv4/tcp_wmem
 	sysctl_proc net.ipv4.udp_rmem_min 6144
 	sysctl_proc net.ipv4.udp_wmem_min 6144
 	sysctl_proc net.ipv4.tcp_window_scaling 1
@@ -255,7 +255,7 @@ network_tweaks()
 	sysctl_proc net.ipv4.conf.all.rp_filter 1
 	sysctl_proc net.ipv4.conf.default.rp_filter 1
 	sysctl_proc net.ipv4.tcp_synack_retries 2
-	sysctl_proc net.ipv4.tcp_syn_retries 2
+	sysctl_proc net.ipv4.tcp_syn_retries 3
 	sysctl_proc net.ipv4.tcp_max_syn_backlog 1024
 	sysctl_proc net.ipv4.tcp_max_tw_buckets 16384
 	sysctl_proc net.ipv4.icmp_echo_ignore_all 1
@@ -264,7 +264,7 @@ network_tweaks()
 	sysctl_proc net.ipv4.tcp_fin_timeout 15
 	sysctl_proc net.ipv4.tcp_keepalive_intvl 30
 	sysctl_proc net.ipv4.tcp_keepalive_probes 5
-	sysctl_proc net.ipv4.tcp_keepalive_time 1800
+	sysctl_proc net.ipv4.tcp_keepalive_time 1200
 	sysctl_proc net.ipv4.ip_forward 0
 	sysctl_proc net.ipv4.conf.default.accept_source_route 0
 	sysctl_proc net.ipv4.conf.default.accept_redirects 0
@@ -272,10 +272,10 @@ network_tweaks()
 	sysctl_proc net.ipv4.conf.all.accept_source_route 0
 	sysctl_proc net.ipv4.conf.all.accept_redirects 0
 	sysctl_proc net.ipv4.conf.all.secure_redirects 0
-	sysctl_proc net.core.wmem_default 262144
-	sysctl_proc net.core.wmem_max 2097152
-	sysctl_proc net.core.rmem_default 262144
-	sysctl_proc net.core.rmem_max 2097152
+	sysctl_proc net.core.wmem_default 65535
+	sysctl_proc net.core.wmem_max 131071
+	sysctl_proc net.core.rmem_default 65535
+	sysctl_proc net.core.rmem_max 131071
 	sysctl_proc net.core.netdev_max_backlog 262144
 	sysctl_proc net.core.somaxconn 262144
 	sysctl_proc net.core.optmem_max 20480
@@ -297,9 +297,10 @@ vm_tweaks()
 	etweak /proc/sys/vm/panic_on_oom 0
 	etweak /proc/sys/vm/laptop_mode 0
 	etweak /proc/sys/vm/block_dump 0
-	etweak /proc/sys/vm/swappiness 0
-	etweak /proc/sys/vm/dirty_background_ratio 60
-	etweak /proc/sys/vm/dirty_ratio 95
+	etweak /proc/sys/vm/swappiness 50
+	etweak /proc/sys/kernel/msgmni 2048
+	etweak /proc/sys/kernel/msgmax 64000
+	etweak /proc/sys/kernel/shmmax 268435456
 	etweak /proc/sys/vm/min_free_kbytes 10240
 	etweak /proc/sys/vm/vfs_cache_pressure 10
 	etweak /proc/sys/vm/overcommit_memory 1
@@ -307,6 +308,8 @@ vm_tweaks()
 	etweak /proc/sys/vm/min_free_order_shift 4
 	etweak /proc/sys/vm/dirty_writeback_centisecs 2000
 	etweak /proc/sys/vm/dirty_expire_centisecs 1000
+	etweak /proc/sys/vm/dirty_ratio 90
+	etweak /proc/sys/vm/dirty_background_ratio 5
 	etweak /proc/sys/fs/lease-break-time 10
 	etweak /proc/sys/fs/file-max 65536
 	sysctl_proc kernel.panic 30
@@ -411,20 +414,21 @@ fi
 mount_tweaks()
 {
 	# Remount with noatime and nodiratime
-	busybox mount -o remount,ro,noauto_da_alloc /system /system
+	busybox mount -o remount,rw,noauto_da_alloc /system /system
 	busybox mount -o remount,rw,noatime,noauto_da_alloc,nosuid,nodev,nodiratime,barrier=0,nobh /data /data
 	busybox mount -o remount,rw,noatime,noauto_da_alloc,nosuid,nodev,nodiratime,barrier=0,nobh /cache /cache
 	# Updated IO tweaks, thx for Zeppelinrox
 	m0()
 	{
 		etweak /sys/block/$1/queue/rotational 0
-		etweak /sys/block/$1/queue/read_ahead_kb 2048
+		etweak /sys/block/$1/queue/optimal_io_size 1024
+		etweak /sys/block/$1/queue/read_ahead_kb 256
 		etweak /sys/block/$1/queue/iostats 0
 		etweak /sys/block/$1/queue/iosched/low_latency 1
 		etweak /sys/block/$1/queue/iosched/back_seek_penalty 1
 		etweak /sys/block/$1/queue/iosched/back_seek_max 1000000000
 		etweak /sys/block/$1/queue/iosched/slice_idle 0
-		etweak /sys/block/$1/queue/iosched/fifo_batch 8
+		etweak /sys/block/$1/queue/iosched/fifo_batch 1
 		etweak /sys/block/$1/queue/nr_requests 512
 		etweak /sys/block/$1/queue/scheduler $SCHEDULER
 	}

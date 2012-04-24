@@ -310,6 +310,7 @@ vm_tweaks()
 	etweak /proc/sys/vm/dirty_expire_centisecs 1000
 	etweak /proc/sys/vm/dirty_ratio 90
 	etweak /proc/sys/vm/dirty_background_ratio 5
+	etweak /proc/sys/vm/mmap_min_addr 32768
 	etweak /proc/sys/fs/lease-break-time 10
 	etweak /proc/sys/fs/file-max 65536
 	sysctl_proc kernel.panic 30

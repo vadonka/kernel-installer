@@ -221,65 +221,11 @@ if [ "$cyanogen" == "1" ]; then
 	ui_print "--Installing AIO tweak"
 	cp -f /tmp/system/etc/init.d/* /system/etc/init.d/
 	$chmod 0755 /system/etc/init.d/*
-	mkdir -p /data/tweakaio/logs
-	if [ ! -f /data/tweakaio/tweakaio.conf ]; then
-		ui_print "--TweakAIO params file not found!"
-		ui_print "--Installing new params file"
-		cp -f /tmp/data/tweakaio/tweakaio.conf /data/tweakaio/
-	else
-		ui_print "--TweakAIO params file found..."
-		checknew=`$grep -c "TIMESTAMP" /data/tweakaio/tweakaio.conf`
-		if [ "$checknew" -gt "0" ]; then
-			tstamp=`$grep "TIMESTAMP" /data/tweakaio/tweakaio.conf | $sed "s/[^0-9]//g"`
-			if [[ "$tstamp" == "$TIMESTAMP" ]]; then
-				ui_print "--No need to update params file"
-			else
-				ui_print "--Backup OLD params file"
-				mv /data/tweakaio/tweakaio.conf /data/tweakaio/tweakaio.conf.`date +%d%m%Y`
-				ui_print "--Installing new params file"
-				cp -f /tmp/data/tweakaio/tweakaio.conf /data/tweakaio/
-			fi
-		else
-			ui_print "--Backup OLD params file"
-			mv /data/tweakaio/tweakaio.conf /data/tweakaio/tweakaio.conf.`date +%d%m%Y`
-			ui_print "--Installing new params file"
-			cp -f /tmp/data/tweakaio/tweakaio.conf /data/tweakaio/
-		fi
-	fi
 else
 	ui_print "-Installing AIO tweak"
 	cp -f /tmp/system/etc/init.d/90tweakaio /system/etc/init.d/
 	$chmod 0755 /system/etc/init.d/90tweakaio
-	mkdir -p /data/tweakaio/logs
-	if [ ! -f /data/tweakaio/tweakaio.conf ]; then
-		ui_print "--TweakAIO params file not found!"
-		ui_print "--Installing new params file"
-		cp -f /tmp/data/tweakaio/tweakaio.conf /data/tweakaio/
-	else
-		ui_print "--TweakAIO params file found..."
-		checknew=`$grep -c "TIMESTAMP" /data/tweakaio/tweakaio.conf`
-		if [ "$checknew" -gt "0" ]; then
-			tstamp=`$grep "TIMESTAMP" /data/tweakaio/tweakaio.conf | $sed "s/[^0-9]//g"`
-			if [[ "$tstamp" == "$TIMESTAMP" ]]; then
-				ui_print "--No need to update params file"
-			else
-				ui_print "--Backup OLD params file"
-				mv /data/tweakaio/tweakaio.conf /data/tweakaio/tweakaio.conf.`date +%d%m%Y`
-				ui_print "--Installing new params file"
-				cp -f /tmp/data/tweakaio/tweakaio.conf /data/tweakaio/
-			fi
-		else
-			ui_print "--Backup OLD params file"
-			mv /data/tweakaio/tweakaio.conf /data/tweakaio/tweakaio.conf.`date +%d%m%Y`
-			ui_print "--Installing new params file"
-			cp -f /tmp/data/tweakaio/tweakaio.conf /data/tweakaio/
-		fi
-	fi
 fi
-ui_print "-Fix tweakaio.conf permission"
-$chmod 0777 /data/tweakaio/tweakaio.conf
-ui_print "-Installing TweakAIO help file"
-cp -f /tmp/data/tweakaio/tweakaio_hlp.txt /data/tweakaio/
 ui_print "-Installing zram_stats binary"
 cp -f /tmp/system/xbin/zram_stats /system/xbin/zram_stats
 $chmod 0755 /system/xbin/zram_stats

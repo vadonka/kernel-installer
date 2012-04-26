@@ -22,13 +22,10 @@ if [ -f $complog ]; then
 fi
 touch $complog
 
-gpuramsize=`dmesg | grep nvmem | awk 'BEGIN {FS="="} {print $3}' | awk 'BEGIN {FS=" "} {print $1}' | awk 'BEGIN {FS="@"} {print $1}' | sed "s/[M]//g"`
-
 echo "#########################################" >> $deflog
 echo "## LG Optimus 2X tweak script log file ##" >> $deflog
 echo "#########################################" >> $deflog
-echo "##Kernel version: "`uname -r` >> $deflog
-echo -e "##Kernel CMDline GPU memory size: $gpuramsize MB\n" >> $deflog
+echo -e "##Kernel version: "`uname -r`"\n" >> $deflog
 
 if [ ! -f /data/tweakaio/tweakaio.conf ]; then
 echo "$date WARNING! Params file not found! Creating now..." >> $deflog

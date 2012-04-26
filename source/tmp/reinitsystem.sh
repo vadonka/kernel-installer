@@ -7,6 +7,7 @@
 #
 
 echo="ui_print"
+set -o pipefail
 
 ui_print() {
 	echo ui_print "$@" 1>&$UPDATE_CMD_PIPE;
@@ -16,6 +17,21 @@ ui_print() {
 }
 log () { echo "$@"; }
 fatal() { ui_print "$@"; exit 1; }
+
+ui_progress () {
+		if [ "$1" == "" ]; then 
+				modulo=1; 
+		else
+				modulo=$1
+		fi;
+		i=0
+		while read LINE; do
+				if [ `expr $i % $modulo` -eq 0 ]; then
+						echo "ui_print #" 1>&$UPDATE_CMD_PIPE
+				fi
+				i=`expr $i + 1`
+		done
+}
 
 REINIT=0
 ui_print "checking if system partition needs re-init"
@@ -50,9 +66,10 @@ if [ $REINIT -eq 1 ]; then
 		$echo "DO NOT INTERRUPT!"
 		$echo "saving system contents";
 #		echo "show_progress 0.4 20" 1>&$UPDATE_CMD_PIPE
-		if ! tar cvf /sdcard/system.tar /system; then
+		if ! tar cvf /sdcard/system.tar /system | ui_progress 30; then
 				fatal "tar exited with error, aborting"
 		fi;
+		$echo
 		$echo "formatting system"
 #		echo "show_progress 0.2 10" 1>&$UPDATE_CMD_PIPE
 		umount /system
@@ -65,17 +82,16 @@ if [ $REINIT -eq 1 ]; then
 		mount /dev/block/mmcblk0p1 /system
 		$echo "restoring system contents";
 #		echo "show_progress 0.4 20" 1>&$UPDATE_CMD_PIPE
-		if /sbin/tar -C / -xvf /sdcard/system.tar; then
+		if /sbin/tar -C / -xvf /sdcard/system.tar | ui_progress 30; then
+				$echo
 				$echo "restore successful"
 				rm /sdcard/system.tar
 		else
+				$echo
 				$echo "restore NOT successful"
 				$echo "keeping /sdcard/system.tar"
 				$echo "try to restore manually with:"
 				$echo "/sbin/tar -C / -xvf /sdcard/system.tar"
 		fi
-		$echo "unmounting system and sdcard"
-		umount /system
-		umount /sdcard
 fi
 exit 0

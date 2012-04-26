@@ -203,7 +203,7 @@ rm -rf /data/dalvik-cache/*
 ui_print "-Cleaning the cache partition"
 rm -rf /cache/*
 umount /cache > /dev/null
-/sbin/e2fsck -fy /dev/block/mmcblk0p2
+/sbin/e2fsck -fp /dev/block/mmcblk0p2
 mount /cache >/dev/null
 
 # Installing modules, tweaks, mods

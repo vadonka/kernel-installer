@@ -1,6 +1,5 @@
 #!/sbin/sh
 device=LGP990
-TIMESTAMP=1333994133
 
 ui_print() {
 	echo ui_print "$@" 1>&$UPDATE_CMD_PIPE;

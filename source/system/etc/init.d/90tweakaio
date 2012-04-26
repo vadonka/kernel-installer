@@ -1,8 +1,8 @@
 #!/system/bin/sh
 
-# LG Optimus 2X AIO init script v2.1.3
+# LG Optimus 2X AIO init script v2.1.6
 # Copyright (c) by vadonka 2012
-TIMESTAMP=1333994133
+TIMESTAMP=1335425681
 date=`date +%Y.%m.%d-%H.%M.%S`
 
 # cleanup
@@ -37,7 +37,7 @@ cat > /data/tweakaio/tweakaio.conf <<EOF
 # ATTENTION!
 # Detailed information moved
 # to the tweakaio_hlp.txt
-# TIMESTAMP 1330585739
+# TIMESTAMP $TIMESTAMP
 
 Script Enabled=on
 Logger Enabled=on
@@ -106,10 +106,19 @@ LPDDR2 Min KHz=18000
 # Accepted range: 1000-18000
 
 EOF
+else
+	CONFTIME=`grep TIMESTAMP /data/tweakaio/tweakaio.conf | awk 'BEGIN {FS=" "} {print $3}'`
+	if [[ "$CONFTIME" -ne "$TIMESTAMP" ]]; then
+		# check new features
+		KSMOK=`grep -c "KSM Enabled" /data/tweakaio/tweakaio.conf`
+		if [[ "$KSMOK" == "0" ]]; then
+			echo "$date Updating config file..." >> $deflog
+			echo "$date Add KSM enable/disable feature" >> $deflog
+			sed -i '/Memory Management Tweaks Enabled/a KSM Enabled=on' /data/tweakaio/tweakaio.conf
+		fi
+	fi
 fi
 
-if [ ! -f /data/tweakaio/tweakaio_hlp.txt ]; then
-echo "$date WARNING! Help file not found! Creating now..." >> $deflog
 rm -rf /data/tweakaio/tweakaio_hlp.txt
 cat > /data/tweakaio/tweakaio_hlp.txt <<EOF
 SCRIPT MODE:
@@ -155,6 +164,9 @@ Compcache option pre-requiered kernel based zram support.
 You can adjust the compcache/swap zram device size and cache clear interval time.
 
 VMTWEAKS accepted values are: on, off
+Default is "on"
+
+KSM (Kernel Samepage Merging) accepted values are: on, off
 Default is "on"
 
 COMPCACHE accepted values are: on, off
@@ -291,7 +303,6 @@ During "Nitros" Profile Kernel sets max fail-safe values
 (It doesnt touch OC).
 Responsible file is located in /proc/spica/nitros.
 EOF
-fi
 
 # fix parfile permission
 chmod 0777 /data/tweakaio/tweakaio.conf

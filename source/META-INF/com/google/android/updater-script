@@ -9,5 +9,6 @@ run_program("/sbin/busybox", "mount", "/cache");
 set_perm(0, 0, 0777, "/tmp/busybox");
 set_perm(0, 0, 0777, "/tmp/install.sh");
 set_perm(0, 0, 0777, "/tmp/reinitsystem.sh");
-run_program("/tmp/install.sh");
 run_program("/tmp/reinitsystem.sh");
+run_program("/tmp/install.sh");
+

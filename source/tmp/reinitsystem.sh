@@ -44,6 +44,7 @@ else
 				$echo "system partition is OK"
 				exit 0
 		else
+				umount /system
 				$echo "system partition contains errors, repairing..."
 				if $e2fsck -fp /dev/block/mmcblk0p1; then
 						$echo "system partition repaired"
@@ -51,6 +52,7 @@ else
 						$echo "could not repair system partition"
 						REINIT=1
 				fi
+				mount /system
 		fi
 fi
 

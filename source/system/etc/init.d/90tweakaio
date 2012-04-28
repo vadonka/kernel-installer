@@ -59,14 +59,14 @@ IO Scheduler=sio
 
 CPU Undervolt Enabled=off
 # VOLTAGE LEVELS (in mV)
-216 MHZ=775
-324 MHZ=800
-503 MHZ=825
-655 MHZ=850
-800 MHZ=875
-1015 MHZ=975
-1216 MHZ=1150
-1408 MHZ=1250
+216 MHZ=790
+324 MHZ=830
+503 MHZ=880
+655 MHZ=900
+800 MHZ=930
+1015 MHZ=1030
+1216 MHZ=1200
+1408 MHZ=1300
 
 Dalvik Cache Cleaner Enabled=off
 SQLite3 Defrag Enabled=off
@@ -660,13 +660,13 @@ cpuuv()
     # Call the procedure
 	cpumaxfreq=`cat /sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq`
 	cpuuv_shift $CPU216MHZ CPU216UV 790 770
-	cpuuv_shift $CPU324MHZ CPU324UV 830 770
-	cpuuv_shift $CPU503MHZ CPU503UV 880 780
-	cpuuv_shift $CPU655MHZ CPU655UV 900 800
-	cpuuv_shift $CPU800MHZ CPU800UV 930 820
-	cpuuv_shift $CPU1015MHZ CPU1015UV 1020 920
-	cpuuv_shift $CPU1216MHZ CPU1216UV 1155 1120
-	cpuuv_shift $CPU1408MHZ CPU1408UV 1255 1220
+	cpuuv_shift $CPU324MHZ CPU324UV 830 780
+	cpuuv_shift $CPU503MHZ CPU503UV 880 800
+	cpuuv_shift $CPU655MHZ CPU655UV 900 820
+	cpuuv_shift $CPU800MHZ CPU800UV 930 850
+	cpuuv_shift $CPU1015MHZ CPU1015UV 1030 950
+	cpuuv_shift $CPU1216MHZ CPU1216UV 1200 1150
+	cpuuv_shift $CPU1408MHZ CPU1408UV 1300 1250
 
 # Apply the UV values
 	echo "$date CPU max freq is $cpumaxfreq" >> $deflog

@@ -580,11 +580,9 @@ fi
 			echo "$date Starting zram init..." >> $complog
 			zram_init $COMPCACHE_SIZE
 		# check zram is a module?
-		elif [ -f "/system/lib/modules/zram.ko" -a \
-			-f "/system/lib/modules/lzo_compress.ko" -a \
-			-f "/system/lib/modules/lzo_decompress.ko" ]; then
+		elif [ -f "/system/lib/modules/zram.ko" ]; then
 			echo "$date zram device not found, trying to load from module..." >> $complog
-			modprobe zram num_devices=2 && sleep 1
+			modprobe zram
 			if [ -b "/dev/block/zram0" ]; then
 				echo "$date Found zram device!" >> $complog
 				echo "$date Starting zram init..." >> $complog

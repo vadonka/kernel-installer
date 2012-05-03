@@ -104,12 +104,12 @@ add ro.telephony.call_ring.delay = 400
 add ro.HOME_APP_ADJ = 1
 # Battery save
 ui_print "-Battery save"
-add wifi.supplicant_scan_interval = 120
+add wifi.supplicant_scan_interval = 180
 add pm.sleep_mode = 1
-add ro.ril.disable.power.collapse = 1
+add ro.ril.disable.power.collapse = 2
 # Helps scrolling responsiveness
 ui_print "-Scroll hack"
-add windowsmgr.max_events_per_sec = 200
+add windowsmgr.max_events_per_sec = 150
 # Fix BSOD issue after a call
 ui_print "-Endcall BSOD workaround"
 add ro.lge.proximity.delay = 25
@@ -127,6 +127,12 @@ add debug.sf.hw = 1
 ui_print "-Increase touch responsiveness"
 add debug.performance.tuning = 1
 add video.accelerate.hw = 1
+# Improves the quality of photos and videos
+ui_print "-Improves the quality of photos and videos"
+add ro.media.dec.jpeg.memcap = 8000000
+add ro.media.enc.hprof.vid.bps = 8000000
+# Saving jpg original size
+add ro.media.enc.jpeg.quality = 100
 # Phone will not wake up from hitting the volume rocker
 ui_print "-Vol.but. not wakeup the phone"
 add ro.config.hwfeature_wakeupkey = 0
@@ -135,12 +141,29 @@ ui_print "-Fix some application issues"
 add ro.kernel.android.checkjni = 0
 # Network speed tweak
 ui_print "-Network speed tweak"
-add net.tcp.buffersize.default = 4096,87380,174760,4096,16384,131072
-add net.tcp.buffersize.wifi = 4096,87380,174760,4096,16384,131072
-add net.tcp.buffersize.umts = 4094,87380,174760,4096,16384,131072
+add net.tcp.buffersize.default = 4096,87380,256960,4096,16384,256960
+add net.tcp.buffersize.wifi = 4096,87380,256960,4096,16384,256960
+add net.tcp.buffersize.umts = 4096,87380,256960,4096,16384,256960
+add net.tcp.buffersize.gprs = 4096,87380,256960,4096,16384,256960
+add net.tcp.buffersize.edge = 4096,87380,256960,4096,16384,256960
+# Tweaks signal level network (3G)
+ui_print "-Tweak signal level network (3G)"
+add ro.ril.hsxpa = 2
+add ro.ril.gprsclass = 10
+add ro.ril.hep = 1
+add ro.ril.enable.dtm = 1
+add ro.ril.hsdpa.category = 10
+add ro.ril.enable.a53 = 1
+add ro.ril.enable.3g.prefix = 1
+add ro.ril.htcmaskw1.bitmask = 4294967295
+add ro.ril.htcmaskw1 = 14449
+add ro.ril.hsupa.category = 5
 # Disable the setup wizard
 ui_print "-Disable the setup wizard"
 add ro.setupwizard.mode = DISABLED
+# Prevent uploading launcher from memory
+ui_print "-Prevent uploading launcher from memory"
+add ro.HOME_APP_ADJ = 1
 else
 ui_print "--build.prop tweaks disabled.."
 ui_print "..in the config file!"

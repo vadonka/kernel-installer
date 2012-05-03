@@ -509,6 +509,7 @@ vm_tweaks()
 	etweak /proc/sys/vm/mmap_min_addr 32768
 	etweak /proc/sys/fs/lease-break-time 10
 	etweak /proc/sys/fs/file-max 65536
+	etweak /sys/devices/system/cpu/sched_mc_power_savings 1
 	sysctl_proc kernel.panic 30
 	sysctl_proc kernel.panic_on_oops 0
 	sysctl_proc kernel.sched_child_runs_first 0

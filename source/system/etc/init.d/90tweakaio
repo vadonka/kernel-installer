@@ -519,7 +519,7 @@ vm_tweaks()
 ksm()
 {
 	# Activate Kernel Samepage Merging
-	etweak /sys/kernel/mm/ksm/sleep_millisecs 850
+	etweak /sys/kernel/mm/ksm/sleep_millisecs 2000
 	etweak /sys/kernel/mm/ksm/pages_to_scan 128
 	etweak /sys/kernel/mm/ksm/run 1
 }

@@ -256,11 +256,11 @@ ui_print "-Checking NvRM binary version"
 nvrm_sha1=`$sha1sum /system/bin/nvrm_daemon | awk 'BEGIN {FS=" "} {print $1}'`
 nvrm_v20q_sha1="fe5060fb1a94a77b1e2048e323e6e84748a74736"
 nvrm_v21y_sha1="48f1975f64634b854a9e320ed10bd8d5be778c37"
-if [[ "$nvrm_sha1" == "$nvrm_v21y_sha1" ]]; then
+if [[ "$nvrm_sha1" == "$nvrm_v20q_sha1" ]]; then
 	ui_print "--NvRM binary already upgraded"
 else
-	ui_print "--Installing v21y NvRM binary"
-	cp -f /tmp/system/bin/nvrm_daemon_v21y /system/bin/nvrm_daemon
+	ui_print "--Installing v20q NvRM binary"
+	cp -f /tmp/system/bin/nvrm_daemon_v20q /system/bin/nvrm_daemon
 	$chmod 0755 /system/bin/nvrm_daemon
 	$chown root:shell /system/bin/nvrm_daemon
 fi

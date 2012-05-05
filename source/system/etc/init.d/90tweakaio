@@ -27,8 +27,9 @@ echo "## LG Optimus 2X tweak script log file ##" >> $deflog
 echo "#########################################" >> $deflog
 echo -e "##Kernel version: "`uname -r`"\n" >> $deflog
 
-if [ ! -f /data/tweakaio/tweakaio.conf ]; then
-echo "$date WARNING! Params file not found! Creating now..." >> $deflog
+pfcreate()
+{
+echo "$date WARNING! Params file not found or invalid! Creating now..." >> $deflog
 rm -rf /data/tweakaio/tweakaio.conf
 cat > /data/tweakaio/tweakaio.conf <<EOF
 # ATTENTION!
@@ -103,19 +104,31 @@ LPDDR2 Min KHz=18000
 # Accepted range: 1000-18000
 
 EOF
-else
-	CONFTIME=`grep TIMESTAMP /data/tweakaio/tweakaio.conf | awk 'BEGIN {FS=" "} {print $3}'`
-	if [[ "$CONFTIME" -ne "$TIMESTAMP" ]]; then
-		# check new features
-		KSMOK=`grep -c "KSM Enabled" /data/tweakaio/tweakaio.conf`
-		if [[ "$KSMOK" == "0" ]]; then
-			echo "$date Updating config file..." >> $deflog
-			echo "$date Add KSM enable/disable feature" >> $deflog
-			sed -i '/Memory Management Tweaks Enabled/a KSM Enabled=on' /data/tweakaio/tweakaio.conf
+}
+
+pfsize=`stat -c %s /data/tweakaio/tweakaio.conf`
+if [ -f /data/tweakaio/tweakaio.conf ]; then
+	if [ "$pfsize" == "0" ]; then
+		pfcreate
+	else
+		CONFTIME=`grep TIMESTAMP /data/tweakaio/tweakaio.conf | awk 'BEGIN {FS=" "} {print $3}'`
+		if [[ "$CONFTIME" -ne "$TIMESTAMP" ]]; then
+			# check new features
+			KSMOK=`grep -c "KSM Enabled" /data/tweakaio/tweakaio.conf`
+			if [[ "$KSMOK" == "0" ]]; then
+				echo "$date Updating config file..." >> $deflog
+				echo "$date Add KSM enable/disable feature" >> $deflog
+				sed -i '/Memory Management Tweaks Enabled/a KSM Enabled=on' /data/tweakaio/tweakaio.conf
+			fi
 		fi
 	fi
+else
+	pfcreate
 fi
 
+helpcreate()
+{
+echo "$date WARNING! Help file not found or invalid! Creating now..." >> $deflog
 rm -rf /data/tweakaio/tweakaio_hlp.txt
 cat > /data/tweakaio/tweakaio_hlp.txt <<EOF
 SCRIPT MODE:
@@ -300,6 +313,16 @@ During "Nitros" Profile Kernel sets max fail-safe values
 (It doesnt touch OC).
 Responsible file is located in /proc/spica/nitros.
 EOF
+}
+
+helpsize=`stat -c %s /data/tweakaio/tweakaio_hlp.txt`
+if [ -f /data/tweakaio/tweakaio_hlp.txt ]; then
+	if [ "$helpsize" == "0" ]; then
+		helpcreate
+	fi
+else
+	helpcreate
+fi
 
 # fix parfile permission
 chmod 0777 /data/tweakaio/tweakaio.conf

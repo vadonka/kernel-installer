@@ -2,8 +2,8 @@
 #
 # For more information about this list, see: http://forum.xda-developers.com/showthread.php?t=509997
 # ----
-# entries:     31932
-# last updated 2012-04-26 22:45:08
+# entries:     31934
+# last updated 2012-05-05 22:45:08
 # AdFree Version 0.8.43 (8043)
 # UID: 0
 # sources:     http://www.mvps.org/winhelp2002/hosts.txt
@@ -20252,6 +20252,7 @@ ff02::2 ip6-allrouters
 127.0.0.1 pops.browseraid.com
 127.0.0.1 pops.freeze.com
 127.0.0.1 popsearch.nbcsearch.com
+127.0.0.1 popspace.virgilio.us
 127.0.0.1 popstart.ru
 127.0.0.1 poptraf.ru
 127.0.0.1 popub.com
@@ -22721,6 +22722,7 @@ ff02::2 ip6-allrouters
 127.0.0.1 sgs001.adtech.fr
 127.0.0.1 sgscanner.com
 127.0.0.1 sguardscan.com
+127.0.0.1 sgy2.sitescout.netdna-cdn.com
 127.0.0.1 shagorgag.orbitcycle.com
 127.0.0.1 shakira.sexybabesx.com
 127.0.0.1 shallownation.us.intellitxt.com

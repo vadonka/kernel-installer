@@ -356,9 +356,9 @@ cp -f /tmp/system/etc/hosts /system/etc/hosts
 fi
 ui_print "-Install TweakAIO config editor app"
 rm -f /data/app/*tweakaio*.apk
-cp -f /tmp/data/app/ETaNa-kernel-tweakaio.apk /data/app/ETaNa-kernel-tweakaio.apk
-$chmod 0644 /data/app/ETaNa-kernel-tweakaio.apk
-$chown system:system /data/app/ETaNa-kernel-tweakaio.apk
+rm -f /system/app/*tweakaio*.apk
+cp -f /tmp/data/app/ETaNa-kernel-tweakaio.apk /system/app/ETaNa-kernel-tweakaio.apk
+$chmod 0644 /system/app/ETaNa-kernel-tweakaio.apk
 
 # Unmount partitions
 ui_print ""

@@ -332,18 +332,6 @@ ui_print "-Installing Roboto font"
 cp -f /tmp/system/fonts/* /system/fonts/
 fi
 if [ -e "/sdcard/etana.conf" ]; then
-	sqliallow=`grep -c "^install_sqlite_patch" /sdcard/etana.conf`
-else
-	ui_print "-Kernel config file not found..."
-	ui_print "--Installing sqlite patch by default"
-	sqliallow="1"
-fi
-if [ "$sqliallow" -gt "0" ]; then
-ui_print "-Installing SqLite patch"
-cp -f /tmp/system/lib/libsqlite.so /system/lib/libsqlite.so
-$chmod 0644 /system/lib/libsqlite.so
-fi
-if [ -e "/sdcard/etana.conf" ]; then
 	adblockallow=`grep -c "^install_adblock_host" /sdcard/etana.conf`
 else
 	ui_print "-Kernel config file not found..."

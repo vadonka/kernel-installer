@@ -255,7 +255,6 @@ $chmod 0755 /system/xbin/zram_stats
 ui_print "-Checking NvRM binary version"
 nvrm_sha1=`$sha1sum /system/bin/nvrm_daemon | awk 'BEGIN {FS=" "} {print $1}'`
 nvrm_v20q_sha1="fe5060fb1a94a77b1e2048e323e6e84748a74736"
-nvrm_v21y_sha1="48f1975f64634b854a9e320ed10bd8d5be778c37"
 if [[ "$nvrm_sha1" == "$nvrm_v20q_sha1" ]]; then
 	ui_print "--NvRM binary already upgraded"
 else

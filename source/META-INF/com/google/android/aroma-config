@@ -1,0 +1,250 @@
+﻿##
+#
+# AROMA Installer - AROMA Configuration
+#       (c) 2011 by Ahmad Amarullah
+#           amarullz - xda-developers
+#           http://www.amarullz.com/
+#
+### FILE INFO:
+#
+# AROMA Installer 1.50 - AROMA Installer Test Script Configuration
+#       (c) 2011-2012 by Ahmad Amarullah
+#           amarullz - xda-developers
+#           http://www.amarullz.com/
+#
+#       Binary Version  : 2.0
+#
+###
+
+calibrate("0.8996","26","0.9461","24");
+
+#
+# ini_set("customkeycode_up",     "115");
+# ini_set("customkeycode_down",   "114");
+# ini_set("customkeycode_select", "116");
+# ini_set("customkeycode_menu",   "229");
+# ini_set("customkeycode_back",   "158");
+#
+
+##
+# SET THEME
+#
+theme("miui");
+
+##
+# Initializing Rom Information
+#
+ini_set("kernel_name",             "ETaNa Kernel");
+ini_set("kernel_version",          "02. April");
+ini_set("kernel_author",           "vadonka");
+ini_set("kernel_device",           "LG O2X");
+ini_set("kernel_date",             "Apr, 02 2012");
+
+
+##
+# Show Simple Splash
+#
+splash(
+  #-- Duration 3000ms / 3 seconds
+    3000,
+  
+  #-- <AROMA Resource Dir>/sample.png
+    "sample"
+);
+
+##
+# Load English Language, can be also multilanguage
+#
+
+loadlang("langs/en.lang");
+
+
+##
+# Show Calibrating Tools Directly before show any UI
+#
+#--- Remove this calibtool if you already know the calibrate data
+#calibtool("");
+
+#
+# Set Small Font to Support all fonts
+#
+fontresload( "0", "ttf/DroidSans.ttf;ttf/DroidSansArabic.ttf;ttf/DroidSansFallback.ttf;", "12" ); #-- Use sets of font (Font Family)
+
+
+###########################################################################
+# WHICH ROM
+###########################################################################
+
+
+if
+	confirm(
+	"<~rom.selection>",
+	"",
+	"@no",
+		"CM7",
+		"MIUI"
+	)=="yes"
+    then
+		writetmpfile(
+		"romversion.prop",
+		"selected=1\n"
+	);
+    else
+		writetmpfile(
+		"romversion.prop",
+		"selected=2\n"
+      );
+endif;
+
+
+###########################################################################
+# WELCOME VIEW BOX
+###########################################################################
+
+
+viewbox(
+
+	"<~welcome.info>",
+    "\n"+
+	"<~welcome.text1> "+ini_get("kernel_name")+"\n\n\n"+
+    "  <~kernel.name> : <b><#080>"+ini_get("kernel_name")+"</#></b>\n"+
+    "  <~kernel.version> : <b><#080>"+ini_get("kernel_version")+"</#></b>\n"+
+    "  <~kernel.developer> : <b><#080>"+ini_get("kernel_author")+"</#></b>\n"+
+    "  <~kernel.date> : <b><#080>"+ini_get("kernel_date")+"</#></b>\n\n\n"+
+	"<~click.next>\n"+
+	"<~start.aroma>",
+  
+    "@welcome"
+);
+
+
+###########################################################################
+# CHANGELOG TXT
+###########################################################################
+
+
+textbox(
+    "<~changelog.title>",
+    "<~changelog.desc>",
+  
+    "@update",
+  
+    resread("changelog.txt")
+);
+
+
+###########################################################################
+# KERNEL SELECTION BOX
+###########################################################################
+
+
+selectbox(
+
+	"<~kerneloptions.info>",
+	"<~kernel.description>",
+	
+	"@apps",
+	
+	"kernel.prop",
+
+# Group Kernel
+    "","",2,
+      "<~etanalocotf.kernel>",         "<~etanalocotf.description>",					0,
+      "<~etanalocdsotf.kernel>",       "<~etanalocdsotf.description>",					0,
+      "<~etanalocliteotf.kernel>",     "<~etanalocliteotf.description>",				1,
+      "<~etanahocotf.kernel>",         "<~etanahocotf.description>",					0,
+      "<~etanahocdsotf.kernel>",       "<~etanahocdsotf.description>",					0,
+      "<~etanahocliteotf.kernel>",     "<~etanahocliteotf.description>",				0
+	
+);
+
+
+###########################################################################
+# EXTRA RAM SELECTION BOX
+###########################################################################
+
+selectbox(
+
+	"<~ramoptions.info>",
+	"<~ram.description>",
+	
+	"@customize",
+	
+ 	"ram.prop",
+
+	# Group Ram
+  	  "","",2,
+	     "<~ram.zeromb>",          			"<~ramzeromb.description>",					1,
+	     "<~ram.thirtytwomb>",            	"<~ramthirtytwomb.description>",			0,
+	     "<~ram.fourtyeightmb>",            "<~ramfourtyeightmb.description>",			0,
+	     "<~ram.sixtyfourmb>",            	"<~ramsixtyfourmb.description>",			0,
+ 	     "<~ram.eightymb>",            		"<~rameightymb.description>",				0,
+  	     "<~ram.ninetysixmb>",            	"<~ramninetysixmb.description>",			0
+
+ );
+
+ 
+ ###########################################################################
+# READY INSTALLATION VIEW BOX
+###########################################################################
+
+
+viewbox(
+
+  "<~ready.installation>",
+  
+    "\n\n"+
+    "<~all.information>\n\n"+
+    "<~clickto.start>",
+    
+  "@info"
+);
+
+
+###########################################################################
+# INSTALLATION
+###########################################################################
+
+
+install(
+  "<~installation.start>",
+  
+    "<~aroma.start>"+
+	"<~please.wait>",
+  
+  "@install"
+);
+
+###########################################################################
+# FINISH SCREEN
+###########################################################################
+
+ini_set("text_next", "<~finish.button>");
+
+checkviewbox(
+    "<~installation.complete>",
+  
+    "\n\n"+
+    ""+ini_get("kernel_name")+" "+ini_get("kernel_version")+" <~finish.text>\n\n"+
+	"<~finish.next>"+
+	"\n\n",
+	
+    "@agreement",
+
+    "<~system.reboot>",
+
+    "1",
+
+    "reboot_it"
+);
+
+
+###
+#
+# Check if reboot checkbox was checked
+
+if
+  getvar("reboot_it")=="1"
+then
+  reboot("onfinish");
+endif;

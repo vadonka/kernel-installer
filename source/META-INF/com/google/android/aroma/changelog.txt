@@ -1,0 +1,8 @@
+<b><#selectbg_g>Update 2012.04.02</#></b>
+
+<*>Various minor bugfix and cleanup</*>
+<*>Improve Lite battery driver</*>
+<*>Revert back to the original CM7 wifi driver (i prefer the stability)</*>
+<*>OTF cleanup and minor adjustment</*>
+<*>Fix ext2/3 fs mount issue on some devices (link2sd, move2sd, etc.. is working fine now)</*>
+<*>Compiled with Linaro gcc 4.5</*>

@@ -1,0 +1,114 @@
+﻿### LANGUAGE STRING RESOURCE FILE
+#
+#   Language  : English
+#   By        : Einsteinno1
+#
+
+############################################################################################################
+#--- COMMON SYSTEM STRING RESOURCE
+############################################################################################################
+
+
+text_ok=OK
+text_next=Next >
+text_back=< Back
+text_yes=Yes
+text_no=No
+text_about=About
+text_calibrating=Screen Calibration
+text_quit=Exit Installation
+text_quit_msg=Are you sure that want to leave the installation?
+
+
+############################################################################################################
+#-- Welcome Screen
+############################################################################################################
+
+rom.selection=Rom Selection
+welcome.info=Welcome
+welcome.text1=This is the new AROMA Installer with
+click.next=Click on NEXT to start
+start.aroma=with the installation...
+kernel.name=Name
+kernel.version=Version
+kernel.developer=Developer
+kernel.date=Date
+
+
+############################################################################################################
+#-- Changelog
+############################################################################################################
+
+
+changelog.title=Changelog
+changelog.desc= Changelog Version
+
+
+############################################################################################################
+#-- Kernel Options
+############################################################################################################
+
+
+kerneloptions.info=Kernel Options
+kernel.description=Choose your Kernel Version:
+
+etanalocotf.kernel=ETaNa LOC OTF
+etanalocotf.description=Low overclock version, max speed is 1216Mhz, Spica On The Fly Toolkit
+etanalocdsotf.kernel=ETaNa LOC DS OTF
+etanalocdsotf.description=Low overclock version, max speed is 1216Mhz, DebauchedSloth battery driver version, Spica On The Fly Toolkit
+etanalocliteotf.kernel=ETaNa LOC LITE OTF
+etanalocliteotf.description=Low overclock version, max speed is 1216Mhz, Lite battery driver, Spica On The Fly Toolkit
+etanahocotf.kernel=ETaNa HOC OTF
+etanahocotf.description=High overclock version, max speed is 1408Mhz, Spica On The Fly Toolkit
+etanahocdsotf.kernel=ETaNa HOC DS OTF
+etanahocdsotf.description=High overclock version, max speed is 1408Mhz, DebauchedSloth battery driver version, Spica On The Fly Toolkit
+etanahocliteotf.kernel=ETaNa HOC LITE OTF
+etanahocliteotf.description= High overclock version, max speed is 1408Mhz, Lite battery driver, Spica On The Fly Toolkit
+    
+
+############################################################################################################
+#-- Ram Kernel Options
+############################################################################################################
+
+ramoptions.info=Kernel Ram Options 
+ram.description=How much Extra Ram do you want:
+
+ram.zeromb=0 MB
+ramzeromb.description=0MB Extra Ram, everything works
+ram.thirtytwomb=32 MB
+ramthirtytwomb.description=32MB Extra Ram, everything works
+ram.fourtyeightmb=48MB
+ramfourtyeightmb.description=48MB Extra Ram, everything works
+ram.sixtyfourmb=64MB
+ramsixtyfourmb.description=64MB Extra Ram, 1080 Video recording and playback doesn't work
+ram.eightymb=80MB
+rameightymb.description=80MB Extra Ram, 1080 Video recording and playback doesn't work, moreover some 3D Games won't work
+ram.ninetysixmb=96MB
+ramninetysixmb.description=96MB Extra Ram, 1080 Video recording and playback doesn't work, moreover most 3D Games won't work
+
+
+############################################################################################################
+#-- Ready To Install
+############################################################################################################
+
+ready.installation=Ready To Start The Installation
+all.information=All information needed are complete and we can start with the installation.
+clickto.start=Click on NEXT to start...
+
+installation.start=Installation
+aroma.start=AROMA Installer started...
+please.wait=Please wait...
+
+
+############################################################################################################
+#-- Finish Screen
+############################################################################################################
+
+finish.button=FINISH!
+
+installation.complete=Installation complete
+finish.text=successfully installed...
+finish.next=Click on Finish! and reboot your phone
+system.reboot=Reboot into the System
+
+

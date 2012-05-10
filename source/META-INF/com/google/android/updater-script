@@ -1,0 +1,344 @@
+###
+#  MOUNTING PARTITIONS
+###
+
+set_progress(0.02);
+ui_print(" ");
+ui_print("@Mount Partition");
+
+	# mount /system
+	set_progress(0.04);
+	mount("ext4", "EMMC", "/dev/block/mmcblk0p1", "/system");
+	ui_print("  Mount /system");
+  
+	# mount /system
+	set_progress(0.06);
+	ui_print("  Mount /data");
+	mount("ext4", "EMMC", "/dev/block/mmcblk0p8", "/data");
+	assert(is_mounted("/data"));
+  
+	# mount /system
+	set_progress(0.08);
+	ui_print("  Mount /cache");
+	mount("ext4", "EMMC", "/dev/block/mmcblk0p2", "/cache");
+	assert(is_mounted("/cache"));
+  
+
+###
+#  DELETE CACHE
+###
+
+set_progress(0.10);
+ui_print(" ");
+ui_print("@Format Cache");
+
+	set_progress(0.12);
+	ui_print("  Format System Cache");
+	delete_recursive("/cache");
+
+	set_progress(0.14);
+	ui_print("  Format Dalvik Cache");
+	delete_recursive("/data/dalvik-cache");
+
+	set_progress(0.16);
+	ui_print("  Delete Other Cache");
+	delete_recursive("/data/MIUI");
+	delete_recursive("/data/sdcard/MIUI");
+	delete_recursive("/sdcard/MIUI/.cache");
+	
+	set_progress(0.18);
+	ui_print("  Delete Android Market Cache");
+	delete_recursive("/data/data/com.android.vending/cache");
+
+	
+#################################################
+#####   LIB AND MODULE CLEANING
+#################################################
+
+	
+if
+    file_getprop("/tmp/aroma-data/romversion.prop","selected") == "1"
+then
+	set_progress(0.20);
+	delete_recursive("/system/lib/modules/");
+	delete_recursive("/system/etc/init.d/");
+endif;	
+
+	
+#################################################
+#####   KERNEL OPTIONS
+#################################################
+
+ui_print(" ");
+ui_print("@Kernel Selection");
+
+###
+#  LOC_ETaNa_OTF
+###
+
+if
+    file_getprop("/tmp/aroma-data/kernel.prop","selected.1") == "1"
+then
+  set_progress(0.35);
+  ui_print("  LOC ETaNa OTF Kernel");
+    package_extract_dir("customize/kernel_data/", "/");
+    package_extract_dir("customize/kernel_system", "/");
+    package_extract_dir("customize/kernel_img/etana_loc_otf", "/tmp/kernel_files");
+    set_perm(0, 0, 0777, "/tmp/kernel_files/initrd.img");
+    set_perm(0, 0, 0777, "/tmp/kernel_files/mkbootimg");
+    set_perm(0, 0, 0777, "/tmp/kernel_files/zImage");
+    set_perm(0, 0, 0777, "/tmp/kernel_files/busybox");
+endif;
+
+###
+#  LOC_ETaNa_DS_OTF
+###
+
+if
+    file_getprop("/tmp/aroma-data/kernel.prop","selected.1") == "2"
+then
+  set_progress(0.35);
+  ui_print("  LOC ETaNa DS OTF Kernel");
+    package_extract_dir("customize/kernel_data/", "/");
+    package_extract_dir("customize/kernel_system", "/");
+    package_extract_dir("customize/kernel_img/etana_loc_ds_otf", "/tmp/kernel_files");
+    set_perm(0, 0, 0777, "/tmp/kernel_files/initrd.img");
+    set_perm(0, 0, 0777, "/tmp/kernel_files/mkbootimg");
+    set_perm(0, 0, 0777, "/tmp/kernel_files/zImage");
+    set_perm(0, 0, 0777, "/tmp/kernel_files/busybox");
+endif;
+
+###
+#  LOC_ETaNa_LITE_OTF
+###
+
+if
+    file_getprop("/tmp/aroma-data/kernel.prop","selected.1") == "3"
+then
+  set_progress(0.35);
+  ui_print("  LOC ETaNa LITE OTF Kernel");
+    package_extract_dir("customize/kernel_data/", "/");
+    package_extract_dir("customize/kernel_system", "/");
+    package_extract_dir("customize/kernel_img/etana_loc_lite_otf", "/tmp/kernel_files");
+    set_perm(0, 0, 0777, "/tmp/kernel_files/initrd.img");
+    set_perm(0, 0, 0777, "/tmp/kernel_files/mkbootimg");
+    set_perm(0, 0, 0777, "/tmp/kernel_files/zImage");
+    set_perm(0, 0, 0777, "/tmp/kernel_files/busybox");
+endif;
+
+###
+#  HOC_ETaNa_OTF
+###
+
+if
+    file_getprop("/tmp/aroma-data/kernel.prop","selected.1") == "4"
+then
+  set_progress(0.35);
+  ui_print("  HOC ETaNa OTF Kernel");
+    package_extract_dir("customize/kernel_data/", "/");
+    package_extract_dir("customize/kernel_system", "/");
+    package_extract_dir("customize/kernel_img/etana_hoc_otf", "/tmp/kernel_files");
+    set_perm(0, 0, 0777, "/tmp/kernel_files/initrd.img");
+    set_perm(0, 0, 0777, "/tmp/kernel_files/mkbootimg");
+    set_perm(0, 0, 0777, "/tmp/kernel_files/zImage");
+    set_perm(0, 0, 0777, "/tmp/kernel_files/busybox");
+endif;
+
+###
+#  HOC_ETaNa_DS_OTF
+###
+
+if
+    file_getprop("/tmp/aroma-data/kernel.prop","selected.1") == "5"
+then
+  set_progress(0.35);
+  ui_print("  HOC ETaNa DS OTF Kernel");
+    package_extract_dir("customize/kernel_data/", "/");
+    package_extract_dir("customize/kernel_system", "/");
+    package_extract_dir("customize/kernel_img/etana_hoc_ds_otf", "/tmp/kernel_files");
+    set_perm(0, 0, 0777, "/tmp/kernel_files/initrd.img");
+    set_perm(0, 0, 0777, "/tmp/kernel_files/mkbootimg");
+    set_perm(0, 0, 0777, "/tmp/kernel_files/zImage");
+    set_perm(0, 0, 0777, "/tmp/kernel_files/busybox");
+endif;
+
+###
+#  HOC_ETaNa_LITEOTF
+###
+
+if
+    file_getprop("/tmp/aroma-data/kernel.prop","selected.1") == "6"
+then
+  set_progress(0.35);
+  ui_print("  HOC ETaNa LITE OTF Kernel");
+    package_extract_dir("customize/kernel_data/", "/");
+    package_extract_dir("customize/kernel_system", "/");
+    package_extract_dir("customize/kernel_img/etana_hoc_lite_otf", "/tmp/kernel_files");
+    set_perm(0, 0, 0777, "/tmp/kernel_files/initrd.img");
+    set_perm(0, 0, 0777, "/tmp/kernel_files/mkbootimg");
+    set_perm(0, 0, 0777, "/tmp/kernel_files/zImage");
+    set_perm(0, 0, 0777, "/tmp/kernel_files/busybox");
+endif;
+
+
+#################################################
+#####   EXTRA RAM OPTIONS
+#################################################
+
+
+###
+#  0 MB EXTRA RAM
+###
+
+if
+    file_getprop("/tmp/aroma-data/ram.prop","selected.1") == "1"
+then
+  set_progress(0.70);
+  ui_print("  0 MB Extra Ram");
+    package_extract_dir("customize/kernel_ram/0", "/tmp/aroma");
+    set_perm(0, 0, 0777, "/tmp/aroma/install.sh");
+    run_program("tmp/aroma/install.sh");
+endif;
+
+###
+#  32 MB EXTRA RAM
+###
+
+if
+    file_getprop("/tmp/aroma-data/ram.prop","selected.1") == "2"
+then
+  set_progress(0.70);
+  ui_print("  32 MB Extra Ram");
+    package_extract_dir("customize/kernel_ram/32", "/tmp/aroma");
+    set_perm(0, 0, 0777, "/tmp/aroma/install.sh");
+    run_program("tmp/aroma/install.sh");
+endif;
+
+###
+#  48 MB EXTRA RAM
+###
+
+if
+    file_getprop("/tmp/aroma-data/ram.prop","selected.1") == "3"
+then
+  set_progress(0.70);
+  ui_print("  48 MB Extra Ram");
+    package_extract_dir("customize/kernel_ram/48", "/tmp/aroma");
+    set_perm(0, 0, 0777, "/tmp/aroma/install.sh");
+    run_program("tmp/aroma/install.sh");
+endif;
+
+###
+#  64 MB EXTRA RAM
+###
+
+if
+    file_getprop("/tmp/aroma-data/ram.prop","selected.1") == "4"
+then
+  set_progress(0.70);
+  ui_print("  64 MB Extra Ram");
+    package_extract_dir("customize/kernel_ram/64", "/tmp/aroma");
+    set_perm(0, 0, 0777, "/tmp/aroma/install.sh");
+    run_program("tmp/aroma/install.sh");
+endif;
+
+###
+#  80 MB EXTRA RAM
+###
+
+if
+    file_getprop("/tmp/aroma-data/ram.prop","selected.1") == "5"
+then
+  set_progress(0.70);
+  ui_print("  80 MB Extra Ram");
+    package_extract_dir("customize/kernel_ram/80", "/tmp/aroma");
+    set_perm(0, 0, 0777, "/tmp/aroma/install.sh");
+    run_program("tmp/aroma/install.sh");
+endif;
+
+###
+#  96 MB EXTRA RAM
+###
+
+if
+    file_getprop("/tmp/aroma-data/ram.prop","selected.1") == "6"
+then
+  set_progress(0.70);
+  ui_print("  80 MB Extra Ram");
+    package_extract_dir("customize/kernel_ram/96", "/tmp/aroma");
+    set_perm(0, 0, 0777, "/tmp/aroma/install.sh");
+    run_program("tmp/aroma/install.sh");
+endif;
+
+
+#################################################
+#####   BUILD PROP TWEAKS
+#################################################
+
+set_progress(0.80);
+ui_print(" ");
+ui_print("@Build Prop Tweaks");
+
+    package_extract_dir("customize/scripts/etana", "/tmp/aroma");
+    set_perm(0, 0, 0777, "/tmp/aroma/etana.sh");
+    run_program("tmp/aroma/etana.sh");
+
+
+#################################################
+#####   FINAL PERMISSION
+#################################################
+
+
+set_progress(0.94);
+ui_print(" ");
+ui_print("@Final Permission Fix");
+
+	set_perm(1000, 1000, 0777, "/data/tweakaio/tweakaio.conf");
+
+	
+#################################################
+#####   UNMOUNT PARTITIONS
+#################################################
+
+
+set_progress(0.95);
+ui_print(" ");
+ui_print("@Unmount Partitions");
+
+	# mount /system
+	set_progress(0.96);
+	ui_print("  Unmount /system");
+	run_program("/sbin/busybox", "umount", "/system");
+	unmount("/system");
+  
+	# mount /system
+	set_progress(0.97);
+	ui_print("  Unmount /data");
+	run_program("/sbin/busybox", "umount", "/data");
+  
+	# mount /system
+	set_progress(0.98);
+	ui_print("  Unmount /cache");
+	run_program("/sbin/busybox", "umount", "/cache");
+  
+	# mount /system
+	set_progress(0.99);
+	ui_print("  Unmount /sdcard");
+	run_program("/sbin/busybox", "umount", "/sdcard");
+
+ui_print(" ");
+
+
+#################################################
+#####   FINISH
+#################################################
+
+
+delete_recursive("/cache");
+delete_recursive("/data/dalvik-cache");
+delete_recursive("/tmp/kernel_files");
+delete_recursive("/tmp/scripts");
+
+ui_print("@Finish...");
+set_progress(1.0);
+

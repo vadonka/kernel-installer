@@ -1,0 +1,759 @@
+#!/system/bin/sh
+
+# LG Optimus 2X AIO init script v2.1.2
+# Copyright (c) by vadonka 2012
+TIMESTAMP=1330992824
+date=`date +%Y.%m.%d-%H.%M.%S`
+
+# cleanup
+deflog="/data/tweakaio/logs/tweakaio.log"
+
+if [ -f $deflog ]; then
+	rm -rf $deflog
+fi
+touch $deflog
+
+# Delete COMPCACHE log
+complog="/data/tweakaio/logs/compcache.log"
+
+if [ -f $complog ]; then
+	rm -f $complog
+fi
+touch $complog
+
+gpuramsize=`dmesg | grep nvmem | awk 'BEGIN {FS="="} {print $3}' | awk 'BEGIN {FS=" "} {print $1}' | awk 'BEGIN {FS="@"} {print $1}' | sed "s/[M]//g"`
+
+echo "#########################################" >> $deflog
+echo "## LG Optimus 2X tweak script log file ##" >> $deflog
+echo "#########################################" >> $deflog
+echo "##Kernel version: "`uname -r` >> $deflog
+echo -e "##Kernel CMDline GPU memory size: $gpuramsize MB\n" >> $deflog
+
+# GPU RAM Size
+if [ "$gpuramsize" == "128" -o "$gpuramsize" == "96" -o "$gpuramsize" == "80" -o "$gpuramsize" == "64" -o "$gpuramsize" == "48" -o "$gpuramsize" == "32" ]; then
+	echo "$date GPU RAM size accepted" >> $deflog
+	echo $gpuramsize > /proc/spica/gpuramsize
+	echo "$date GPU RAM size = "`cat /proc/spica/gpuramsize` >> $deflog
+else
+	echo "$date WARNING: Your GPU RAM size is invalid!" >> $deflog
+	echo "128" > /proc/spica/gpuramsize
+	echo "$date GPU RAM size set to 128MB by default" >> $deflog
+fi
+
+readvar()
+{
+export parfile="/data/tweakaio/tweakaio.conf"
+export SCRIPT_ENABLE=`grep "^Script Enabled" $parfile | awk 'BEGIN {FS="="} {print $2}'`
+export ENABLE_LOGGER=`grep "^Logger Enabled" $parfile | awk 'BEGIN {FS="="} {print $2}'`
+export ENABLE_LMK_TWEAK=`grep "^LMK Tweaks Enabled" $parfile | awk 'BEGIN {FS="="} {print $2}'`
+export LMK_MODE=`grep "^LMK Mode" $parfile | awk 'BEGIN {FS="="} {print $2}'`
+export ENABLE_NET_TWEAKS=`grep "^Network Tweaks Enabled" $parfile | awk 'BEGIN {FS="="} {print $2}'`
+export ENABLE_VM_TWEAKS=`grep "^Memory Management Tweaks Enabled" $parfile | awk 'BEGIN {FS="="} {print $2}'`
+export ENABLE_COMPCACHE=`grep "^Compcache Enabled" $parfile | awk 'BEGIN {FS="="} {print $2}'`
+export COMPCACHE_SIZE=`grep "^Compcache Size" $parfile | awk 'BEGIN {FS="="} {print $2}'`
+export COMPCACHE_RATIO=`grep "^Compcache Ratio" $parfile | awk 'BEGIN {FS="="} {print $2}'`
+export CACHE_DROP_INTERVAL=`grep "^Cache Drop Interval Time" $parfile | awk 'BEGIN {FS="="} {print $2}'`
+export ENABLE_MOUNT_TWEAKS=`grep "^Mount Tweaks Enabled" $parfile | awk 'BEGIN {FS="="} {print $2}'`
+export SCHEDULER=`grep "^IO Scheduler" $parfile | awk 'BEGIN {FS="="} {print $2}'`
+export ENABLE_CPU_UNDERVOLT=`grep "^CPU Undervolt Enabled" $parfile | awk 'BEGIN {FS="="} {print $2}'`
+export CPU216MHZ=`grep "^216 MHZ" $parfile | awk 'BEGIN {FS="="} {print $2}'`
+export CPU324MHZ=`grep "^324 MHZ" $parfile | awk 'BEGIN {FS="="} {print $2}'`
+export CPU503MHZ=`grep "^503 MHZ" $parfile | awk 'BEGIN {FS="="} {print $2}'`
+export CPU655MHZ=`grep "^655 MHZ" $parfile | awk 'BEGIN {FS="="} {print $2}'`
+export CPU800MHZ=`grep "^800 MHZ" $parfile | awk 'BEGIN {FS="="} {print $2}'`
+export CPU1015MHZ=`grep "^1015 MHZ" $parfile | awk 'BEGIN {FS="="} {print $2}'`
+export CPU1100MHZ=`grep "^1100 MHZ" $parfile | awk 'BEGIN {FS="="} {print $2}'`
+export CPU1216MHZ=`grep "^1216 MHZ" $parfile | awk 'BEGIN {FS="="} {print $2}'`
+export CPU1408MHZ=`grep "^1408 MHZ" $parfile | awk 'BEGIN {FS="="} {print $2}'`
+export ENABLE_DALVIK_CLEANER=`grep "^Dalvik Cache Cleaner Enabled" $parfile | awk 'BEGIN {FS="="} {print $2}'`
+export ENABLE_SQLITE_DEFRAG=`grep "^SQLite3 Defrag Enabled" $parfile | awk 'BEGIN {FS="="} {print $2}'`
+export ENABLE_SPICA_OTF=`grep "^Spica OTF Tweaks Enabled" $parfile | awk 'BEGIN {FS="="} {print $2}'`
+export AVP_FREQ=`grep "^AVP Frequency" $parfile | awk 'BEGIN {FS="="} {print $2}'`
+export VDE_FREQ=`grep "^VDE Frequency" $parfile | awk 'BEGIN {FS="="} {print $2}'`
+export GPU_FREQ=`grep "^GPU Frequency" $parfile | awk 'BEGIN {FS="="} {print $2}'`
+export MIN_CPU1_ON=`grep "^Min CPU1 On Frequency" $parfile | awk 'BEGIN {FS="="} {print $2}'`
+export MAX_CPU1_OFF=`grep "^Max CPU1 Off Frequency" $parfile | awk 'BEGIN {FS="="} {print $2}'`
+export POWERSAVE=`grep "^PowerSave Mode" $parfile | awk 'BEGIN {FS="="} {print $2}'`
+export ENABLE_NITRO=`grep "^NITRO Enabled" $parfile | awk 'BEGIN {FS="="} {print $2}'`
+export SCREEN_OFF_MAX_FREQ=`grep "^Screen Off Max Frequency" $parfile | awk 'BEGIN {FS="="} {print $2}'`
+export DDR2_MIN_KHZ=`grep "^DDR2 Min KHz" $parfile | awk 'BEGIN {FS="="} {print $2}'`
+export LPDDR2_MIN_KHZ=`grep "^LPDDR2 Min KHz" $parfile | awk 'BEGIN {FS="="} {print $2}'`
+}
+
+if [ -f /data/tweakaio/tweakaio.conf ]; then
+	echo -e "$date Params file found\n" >> $deflog
+	echo "$date Reading variables from the parfile..." >> $deflog
+	readvar
+else
+echo "$date WARNING! Params file not found! Creating now..." >> $deflog
+cat > /data/tweakaio/tweakaio.conf <<EOF
+# ATTENTION!
+# Detailed information moved
+# to the tweakaio_hlp.txt
+# TIMESTAMP 1330585739
+
+Script Enabled=on
+Logger Enabled=on
+
+# LOW MEMORY KILLER MODE (aka LMK)
+LMK Tweaks Enabled=on
+# LMK Values are:
+# auto, def, std, opt, str, aggr, extr, ult
+LMK Mode=str
+
+Network Tweaks Enabled=on
+Memory Management Tweaks Enabled=on
+Compcache Enabled=off
+Compcache Size (in MB)=100
+Compcache Ratio (in %)=20
+Cache Drop Interval Time (in hour)=4
+
+Mount Tweaks Enabled=on
+# example: deadline cfq bfq sio
+IO Scheduler=bfq
+
+CPU Undervolt Enabled=off
+# VOLTAGE LEVELS (in mV)
+216 MHZ=780
+324 MHZ=790
+503 MHZ=840
+655 MHZ=870
+800 MHZ=900
+1015 MHZ=1000
+1100 MHZ=1050
+1216 MHZ=1150
+1408 MHZ=1250
+
+Dalvik Cache Cleaner Enabled=off
+SQLite3 Defrag Enabled=off
+
+Spica OTF Tweaks Enabled=on
+
+AVP Frequency=240000
+# Accepted range: 200000-250000
+
+VDE Frequency=650000
+# Accepted range: 600000-700000
+
+GPU Frequency=300000
+# Accepted range: 280000-350000
+
+Min CPU1 On Frequency=655000
+# Accepted range: 216000-1100000
+
+Max CPU1 Off Frequency=610000
+# Accepted range: 216000-1100000
+
+PowerSave Mode=0
+# Accepted range: 0-6
+
+NITRO Enabled=off
+
+Screen Off Max Frequency=503000
+# Accepted range: 216000-999000
+
+DDR2 Min KHz=50000
+# Accepted range: 10000-50000
+
+LPDDR2 Min KHz=18000
+# Accepted range: 1000-18000
+
+EOF
+if [ -f /data/tweakaio/tweakaio.conf ]; then
+	echo -e "$date Params file created\n" >> $deflog
+	echo "$date Reading variables from the parfile..." >> $deflog
+	readvar
+else
+	echo "$date Something is really wrong" >> $deflog
+	echo "$date ERROR: param file creation error!" >> $deflog
+	echo "$date ERROR: PROGRAM ABORTED!" >> $deflog
+fi
+fi
+
+# Checking Script Mode
+if [ ! "$SCRIPT_ENABLE" == "on" ]; then
+	echo "$date Script is disabled in the params file!" >> $deflog
+	echo "$date WARNING: PROGRAM EXIT NOW!" >> $deflog
+	exit 1
+fi
+
+etweak()
+{
+	if [ -f $1 ]; then
+		echo "$date Original: $1 = "`cat $1` >> $deflog
+		echo $2 > $1
+		echo -e "$date Tweaked: $1 = "`cat $1`"\n" >> $deflog
+	fi
+}
+
+sysctl_proc()
+{
+	echo "$date Original: "`sysctl -e $1` >> $deflog
+	sysctl -w $1=$2
+	echo -e "$date Tweaked: "`sysctl -e $1`"\n" >> $deflog
+}
+
+##########################################
+# Basic Memory Management and LMK Tweaks #
+##########################################
+TOTALMEM=`free | grep Mem | awk 'BEGIN { FS = " " } ; { print $2 }'`
+
+basic_mem_tweaks()
+{
+if [ -z "$LMK_MODE" ]; then
+	LMK_MODE="str"
+fi
+	# Strict minfree handler tweak
+	etweak /sys/module/lowmemorykiller/parameters/adj 0,1,2,4,6,15
+	lmk()
+		{
+			if [ "$LMK_MODE" == "$1" ]; then
+				echo "$date Lowmemorykiller mode is: $LMK_MODE" >> $deflog
+				etweak /sys/module/lowmemorykiller/parameters/minfree $2
+			fi
+		}
+
+	# lowmemorykiller auto management
+	if [ "$LMK_MODE" == "auto" ]; then
+		echo "$date Using LowMemoryKiller Auto management mode..." >> $deflog
+			if [ "$TOTALMEM" -gt "470000" ]; then
+				LMK_MODE="std"
+			elif [ "$TOTALMEM" -gt "440000" ]; then
+				LMK_MODE="opt"
+			elif [ "$TOTALMEM" -gt "410000" ]; then
+				LMK_MODE="str"
+			else
+				LMK_MODE="aggr"
+			fi
+	fi
+	# Define minfree
+	lmk def 1536,2048,4096,5120,5632,6144
+	lmk std 1536,3072,4096,7680,8960,10240
+	lmk opt 1536,2048,4096,10240,12800,15360
+	lmk str 1536,2048,4096,15360,17920,20480
+	lmk aggr 1536,3072,4096,21000,23000,25000
+	lmk extr 1536,3072,4096,38400,40960,43520
+	lmk ult 1536,3072,4096,51200,57600,64000
+}
+
+##################
+# Network Tweaks #
+##################
+network_tweaks()
+{
+	# Updated, thx for Zeppelinrox
+	sysctl_proc net.ipv4.ip_no_pmtu_disc 0
+	sysctl_proc net.ipv4.tcp_ecn 0
+	sysctl_proc net.ipv4.tcp_timestamps 0
+	sysctl_proc net.ipv4.tcp_no_metrics_save 1
+	sysctl_proc net.ipv4.tcp_tw_recycle 1
+	sysctl_proc net.ipv4.tcp_tw_reuse 1
+	sysctl_proc net.ipv4.tcp_sack 1
+	sysctl_proc net.ipv4.tcp_window_scaling 0
+	sysctl_proc net.ipv4.tcp_max_tw_buckets 360000
+	sysctl_proc net.ipv4.tcp_moderate_rcvbuf 1
+	sysctl_proc net.ipv4.tcp_reordering 5
+	sysctl_proc net.ipv4.route.flush 1
+	sysctl_proc net.ipv4.tcp_rfc1337 1
+	sysctl_proc net.ipv4.tcp_slow_start_after_idle 0
+	sysctl_proc net.ipv4.tcp_sack 1
+	sysctl_proc net.ipv4.tcp_fack 1
+	sysctl_proc net.ipv4.tcp_rmem 6144,87380,2097152
+	sysctl_proc net.ipv4.tcp_wmem 6144,87380,2097152
+	sysctl_proc net.ipv4.udp_rmem_min 6144
+	sysctl_proc net.ipv4.udp_wmem_min 6144
+	sysctl_proc net.ipv4.tcp_window_scaling 1
+	sysctl_proc net.ipv4.tcp_congestion_control cubic
+	sysctl_proc net.ipv4.tcp_syncookies 1
+	sysctl_proc net.ipv4.conf.all.rp_filter 1
+	sysctl_proc net.ipv4.conf.default.rp_filter 1
+	sysctl_proc net.ipv4.tcp_synack_retries 2
+	sysctl_proc net.ipv4.tcp_syn_retries 2
+	sysctl_proc net.ipv4.tcp_max_syn_backlog 1024
+	sysctl_proc net.ipv4.tcp_max_tw_buckets 16384
+	sysctl_proc net.ipv4.icmp_echo_ignore_all 1
+	sysctl_proc net.ipv4.icmp_ignore_bogus_error_responses 1
+	sysctl_proc net.ipv4.tcp_no_metrics_save 1
+	sysctl_proc net.ipv4.tcp_fin_timeout 15
+	sysctl_proc net.ipv4.tcp_keepalive_intvl 30
+	sysctl_proc net.ipv4.tcp_keepalive_probes 5
+	sysctl_proc net.ipv4.tcp_keepalive_time 1800
+	sysctl_proc net.ipv4.ip_forward 0
+	sysctl_proc net.ipv4.conf.default.accept_source_route 0
+	sysctl_proc net.ipv4.conf.default.accept_redirects 0
+	sysctl_proc net.ipv4.conf.default.secure_redirects 0
+	sysctl_proc net.ipv4.conf.all.accept_source_route 0
+	sysctl_proc net.ipv4.conf.all.accept_redirects 0
+	sysctl_proc net.ipv4.conf.all.secure_redirects 0
+	sysctl_proc net.core.wmem_default 262144
+	sysctl_proc net.core.wmem_max 2097152
+	sysctl_proc net.core.rmem_default 262144
+	sysctl_proc net.core.rmem_max 2097152
+	sysctl_proc net.core.netdev_max_backlog 262144
+	sysctl_proc net.core.somaxconn 262144
+	sysctl_proc net.core.optmem_max 20480
+	sysctl_proc net.unix.max_dgram_qlen 50
+}
+
+#############
+# VM Tweaks #
+#############
+vm_tweaks()
+{
+	# Disable normalized sleeper
+	mount -t debugfs none /sys/kernel/debug
+	echo NO_NORMALIZED_SLEEPER > /sys/kernel/debug/sched_features
+	# Memory management, updated thx for Zeppelinrox
+	etweak /proc/sys/vm/oom_kill_allocating_task 0
+	etweak /proc/sys/vm/oom_dump_tasks 1
+	etweak /proc/sys/vm/panic_on_oom 0
+	etweak /proc/sys/vm/laptop_mode 0
+	etweak /proc/sys/vm/block_dump 0
+	etweak /proc/sys/vm/swappiness 0
+	etweak /proc/sys/vm/dirty_background_ratio 60
+	etweak /proc/sys/vm/dirty_ratio 95
+	etweak /proc/sys/vm/min_free_kbytes 10240
+	etweak /proc/sys/vm/vfs_cache_pressure 10
+	etweak /proc/sys/vm/overcommit_memory 1
+	etweak /proc/sys/vm/page-cluster 3
+	etweak /proc/sys/vm/min_free_order_shift 4
+	etweak /proc/sys/vm/dirty_writeback_centisecs 2000
+	etweak /proc/sys/vm/dirty_expire_centisecs 1000
+	etweak /proc/sys/fs/lease-break-time 10
+	etweak /proc/sys/fs/file-max 65536
+	sysctl_proc kernel.panic 30
+	sysctl_proc kernel.panic_on_oops 0
+	sysctl_proc kernel.sched_child_runs_first 0
+	sysctl_proc kernel.sched_compat_yield 1
+	sysctl_proc kernel.sched_features 24189
+	sysctl_proc kernel.sched_latency_ns 18000000
+	sysctl_proc kernel.sched_min_granularity_ns 1500000
+	sysctl_proc kernel.sched_shares_ratelimit 256000
+	sysctl_proc kernel.sched_wakeup_granularity_ns 3000000
+	sysctl_proc kernel.threads-max 5000
+	sysctl_proc kernel.msgmni 2048
+	sysctl_proc kernel.msgmax 64000
+	sysctl_proc kernel.shmmni 4096
+	sysctl_proc kernel.shmall 2097152
+	sysctl_proc kernel.shmmax 268435456
+	sysctl_proc kernel.sem 500,512000,64,2048
+	sysctl_proc kernel.hung_task_timeout_secs 30
+}
+
+ccache()
+{
+if [ -z "$COMPCACHE_SIZE" ]; then
+	COMPCACHE_SIZE="50"
+fi
+if [ -z "$COMPCACHE_RATIO" ]; then
+	COMPCACHE_RATIO="20"
+fi
+if [ -z "$CACHE_DROP_INTERVAL" ]; then
+	CACHE_DROP_INTERVAL="4"
+fi
+	# COMPCACHE management
+	ccache_proc()
+	{
+		zram_init()
+		{
+			echo "$date Disable swap" >> $complog
+			swapoff /dev/block/zram0
+			echo "$date Reset swap state" >> $complog
+			echo 1 > /sys/block/zram0/reset
+			echo "$date Enable system property" >> $complog
+			setprop persist.compcache.user 1
+			setprop persist.service.compcache 1
+			COMPUS=`getprop persist.compcache.user`
+			COMPSER=`getprop persist.service.compcache`
+			echo "$date Verify system property" >> $complog
+			if [ "$COMPUS" == "1" -a "$COMPSER" == "1" ]; then
+				echo "$date System property setup complete" >> $complog
+			else
+				echo "$date ERROR: System property setup is incomplete!" >> $complog
+			fi
+			echo "$date drop cache" >> $complog
+			sync; sysctl -w vm.drop_caches=3 > /dev/null
+			echo "$date Tweak swappiness and vfs_cache_pressure" >> $complog
+			etweak /proc/sys/vm/swappiness 100
+			etweak /proc/sys/vm/vfs_cache_pressure 100
+			echo "$date Set zram disksize to $(($COMPCACHE_SIZE))MB" >> $complog
+			echo $(($1*1024*1024)) > /sys/block/zram0/disksize
+			echo "$date Verify disksize..." >> $complog
+			COMPCACHE_SIZE_SET=$((`cat /sys/block/zram0/disksize`/1024/1024))
+			if [ "$COMPCACHE_SIZE_SET" == "$COMPCACHE_SIZE" ]; then
+				echo "$date Compcache size is match" >> $complog
+			else
+				echo "$date ERROR: Compcache size not match!" >> $complog
+			fi
+			echo "$date format swap" >> $complog
+			mkswap /dev/block/zram0 > /dev/null
+			echo "$date enable swap" >> $complog
+			swapon /dev/block/zram0
+			echo "$date Compcache initialization successfully completed!" >> $complog
+		}
+		#check zram is a block device?
+		if [ -b "/dev/block/zram0" ]; then
+			echo "$date Found zram device!" >> $complog
+			echo "$date Starting zram init..." >> $complog
+			zram_init $COMPCACHE_SIZE
+		# check zram is a module?
+		elif [ -f "/system/lib/modules/zram.ko" -a \
+			-f "/system/lib/modules/lzo_compress.ko" -a \
+			-f "/system/lib/modules/lzo_decompress.ko" ]; then
+			echo "$date zram device not found, trying to load from module..." >> $complog
+			modprobe zram num_devices=2 && sleep 1
+			if [ -b "/dev/block/zram0" ]; then
+				echo "$date Found zram device!" >> $complog
+				echo "$date Starting zram init..." >> $complog
+				zram_init $COMPCACHE_SIZE
+			else
+				echo "$date ERROR: zram module not loaded!" >> $complog
+			fi
+		fi
+		# Cron job for periodically cache drop
+		mkdir -p /data/cron
+		echo "* */$CACHE_DROP_INTERVAL * * * sync; sysctl -w vm.drop_caches=3" > /data/cron/root
+		/system/xbin/crond -b -l 0 -c /data/cron -L /data/cron/cron.log
+	}
+		if [ "$COMPCACHE_SIZE" == "auto" ]; then
+			COMPCACHE_SIZE=$(($TOTALMEM*$COMPCACHE_RATIO/102400))
+			echo "$date Using Compcache auto management mode..." >> $complog
+			echo "$date Compcache ratio is $(($COMPCACHE_RATIO))%" >> $complog
+			echo "$date Total memory is $(($TOTALMEM/1024))MB" >> $complog
+			echo "$date Used Compcache size is $(($COMPCACHE_SIZE))MB" >> $complog
+			ccache_proc
+		else
+			echo "$date Compcache in static mode size is $(($COMPCACHE_SIZE))MB" >> $complog
+			ccache_proc
+		fi
+}
+
+#######################
+# Mount Option Tweaks #
+#######################
+mount_tweaks()
+{
+	# Remount with noatime and nodiratime, updated thx for SetiroN
+	busybox mount -o remount,noatime,nodiratime,data=writeback,barrier=0,nobh,commit=180,noauto_da_alloc /system
+	busybox mount -o remount,noatime,nodiratime,data=writeback,barrier=0,nobh,nosuid,nodev,commit=120,noauto_da_alloc /data
+	busybox mount -o remount,noatime,nodiratime,data=writeback,nobh,barrier=0,commit=150,noauto_da_alloc /cache
+	# Updated IO tweaks, thx for Zeppelinrox
+	m0()
+	{
+		etweak /sys/block/$1/queue/rotational 0
+		etweak /sys/block/$1/queue/read_ahead_kb 2048
+		etweak /sys/block/$1/queue/iostats 0
+		etweak /sys/block/$1/queue/iosched/low_latency 1
+		etweak /sys/block/$1/queue/iosched/back_seek_penalty 1
+		etweak /sys/block/$1/queue/iosched/back_seek_max 1000000000
+		etweak /sys/block/$1/queue/iosched/slice_idle 0
+		etweak /sys/block/$1/queue/iosched/fifo_batch 1
+		etweak /sys/block/$1/queue/iosched/quantum 16
+		etweak /sys/block/$1/queue/nr_requests 512
+		etweak /sys/block/$1/queue/scheduler $SCHEDULER
+	}
+	m0 mmcblk0
+	m0 mmcblk1
+	echo 2048 > /sys/devices/virtual/bdi/179:0/read_ahead_kb
+}
+
+######################
+#   CPU undervolt    #
+######################
+cpuuv()
+{
+	cpuuv_shift()
+	{
+		# Define UV shift
+		if [ -z "$1" ]; then
+			export $2="0"
+			elif [ "$1" -gt "$4" ]; then
+			export $2=$(($3-$1))
+		else
+			export $2=$(($3-$4))
+		fi
+	}
+
+    # Call the procedure
+	cpumaxfreq=`cat /sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq`
+	cpuuv_shift $CPU216MHZ CPU216UV 790 770
+	cpuuv_shift $CPU324MHZ CPU324UV 830 770
+	cpuuv_shift $CPU503MHZ CPU503UV 880 780
+	if [[ "${cpumaxfreq}" == "1216000" ]]; then
+		cpuuv_shift $CPU655MHZ CPU655UV 900 800
+	fi
+	cpuuv_shift $CPU800MHZ CPU800UV 930 820
+	cpuuv_shift $CPU1015MHZ CPU1015UV 1020 920
+	cpuuv_shift $CPU1100MHZ CPU1100UV 1055 1020
+	cpuuv_shift $CPU1216MHZ CPU1216UV 1155 1120
+	if [[ "${cpumaxfreq}" == "1408000" ]]; then
+		cpuuv_shift $CPU1408MHZ CPU1408UV 1255 1220
+	fi
+
+# Apply the UV values
+if [ "$cpumaxfreq" == "1216000" ]; then
+	echo "$date CPU max freq is $cpumaxfreq" >> $deflog
+	echo "$date Applying UV..." >> $deflog
+	echo "$CPU1216UV $CPU1100UV $CPU1015UV $CPU800UV $CPU655UV $CPU503UV $CPU324UV $CPU216UV" > /sys/devices/system/cpu/cpu0/cpufreq/UV_mV_table
+	echo "$date UV shift levels are set to: "`cat /sys/devices/system/cpu/cpu0/cpufreq/UV_mV_table` >> $deflog
+fi
+if [ "$cpumaxfreq" == "1408000" ]; then
+	echo "$date CPU max freq is $cpumaxfreq" >> $deflog
+	echo "$date Applying UV..." >> $deflog
+	echo "$CPU1408UV $CPU1216UV $CPU1100UV $CPU1015UV $CPU800UV $CPU503UV $CPU324UV $CPU216UV" > /sys/devices/system/cpu/cpu0/cpufreq/UV_mV_table
+	echo "$date UV shift levels are set to: "`cat /sys/devices/system/cpu/cpu0/cpufreq/UV_mV_table` >> $deflog
+fi
+}
+
+##################
+# Dalvik cleaner #
+##################
+dalvik_cleaner()
+{
+	mount -o remount,rw /system
+	mount -o remount,rw /data
+	DALVIK=dalviknotfound
+	echo "$date Starting Dalvik Cleaner" >> $deflog
+	echo "$date Checking where dalvik exists" >> $deflog
+	if [ -e "/data/dalvik-cache/system@framework@services.jar@classes.dex" ]; then
+		DALVIK=/data/dalvik-cache
+		echo "$date Dalvik found on Data" >> $deflog
+	fi
+
+	if [ "$DALVIK" != "dalviknotfound" ]; then
+		cd "$DALVIK"
+		echo "$date Checking Dex entries from /data/app" >> $deflog
+		for dex in data@app@*.dex; do
+			apk=`echo "$dex" | sed "s/data@app@//g" | sed "s/@classes.*//g"`
+			if [ ! -e "/data/app/$apk" ]; then
+				echo "$date Outdated dex found for $dex removing..." >> $deflog
+				rm $dex
+			fi
+		done
+		echo "$date Outdated dex not found/removed from /data/app" >> $deflog
+
+		echo "$date Checking Dex entries from /system/app" >> $deflog
+		for dex in system@app@*.dex; do
+			apk=`echo "$dex" | sed "s/system@app@//g" | sed "s/@classes.*//g"`
+				if [ ! -e "/system/app/$apk" ]; then
+					echo "$date Outdated dex found for $dex removing..." >> $deflog
+					rm $dex
+				fi
+		done
+		echo "$date Outdated dex not found/removed from /system/app" >> $deflog
+
+		echo "$date Checking Dex entries from /system/framework" >> $deflog
+		for dex in system@framework@*.dex; do
+			jar=`echo "$dex" | sed "s/system@framework@//g" | sed "s/@classes.*//g"`
+				if [ ! -e "/system/framework/$jar" ]; then
+					echo "$date Outdated dex found for $dex removing..." >> $deflog
+					rm $dex
+				fi
+		done
+		echo "$date Outdated dex not found/removed from /system/framework" >> $deflog
+	else
+		echo "$date No framework found, hopefully this is first boot" >> $deflog
+	fi
+	echo "$date Remount the system partition as read-only" >> $deflog
+	mount -o remount,ro /system
+	echo "$date Dalvik-Celaner completed succesfuly" >> $deflog
+}
+
+####################
+# SQLite defragger #
+####################
+sqlidefrag()
+{
+	echo "$date SQLite Defragger Start" >> $deflog
+	if [ -e /system/xbin/sqlite3 -o \
+		 -e /system/bin/sqlite3 ]; then
+		echo "$date SQLite3 binary found!" >> $deflog
+		echo "$date Starting defrag process..." >> $deflog
+			for i in `find /data -iname "*.db"`; do
+				/system/xbin/sqlite3 $i 'VACUUM;';
+			done
+		echo "$date Defrag process completed" >> $deflog
+	else
+		echo "$date WARNING: SQLite3 binary not found!" >> $deflog
+		echo "$date Skipping defrag process" >> $deflog
+	fi
+}
+
+#############
+# Spica OTF #
+#############
+spicaotf()
+{
+	echo "$date Spica OTF enabled" >> $deflog
+	echo "$date Checking Spica OTF kernel support..." >> $deflog
+	if [ -d  "/proc/spica" ]; then
+		echo "$date Spica OTF is supported by the kernel" >> $deflog
+		# Initialization & Boot time part
+		# AVP Freq
+		if [ "$AVP_FREQ" -gt "199999" -a "$AVP_FREQ" -lt "250001" ]; then
+			echo "$date AVP Freq within the acceptable range" >> $deflog
+			echo $AVP_FREQ > /proc/spica/avpfreq
+			echo "$date AVP Freq = "`cat /proc/spica/avpfreq` >> $deflog
+		else
+			echo "$date WARNING: Your AVP Freq is out of the safe range!" >> $deflog
+			echo "240000" > /proc/spica/avpfreq
+			echo "$date AVP Freq set to 240000 by default" >> $deflog
+		fi
+		# VDE Freq
+		if [ "$VDE_FREQ" -gt "599999" -a "$VDE_FREQ" -lt "700001" ]; then
+			echo "$date VDE Freq within the acceptable range" >> $deflog
+			echo $VDE_FREQ > /proc/spica/vdefreq
+			echo "$date VDE Freq = "`cat /proc/spica/vdefreq` >> $deflog
+		else
+			echo "$date WARNING: Your VDE Freq is out of the safe range!" >> $deflog
+			echo "650000" > /proc/spica/vdefreq
+			echo "$date VDE Freq set to 650000 by default" >> $deflog
+		fi
+		# GPU Freq
+		if [ "$GPU_FREQ" -gt "279999" -a "$GPU_FREQ" -lt "400001" ]; then
+			echo "$date GPU Freq within the acceptable range" >> $deflog
+			echo $GPU_FREQ > /proc/spica/gpufreq
+			echo "$date GPU Freq = "`cat /proc/spica/gpufreq` >> $deflog
+		else
+			echo "$date WARNING: Your GPU Freq is out of the safe range!" >> $deflog
+			echo "350000" > /proc/spica/gpufreq
+			echo "$date GPU Freq set to 350000 by default" >> $deflog
+		fi
+		# CPU1 activation threshold
+		if [ "$MIN_CPU1_ON" -gt "215999" -a "$MIN_CPU1_ON" -lt "1099999" ]; then
+			echo "$date CPU1 activation threshold freq within the acceptable range" >> $deflog
+			echo $MIN_CPU1_ON > /proc/spica/mincpu1on
+			echo "$date CPU1 activation threshold freq = "`cat /proc/spica/mincpu1on` >> $deflog
+		else
+			echo "$date WARNING: Your CPU1 activation threshold freq is out of the safe range!" >> $deflog
+			echo "655000" > /proc/spica/mincpu1on
+			echo "$date CPU1 activation threshold freq set to 655000 by default" >> $deflog
+		fi
+		# CPU1 deactivation threshold
+		if [ "$MAX_CPU1_OFF" -gt "215999" -a "$MAX_CPU1_OFF" -lt "1099999" ]; then
+			echo "$date CPU1 deactivation threshold freq within the acceptable range" >> $deflog
+			echo $MAX_CPU1_OFF > /proc/spica/maxcpu1off
+			echo "$date CPU1 deactivation threshold freq = "`cat /proc/spica/maxcpu1off` >> $deflog
+		else
+			echo "$date WARNING: Your CPU1 deactivation threshold freq is out of the safe range!" >> $deflog
+			echo "610000" > /proc/spica/maxcpu1off
+			echo "$date CPU1 deactivation threshold freq set to 610000 by default" >> $deflog
+		fi
+		# Suspend Core Voltage
+#		if [ "$SUSPEND_CORE_MV" -gt "599" -a "$SUSPEND_CORE_MV" -lt "1001" ]; then
+#			echo "$date SUSPENDED CORE VOLTAGE SUPPLY within the acceptable range" >> $deflog
+#			echo $SUSPEND_CORE_MV > /proc/spica/suspend_core_mv
+#			echo "$date SUSPENDED CORE VOLTAGE SUPPLY = "`cat /proc/spica/suspend_core_mv` >> $deflog
+#		else
+#			echo "$date WARNING: Your SUSPENDED CORE VOLTAGE SUPPLY is out of the safe range!" >> $deflog
+#			echo "1000" > /proc/spica/suspend_core_mv
+#			echo "$date SUSPENDED CORE VOLTAGE SUPPLY set to 1000 by default" >> $deflog
+#		fi
+		echo "1000" > /proc/spica/suspend_core_mv
+		echo "$date SUSPENDED CORE VOLTAGE SUPPLY set to 1000 for safety (for now...)" >> $deflog
+		# PowerSave flag Check
+		if [ "$POWERSAVE" -gt "-1" -a "$POWERSAVE" -lt "7" ]; then
+			echo "$date POWERSAVE flag within the acceptable range" >> $deflog
+			echo $POWERSAVE > /proc/spica/powersave
+			echo "$date POWERSAVE flag = "`cat /proc/spica/powersave` >> $deflog
+		else
+			echo "$date WARNING: Your POWERSAVE flag is out of the safe range!" >> $deflog
+			echo "0" > /proc/spica/powersave
+			echo "$date POWERSAVE flag set to 0 by default" >> $deflog
+		fi
+		# Nitro flag check
+		if [ "$ENABLE_NITRO" == "on" ]; then
+			if [ "$POWERSAVE" == "0" ]; then
+				echo "$date NITRO mode enabled! Battery drain is highly increased for sure!" >> $deflog
+				echo "1" > /proc/spica/nitros
+			else
+				echo "$date WARNING: You are enabled the NITRO mode, but also defined a powersave profile" >> $deflog
+				echo "$date This two is conflicted, so NITRO remain disabled!" >> $deflog
+				echo "0" > /proc/spica/nitros
+			fi
+		fi
+		# Screen OFF Max CPU Freq
+		if [ "$SCREEN_OFF_MAX_FREQ" -gt "215999" -a "$SCREEN_OFF_MAX_FREQ" -lt "999001" ]; then
+			echo "$date SCREEN OFF MAX CPU Freq within the acceptable range" >> $deflog
+			echo $SCREEN_OFF_MAX_FREQ > /proc/spica/screenoff_maxcpufreq
+			echo "$date SCREEN OFF MAX CPU Freq = "`cat /proc/spica/screenoff_maxcpufreq` >> $deflog
+		else
+			echo "$date WARNING: Your SCREEN OFF MAX CPU Freq is out of the safe range!" >> $deflog
+			echo "800000" > /proc/spica/screenoff_maxcpufreq
+			echo "$date SCREEN OFF MAX CPU Freq set to 800000 by default" >> $deflog
+		fi
+		# DDR2 MINIMUM FREQUENCY
+		if [ "$DDR2_MIN_KHZ" -gt "9999" -a "$DDR2_MIN_KHZ" -lt "50001" ]; then
+			echo "$date DDR2 MINIMUM FREQUENCY within the acceptable range" >> $deflog
+			echo $DDR2_MIN_KHZ > /proc/spica/ddr2_min_khz
+			echo "$date DDR2 MINIMUM FREQUENCY = "`cat /proc/spica/ddr2_min_khz` >> $deflog
+		else
+			echo "$date WARNING: Your DDR2 MINIMUM FREQUENCY is out of the safe range!" >> $deflog
+			echo "50000" > /proc/spica/ddr2_min_khz
+			echo "$date DDR2 MINIMUM FREQUENCY set to 50000 by default" >> $deflog
+		fi
+		# LPDDR2 MINIMUM FREQUENCY
+		if [ "$LPDDR2_MIN_KHZ" -gt "999" -a "$LPDDR2_MIN_KHZ" -lt "18001" ]; then
+			echo "$date LPDDR2 MINIMUM FREQUENCY within the acceptable range" >> $deflog
+			echo $LPDDR2_MIN_KHZ > /proc/spica/lpddr2_min_khz
+			echo "$date LPDDR2 MINIMUM FREQUENCY = "`cat /proc/spica/lpddr2_min_khz` >> $deflog
+		else
+			echo "$date WARNING: Your LPDDR2 MINIMUM FREQUENCY is out of the safe range!" >> $deflog
+			echo "18000" > /proc/spica/lpddr2_min_khz
+			echo "$date LPDDR2 MINIMUM FREQUENCY set to 18000 by default" >> $deflog
+		fi
+		# On The Fly part
+		if [ -d  "/proc/spica" ]; then
+			rm -rf /data/spica
+		fi
+		chmod 0755 /proc
+		chmod 0777 -R /proc/spica
+		ln -s /proc/spica /data/spica
+	else
+		echo "$date WARNING: Spica OTF is unsupported by this kernel!" >> $deflog
+	fi
+}
+
+#######################
+# Procedures end here #
+#######################
+
+sysctl -p /etc/sysctl.conf
+if [ "$ENABLE_LMK_TWEAK" == "on" ]; then
+	basic_mem_tweaks
+fi
+if [ "$ENABLE_NET_TWEAKS" == "on" ]; then
+	network_tweaks
+fi
+if [ "$ENABLE_VM_TWEAKS" == "on" ]; then
+	vm_tweaks
+fi
+if [ "$ENABLE_MOUNT_TWEAKS" == "on" ]; then
+	mount_tweaks
+fi
+if [ "$ENABLE_COMPCACHE" == "on" ]; then
+	ccache
+else
+	setprop persist.compcache.user 0
+	setprop persist.service.compcache 0
+fi
+if [ "$ENABLE_LOGGER" == "off" -a -e /dev/log/main ]; then
+	rm /dev/log/main
+fi
+if [ "$ENABLE_CPU_UNDERVOLT" == "on" ]; then
+	echo "$date CPU Undervolt enabled" >> $deflog
+	cpuuv
+else
+	echo "$date CPU Undervolt disabled, used the stock levels" >> $deflog
+fi
+if [ "$ENABLE_DALVIK_CLEANER" == "on" ]; then
+	dalvik_cleaner
+fi
+if [ "$ENABLE_SQLITE_DEFRAG" == "on" ]; then
+	sqlidefrag
+fi
+if [ "$ENABLE_SPICA_OTF" == "on" ]; then
+	spicaotf
+fi
+
+exit 1

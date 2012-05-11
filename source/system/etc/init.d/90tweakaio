@@ -2,7 +2,7 @@
 
 # LG Optimus 2X AIO init script v2.1.6
 # Copyright (c) by vadonka 2012
-TIMESTAMP=1335425681
+TIMESTAMP=1336727152
 date=`date +%Y.%m.%d-%H.%M.%S`
 
 # cleanup
@@ -71,6 +71,8 @@ CPU Undervolt Enabled=off
 
 Dalvik Cache Cleaner Enabled=off
 SQLite3 Defrag Enabled=off
+Vibrator Strength=3000
+# Accepted range: 1500-3700
 
 Spica OTF Tweaks Enabled=on
 
@@ -120,6 +122,15 @@ if [ -f /data/tweakaio/tweakaio.conf ]; then
 				echo "$date Add KSM enable/disable feature" >> $deflog
 				sed -i '/Memory Management Tweaks Enabled/a KSM Enabled=on' /data/tweakaio/tweakaio.conf
 			fi
+			VIBRAOK=`grep -c "Vibrator Strength" /data/tweakaio/tweakaio.conf`
+			if [[ "$VIBRAOK" == "0" ]]; then
+				echo "$date Updating config file..." >> $deflog
+				echo "$date Add Vibrator Strength feature" >> $deflog
+				sed -i '/SQLite3 Defrag Enabled/a Vibrator Strength=3000' /data/tweakaio/tweakaio.conf
+				sed -i '/Vibrator Strength/a # Accepted range: 1500-3700' /data/tweakaio/tweakaio.conf
+			fi
+			echo "$date Updating timestamp" >> $deflog
+			sed -i "s/$CONFTIME/$TIMESTAMP/g" /data/tweakaio/tweakaio.conf
 		fi
 	fi
 else
@@ -232,6 +243,12 @@ Defrag SQLite3 databases
 
 SQLITE_DEFRAG accepted values are: on, off
 Default is "off"
+
+VIBRATOR CONTROL:
+*****************
+You can adjust the vibrator strength
+Default is 3000
+Range 1500-3000
 
 SPICA OTF TWEAKS (great THX for SPICA for this!)
 ************************************************
@@ -354,6 +371,7 @@ export CPU1216MHZ=`grep "^1216 MHZ" $parfile | awk 'BEGIN {FS="="} {print $2}'`
 export CPU1408MHZ=`grep "^1408 MHZ" $parfile | awk 'BEGIN {FS="="} {print $2}'`
 export ENABLE_DALVIK_CLEANER=`grep "^Dalvik Cache Cleaner Enabled" $parfile | awk 'BEGIN {FS="="} {print $2}'`
 export ENABLE_SQLITE_DEFRAG=`grep "^SQLite3 Defrag Enabled" $parfile | awk 'BEGIN {FS="="} {print $2}'`
+export VIBRA_STR=`grep "^Vibrator Strength" $parfile | awk 'BEGIN {FS="="} {print $2}'`
 export ENABLE_SPICA_OTF=`grep "^Spica OTF Tweaks Enabled" $parfile | awk 'BEGIN {FS="="} {print $2}'`
 export AVP_FREQ=`grep "^AVP Frequency" $parfile | awk 'BEGIN {FS="="} {print $2}'`
 export VDE_FREQ=`grep "^VDE Frequency" $parfile | awk 'BEGIN {FS="="} {print $2}'`
@@ -771,6 +789,18 @@ sqlidefrag()
 	fi
 }
 
+#####################
+# Vibrator strength #
+#####################
+vibrastr()
+{
+	VIBRA_STROLD=`cat /sys/devices/virtual/misc/vibratorcontrol/vibrator_strength`
+	if [[ "$VIBRA_STR" -ne "$VIBRA_STROLD" ]]; then
+		echo "$date Adjusting vibrator strength to: $VIBRA_STR" >> $deflog
+		echo $VIBRA_STR > /sys/devices/virtual/misc/vibratorcontrol/vibrator_strength
+	fi
+}
+
 #############
 # Spica OTF #
 #############
@@ -935,6 +965,9 @@ fi
 if [ "$ENABLE_SQLITE_DEFRAG" == "on" ]; then
 	sqlidefrag
 fi
+
+	vibrastr
+
 if [ "$ENABLE_SPICA_OTF" == "on" ]; then
 	spicaotf
 fi

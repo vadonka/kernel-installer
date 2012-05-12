@@ -72,7 +72,7 @@ CPU Undervolt Enabled=off
 Dalvik Cache Cleaner Enabled=off
 SQLite3 Defrag Enabled=off
 Vibrator Strength=3000
-# Accepted range: 1500-3700
+# Accepted range: 1500-3600
 
 Spica OTF Tweaks Enabled=on
 
@@ -127,7 +127,7 @@ if [ -f /data/tweakaio/tweakaio.conf ]; then
 				echo "$date Updating config file..." >> $deflog
 				echo "$date Add Vibrator Strength feature" >> $deflog
 				sed -i '/SQLite3 Defrag Enabled/a Vibrator Strength=3000' /data/tweakaio/tweakaio.conf
-				sed -i '/Vibrator Strength/a # Accepted range: 1500-3700' /data/tweakaio/tweakaio.conf
+				sed -i '/Vibrator Strength/a # Accepted range: 1500-3600' /data/tweakaio/tweakaio.conf
 			fi
 			echo "$date Updating timestamp" >> $deflog
 			sed -i "s/$CONFTIME/$TIMESTAMP/g" /data/tweakaio/tweakaio.conf
@@ -248,7 +248,7 @@ VIBRATOR CONTROL:
 *****************
 You can adjust the vibrator strength
 Default is 3000
-Range 1500-3000
+Range 1500-3600
 
 SPICA OTF TWEAKS (great THX for SPICA for this!)
 ************************************************

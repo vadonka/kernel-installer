@@ -1,8 +1,8 @@
 #!/system/bin/sh
 
-# LG Optimus 2X AIO init script v2.1.6
+# LG Optimus 2X AIO init script v2.2.0
 # Copyright (c) by vadonka 2012
-TIMESTAMP=1336727152
+TIMESTAMP=1337023416
 date=`date +%Y.%m.%d-%H.%M.%S`
 
 # cleanup
@@ -60,21 +60,24 @@ IO Scheduler=sio
 
 CPU Undervolt Enabled=off
 # VOLTAGE LEVELS (in mV)
-216 MHZ=790
-324 MHZ=830
-503 MHZ=880
-655 MHZ=900
-800 MHZ=930
-1015 MHZ=1030
-1216 MHZ=1200
-1408 MHZ=1300
+216 MHZ=770
+324 MHZ=790
+456 MHZ=825
+608 MHZ=950
+816 MHZ=1025
+1000 MHZ=1100
+1200 MHZ=1150
+1408 MHZ=1250
 
 Dalvik Cache Cleaner Enabled=off
 SQLite3 Defrag Enabled=off
 Vibrator Strength=3000
 # Accepted range: 1500-3600
 
-Spica OTF Tweaks Enabled=on
+OTF Tweaks Enabled=on
+
+NITRO Enabled=off
+# Override all of this settings above!
 
 AVP Frequency=240000
 # Accepted range: 200000-280000
@@ -82,28 +85,23 @@ AVP Frequency=240000
 VDE Frequency=650000
 # Accepted range: 600000-700000
 
-GPU Frequency=300000
-# Accepted range: 280000-350000
+GPU Frequency=350000
+# Accepted range: 300000-400000
 
-Min CPU1 On Frequency=655000
-# Accepted range: 216000-1100000
+Min CPU1 On Frequency=816000
+# Accepted range: 216000-1000000
 
-Max CPU1 Off Frequency=610000
-# Accepted range: 216000-1100000
+CPU1 On Delay Time=2000
+# Accepted range: 300-2500
 
-PowerSave Mode=0
-# Accepted range: 0-6
+Max CPU1 Off Frequency=860000
+# Accepted range: 216000-1000000
 
-NITRO Enabled=off
+CPU1 Off Delay Time=1000
+# Accepted range: 300-2000
 
 Screen Off Max Frequency=324000
-# Accepted range: 216000-999000
-
-DDR2 Min KHz=50000
-# Accepted range: 10000-50000
-
-LPDDR2 Min KHz=18000
-# Accepted range: 1000-18000
+# Accepted range: 324000-816000
 
 EOF
 }
@@ -115,22 +113,7 @@ if [ -f /data/tweakaio/tweakaio.conf ]; then
 	else
 		CONFTIME=`grep TIMESTAMP /data/tweakaio/tweakaio.conf | awk 'BEGIN {FS=" "} {print $3}'`
 		if [[ "$CONFTIME" -ne "$TIMESTAMP" ]]; then
-			# check new features
-			KSMOK=`grep -c "KSM Enabled" /data/tweakaio/tweakaio.conf`
-			if [[ "$KSMOK" == "0" ]]; then
-				echo "$date Updating config file..." >> $deflog
-				echo "$date Add KSM enable/disable feature" >> $deflog
-				sed -i '/Memory Management Tweaks Enabled/a KSM Enabled=on' /data/tweakaio/tweakaio.conf
-			fi
-			VIBRAOK=`grep -c "Vibrator Strength" /data/tweakaio/tweakaio.conf`
-			if [[ "$VIBRAOK" == "0" ]]; then
-				echo "$date Updating config file..." >> $deflog
-				echo "$date Add Vibrator Strength feature" >> $deflog
-				sed -i '/SQLite3 Defrag Enabled/a Vibrator Strength=3000' /data/tweakaio/tweakaio.conf
-				sed -i '/Vibrator Strength/a # Accepted range: 1500-3600' /data/tweakaio/tweakaio.conf
-			fi
-			echo "$date Updating timestamp" >> $deflog
-			sed -i "s/$CONFTIME/$TIMESTAMP/g" /data/tweakaio/tweakaio.conf
+			pfcreate
 		fi
 	fi
 else
@@ -261,7 +244,6 @@ Any values above 650000 will OC it w/o increasing supplying voltage.
 For safety concern no values except in range will be accepted.
 
 On-the-fly GPUFREQ change support.
-Responsible file is located in /proc/spica/gpufreq.
 Default value is 340000.
 Supported Values in between 280000-400000.
 Any values above 300000 will OC it w/o increasing supplying voltage.
@@ -269,58 +251,21 @@ For safety concern no values except in range will be accepted.
 
 On-the-fly MINCPU1ON freq change support.
 Means during upword scaling at what freq 2nd core will be activated.
-Responsible file is located in /proc/spica/mincpu1on.
 Default value is what you see after boot.
 Supported Values in between 216000-1100000.
 For safety concern no values except in range will be accepted.
 
 On-the-fly MAXCPU1OFF freq change support.
 Means at what max freq 2nd core will be off during returning phaze.
-Responsible file is located in /proc/spica/maxcpu1off.
 Default value is what you see after boot.
 Supported Values in between 216000-1100000.
 For safety concern no values except in range will be accepted.
 
 On-the-fly MaxScreenOffFreq support.
 Means During screen off what will be the max freq.
-Responsible file is located in /proc/spica/screenoff_maxcpufreq.
 Default value is what you see after boot.
 Supported Values in between 216000-999000.
 For safety concern no values except in range will be accepted.
-
-On-the-fly DDR2 MINIMUM FREQUENCY support.
-It's theminimum frequency of DDR2(SDRAM).
-Responsible file is located in /proc/spica/ddr2_min_khz.
-Supported Values in between 10000-50000.
-Default value is 50000.
-For safety concern no values except in range will be accepted.
-
-On-the-fly LPDDR2 MINIMUM FREQUENCY support.
-It's theminimum frequency of LPDDR2.
-Responsible file is located in /proc/spica/lpddr2_min_khz.
-Supported Values in between 1000-18000.
-Default value is 18000.
-For safety concern no values except in range will be accepted.
-
-On-the-fly SUSPENDED CORE VOLTAGE SUPPLY support.
-It's theminimum frequency of CORE VOLTAGE WHEN Core is in suspend state.
-Responsible file is located in /proc/spica/suspend_core_mv.
-Supported Values in between 600-1000.
-Default value is 1000.
-For safety concern no values except in range will be accepted.
-
-Dynamic On-The-Fly 'powersave' profile.
-Which accepts value from '0' to '6'.
-During 'powersave' kernel smartly adjust various thresholds of voltage to lower possible values.
-"0' value means disable(Defult)
-"1" light powersave
-"2" moderate powersave
-"3" aggressive powersave
-"4" Use Profile "1" during only when screen is off
-"5" Use Profile "2" during only when screen is off
-"6" Use Profile "3" during only ehrn screen is off
-(POWERSAVE doesnt touch UV).
-Responsible file is located in /proc/spica/powersave.
 
 Dynamic On-The-Fly "Nitros" -"Performance" mode.
 It accepts two values:
@@ -328,7 +273,6 @@ It accepts two values:
 "1" Enable. (on)
 During "Nitros" Profile Kernel sets max fail-safe values
 (It doesnt touch OC).
-Responsible file is located in /proc/spica/nitros.
 EOF
 }
 
@@ -363,26 +307,25 @@ export SCHEDULER=`grep "^IO Scheduler" $parfile | awk 'BEGIN {FS="="} {print $2}
 export ENABLE_CPU_UNDERVOLT=`grep "^CPU Undervolt Enabled" $parfile | awk 'BEGIN {FS="="} {print $2}'`
 export CPU216MHZ=`grep "^216 MHZ" $parfile | awk 'BEGIN {FS="="} {print $2}'`
 export CPU324MHZ=`grep "^324 MHZ" $parfile | awk 'BEGIN {FS="="} {print $2}'`
-export CPU503MHZ=`grep "^503 MHZ" $parfile | awk 'BEGIN {FS="="} {print $2}'`
-export CPU655MHZ=`grep "^655 MHZ" $parfile | awk 'BEGIN {FS="="} {print $2}'`
-export CPU800MHZ=`grep "^800 MHZ" $parfile | awk 'BEGIN {FS="="} {print $2}'`
-export CPU1015MHZ=`grep "^1015 MHZ" $parfile | awk 'BEGIN {FS="="} {print $2}'`
-export CPU1216MHZ=`grep "^1216 MHZ" $parfile | awk 'BEGIN {FS="="} {print $2}'`
+export CPU503MHZ=`grep "^456 MHZ" $parfile | awk 'BEGIN {FS="="} {print $2}'`
+export CPU655MHZ=`grep "^608 MHZ" $parfile | awk 'BEGIN {FS="="} {print $2}'`
+export CPU800MHZ=`grep "^816 MHZ" $parfile | awk 'BEGIN {FS="="} {print $2}'`
+export CPU1015MHZ=`grep "^1000 MHZ" $parfile | awk 'BEGIN {FS="="} {print $2}'`
+export CPU1216MHZ=`grep "^1200 MHZ" $parfile | awk 'BEGIN {FS="="} {print $2}'`
 export CPU1408MHZ=`grep "^1408 MHZ" $parfile | awk 'BEGIN {FS="="} {print $2}'`
 export ENABLE_DALVIK_CLEANER=`grep "^Dalvik Cache Cleaner Enabled" $parfile | awk 'BEGIN {FS="="} {print $2}'`
 export ENABLE_SQLITE_DEFRAG=`grep "^SQLite3 Defrag Enabled" $parfile | awk 'BEGIN {FS="="} {print $2}'`
 export VIBRA_STR=`grep "^Vibrator Strength" $parfile | awk 'BEGIN {FS="="} {print $2}'`
-export ENABLE_SPICA_OTF=`grep "^Spica OTF Tweaks Enabled" $parfile | awk 'BEGIN {FS="="} {print $2}'`
+export ENABLE_OTF=`grep "^OTF Tweaks Enabled" $parfile | awk 'BEGIN {FS="="} {print $2}'`
 export AVP_FREQ=`grep "^AVP Frequency" $parfile | awk 'BEGIN {FS="="} {print $2}'`
 export VDE_FREQ=`grep "^VDE Frequency" $parfile | awk 'BEGIN {FS="="} {print $2}'`
 export GPU_FREQ=`grep "^GPU Frequency" $parfile | awk 'BEGIN {FS="="} {print $2}'`
 export MIN_CPU1_ON=`grep "^Min CPU1 On Frequency" $parfile | awk 'BEGIN {FS="="} {print $2}'`
+export CPU1_ON_DELAY=`grep "^CPU1 On Delay Time" $parfile | awk 'BEGIN {FS="="} {print $2}'`
 export MAX_CPU1_OFF=`grep "^Max CPU1 Off Frequency" $parfile | awk 'BEGIN {FS="="} {print $2}'`
-export POWERSAVE=`grep "^PowerSave Mode" $parfile | awk 'BEGIN {FS="="} {print $2}'`
+export CPU1_OFF_DELAY=`grep "^CPU1 Off Delay Time" $parfile | awk 'BEGIN {FS="="} {print $2}'`
 export ENABLE_NITRO=`grep "^NITRO Enabled" $parfile | awk 'BEGIN {FS="="} {print $2}'`
 export SCREEN_OFF_MAX_FREQ=`grep "^Screen Off Max Frequency" $parfile | awk 'BEGIN {FS="="} {print $2}'`
-export DDR2_MIN_KHZ=`grep "^DDR2 Min KHz" $parfile | awk 'BEGIN {FS="="} {print $2}'`
-export LPDDR2_MIN_KHZ=`grep "^LPDDR2 Min KHz" $parfile | awk 'BEGIN {FS="="} {print $2}'`
 }
 
 if [ -f /data/tweakaio/tweakaio.conf ]; then
@@ -699,19 +642,19 @@ cpuuv()
 
     # Call the procedure
 	cpumaxfreq=`cat /sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq`
-	cpuuv_shift $CPU216MHZ CPU216UV 790 770
-	cpuuv_shift $CPU324MHZ CPU324UV 830 780
-	cpuuv_shift $CPU503MHZ CPU503UV 880 800
-	cpuuv_shift $CPU655MHZ CPU655UV 900 820
-	cpuuv_shift $CPU800MHZ CPU800UV 930 850
-	cpuuv_shift $CPU1015MHZ CPU1015UV 1030 950
-	cpuuv_shift $CPU1216MHZ CPU1216UV 1200 1150
-	cpuuv_shift $CPU1408MHZ CPU1408UV 1300 1250
+	cpuuv_shift $CPU216MHZ CPU216UV 770 770
+	cpuuv_shift $CPU324MHZ CPU324UV 790 770
+	cpuuv_shift $CPU456MHZ CPU503UV 825 800
+	cpuuv_shift $CPU608MHZ CPU655UV 950 850
+	cpuuv_shift $CPU816MHZ CPU800UV 1025 950
+	cpuuv_shift $CPU1000MHZ CPU1015UV 1100 1050
+	cpuuv_shift $CPU1200MHZ CPU1216UV 1150 1150
+	cpuuv_shift $CPU1408MHZ CPU1408UV 1250 1250
 
 # Apply the UV values
 	echo "$date CPU max freq is $cpumaxfreq" >> $deflog
 	echo "$date Applying UV..." >> $deflog
-	echo "$CPU1408UV $CPU1216UV $CPU1015UV $CPU800UV $CPU655UV $CPU503UV $CPU324UV $CPU216UV" > /sys/devices/system/cpu/cpu0/cpufreq/UV_mV_table
+	echo "$CPU1408UV $CPU1200UV $CPU1000UV $CPU816UV $CPU608UV $CPU456UV $CPU324UV $CPU216UV" > /sys/devices/system/cpu/cpu0/cpufreq/UV_mV_table
 	echo "$date UV shift levels are set to: "`cat /sys/devices/system/cpu/cpu0/cpufreq/UV_mV_table` >> $deflog
 }
 
@@ -806,121 +749,103 @@ vibrastr()
 #############
 spicaotf()
 {
-	echo "$date Spica OTF enabled" >> $deflog
-	echo "$date Checking Spica OTF kernel support..." >> $deflog
-	if [ -d  "/proc/spica" ]; then
-		echo "$date Spica OTF is supported by the kernel" >> $deflog
+	echo "$date OTF enabled" >> $deflog
+	echo "$date Checking OTF kernel support..." >> $deflog
+	if [ -d  "/sys/devices/virtual/misc/avpcontrol"  -a \
+	     -d  "/sys/devices/virtual/misc/vdecontrol"  -a \
+	     -d  "/sys/devices/virtual/misc/gpucontrol"  -a \
+	     -d  "/sys/devices/virtual/misc/cpu1control" -a \
+	     -d  "/sys/devices/virtual/misc/scroffmaxcontrol" ]; then
+		echo "$date OTF is supported by the kernel" >> $deflog
 		# Initialization & Boot time part
 		# AVP Freq
 		if [ "$AVP_FREQ" -gt "199999" -a "$AVP_FREQ" -lt "280001" ]; then
 			echo "$date AVP Freq within the acceptable range" >> $deflog
-			echo $AVP_FREQ > /proc/spica/avpfreq
-			echo "$date AVP Freq = "`cat /proc/spica/avpfreq` >> $deflog
+			echo $AVP_FREQ > /sys/class/misc/avpcontrol/avpfreq
+			echo "$date AVP Freq = "`cat /sys/class/misc/avpcontrol/avpfreq` >> $deflog
 		else
 			echo "$date WARNING: Your AVP Freq is out of the safe range!" >> $deflog
-			echo "240000" > /proc/spica/avpfreq
+			echo "240000" > /sys/class/misc/avpcontrol/avpfreq
 			echo "$date AVP Freq set to 240000 by default" >> $deflog
 		fi
 		# VDE Freq
 		if [ "$VDE_FREQ" -gt "599999" -a "$VDE_FREQ" -lt "700001" ]; then
 			echo "$date VDE Freq within the acceptable range" >> $deflog
-			echo $VDE_FREQ > /proc/spica/vdefreq
-			echo "$date VDE Freq = "`cat /proc/spica/vdefreq` >> $deflog
+			echo $VDE_FREQ > /sys/class/misc/vdecontrol/vdefreq
+			echo "$date VDE Freq = "`cat /sys/class/misc/vdecontrol/vdefreq` >> $deflog
 		else
 			echo "$date WARNING: Your VDE Freq is out of the safe range!" >> $deflog
-			echo "650000" > /proc/spica/vdefreq
+			echo "650000" > /sys/class/misc/vdecontrol/vdefreq
 			echo "$date VDE Freq set to 650000 by default" >> $deflog
 		fi
 		# GPU Freq
-		if [ "$GPU_FREQ" -gt "279999" -a "$GPU_FREQ" -lt "350001" ]; then
+		if [ "$GPU_FREQ" -gt "299999" -a "$GPU_FREQ" -lt "400001" ]; then
 			echo "$date GPU Freq within the acceptable range" >> $deflog
-			echo $GPU_FREQ > /proc/spica/gpufreq
-			echo "$date GPU Freq = "`cat /proc/spica/gpufreq` >> $deflog
+			echo $GPU_FREQ > /sys/class/misc/gpucontrol/gpufreq
+			echo "$date GPU Freq = "`cat /sys/class/misc/gpucontrol/gpufreq` >> $deflog
 		else
 			echo "$date WARNING: Your GPU Freq is out of the safe range!" >> $deflog
-			echo "350000" > /proc/spica/gpufreq
+			echo "350000" > /sys/class/misc/gpucontrol/gpufreq
 			echo "$date GPU Freq set to 350000 by default" >> $deflog
 		fi
-		# CPU1 activation threshold
-		if [ "$MIN_CPU1_ON" -gt "215999" -a "$MIN_CPU1_ON" -lt "1099999" ]; then
-			echo "$date CPU1 activation threshold freq within the acceptable range" >> $deflog
-			echo $MIN_CPU1_ON > /proc/spica/mincpu1on
-			echo "$date CPU1 activation threshold freq = "`cat /proc/spica/mincpu1on` >> $deflog
-		else
-			echo "$date WARNING: Your CPU1 activation threshold freq is out of the safe range!" >> $deflog
-			echo "655000" > /proc/spica/mincpu1on
-			echo "$date CPU1 activation threshold freq set to 655000 by default" >> $deflog
-		fi
 		# CPU1 deactivation threshold
-		if [ "$MAX_CPU1_OFF" -gt "215999" -a "$MAX_CPU1_OFF" -lt "1099999" ]; then
+		if [ "$MIN_CPU1_ON" -gt "215999" -a "$MIN_CPU1_ON" -lt "1000001" ]; then
 			echo "$date CPU1 deactivation threshold freq within the acceptable range" >> $deflog
-			echo $MAX_CPU1_OFF > /proc/spica/maxcpu1off
-			echo "$date CPU1 deactivation threshold freq = "`cat /proc/spica/maxcpu1off` >> $deflog
+			echo $MIN_CPU1_ON > /sys/class/misc/cpu1control/onminkhz
+			echo "$date CPU1 deactivation threshold freq = "`cat /sys/class/misc/cpu1control/onminkhz` >> $deflog
 		else
 			echo "$date WARNING: Your CPU1 deactivation threshold freq is out of the safe range!" >> $deflog
-			echo "610000" > /proc/spica/maxcpu1off
-			echo "$date CPU1 deactivation threshold freq set to 610000 by default" >> $deflog
+			echo "816000" > /sys/class/misc/cpu1control/onminkhz
+			echo "$date CPU1 deactivation threshold freq set to 816000 by default" >> $deflog
 		fi
-		# PowerSave flag Check
-		if [ "$POWERSAVE" -gt "-1" -a "$POWERSAVE" -lt "7" ]; then
-			echo "$date POWERSAVE flag within the acceptable range" >> $deflog
-			echo $POWERSAVE > /proc/spica/powersave
-			echo "$date POWERSAVE flag = "`cat /proc/spica/powersave` >> $deflog
+		
+		if [ "$CPU1_ON_DELAY" -gt "299" -a "$CPU1_ON_DELAY" -lt "2501" ]; then
+			echo "$date CPU1 deactivation delay within the acceptable range" >> $deflog
+			echo $CPU1_ON_DELAY > /sys/class/misc/cpu1control/ondelay
+			echo "$date CPU1 deactivation delay = "`cat /sys/class/misc/cpu1control/ondelay` >> $deflog
 		else
-			echo "$date WARNING: Your POWERSAVE flag is out of the safe range!" >> $deflog
-			echo "0" > /proc/spica/powersave
-			echo "$date POWERSAVE flag set to 0 by default" >> $deflog
+			echo "$date WARNING: Your CPU1 deactivation delay is out of the safe range!" >> $deflog
+			echo "2000" > /sys/class/misc/cpu1control/ondelay
+			echo "$date CPU1 deactivation delay set to 2000 by default" >> $deflog
+		fi
+		
+		
+		# CPU1 activation threshold
+		if [ "$MAX_CPU1_OFF" -gt "215999" -a "$MAX_CPU1_OFF" -lt "1000001" ]; then
+			echo "$date CPU1 activation threshold freq within the acceptable range" >> $deflog
+			echo $MAX_CPU1_OFF > /sys/class/misc/cpu1control/offmaxkhz
+			echo "$date CPU1 activation threshold freq = "`cat /sys/class/misc/cpu1control/offmaxkhz` >> $deflog
+		else
+			echo "$date WARNING: Your CPU1 activation threshold freq is out of the safe range!" >> $deflog
+			echo "860000" > /sys/class/misc/cpu1control/offmaxkhz
+			echo "$date CPU1 activation threshold freq set to 860000 by default" >> $deflog
+		fi
+		if [ "$CPU1_OFF_DELAY" -gt "299" -a "$CPU1_OFF_DELAY" -lt "2001" ]; then
+			echo "$date CPU1 activation delay within the acceptable range" >> $deflog
+			echo $CPU1_OFF_DELAY > /sys/class/misc/cpu1control/offdelay
+			echo "$date CPU1 activation delay = "`cat /sys/class/misc/cpu1control/offdelay` >> $deflog
+		else
+			echo "$date WARNING: Your CPU1 activation delay is out of the safe range!" >> $deflog
+			echo "1000" > /sys/class/misc/cpu1control/offdelay
+			echo "$date CPU1 activation delay set to 1000 by default" >> $deflog
 		fi
 		# Nitro flag check
 		if [ "$ENABLE_NITRO" == "on" ]; then
-			if [ "$POWERSAVE" == "0" ]; then
-				echo "$date NITRO mode enabled! Battery drain is highly increased for sure!" >> $deflog
-				echo "1" > /proc/spica/nitros
-			else
-				echo "$date WARNING: You are enabled the NITRO mode, but also defined a powersave profile" >> $deflog
-				echo "$date This two is conflicted, so NITRO remain disabled!" >> $deflog
-				echo "0" > /proc/spica/nitros
-			fi
+			echo "$date NITRO mode enabled! Battery drain is highly increased for sure!" >> $deflog
+			echo "1" > /sys/class/misc/nitrocontrol/nitro
 		fi
 		# Screen OFF Max CPU Freq
-		if [ "$SCREEN_OFF_MAX_FREQ" -gt "215999" -a "$SCREEN_OFF_MAX_FREQ" -lt "999001" ]; then
+		if [ "$SCREEN_OFF_MAX_FREQ" -gt "323999" -a "$SCREEN_OFF_MAX_FREQ" -lt "816001" ]; then
 			echo "$date SCREEN OFF MAX CPU Freq within the acceptable range" >> $deflog
-			echo $SCREEN_OFF_MAX_FREQ > /proc/spica/screenoff_maxcpufreq
-			echo "$date SCREEN OFF MAX CPU Freq = "`cat /proc/spica/screenoff_maxcpufreq` >> $deflog
+			echo $SCREEN_OFF_MAX_FREQ > /sys/class/misc/scroffmaxcontrol/scroffmaxfreq
+			echo "$date SCREEN OFF MAX CPU Freq = "`cat /sys/class/misc/scroffmaxcontrol/scroffmaxfreq` >> $deflog
 		else
 			echo "$date WARNING: Your SCREEN OFF MAX CPU Freq is out of the safe range!" >> $deflog
-			echo "800000" > /proc/spica/screenoff_maxcpufreq
-			echo "$date SCREEN OFF MAX CPU Freq set to 800000 by default" >> $deflog
+			echo "324000" > /sys/class/misc/scroffmaxcontrol/scroffmaxfreq
+			echo "$date SCREEN OFF MAX CPU Freq set to 324000 by default" >> $deflog
 		fi
-		# DDR2 MINIMUM FREQUENCY
-		if [ "$DDR2_MIN_KHZ" -gt "9999" -a "$DDR2_MIN_KHZ" -lt "50001" ]; then
-			echo "$date DDR2 MINIMUM FREQUENCY within the acceptable range" >> $deflog
-			echo $DDR2_MIN_KHZ > /proc/spica/ddr2_min_khz
-			echo "$date DDR2 MINIMUM FREQUENCY = "`cat /proc/spica/ddr2_min_khz` >> $deflog
-		else
-			echo "$date WARNING: Your DDR2 MINIMUM FREQUENCY is out of the safe range!" >> $deflog
-			echo "50000" > /proc/spica/ddr2_min_khz
-			echo "$date DDR2 MINIMUM FREQUENCY set to 50000 by default" >> $deflog
-		fi
-		# LPDDR2 MINIMUM FREQUENCY
-		if [ "$LPDDR2_MIN_KHZ" -gt "999" -a "$LPDDR2_MIN_KHZ" -lt "18001" ]; then
-			echo "$date LPDDR2 MINIMUM FREQUENCY within the acceptable range" >> $deflog
-			echo $LPDDR2_MIN_KHZ > /proc/spica/lpddr2_min_khz
-			echo "$date LPDDR2 MINIMUM FREQUENCY = "`cat /proc/spica/lpddr2_min_khz` >> $deflog
-		else
-			echo "$date WARNING: Your LPDDR2 MINIMUM FREQUENCY is out of the safe range!" >> $deflog
-			echo "18000" > /proc/spica/lpddr2_min_khz
-			echo "$date LPDDR2 MINIMUM FREQUENCY set to 18000 by default" >> $deflog
-		fi
-		# On The Fly part
-		if [ -d  "/proc/spica" ]; then
-			rm -rf /data/spica
-		fi
-		chmod 0755 /proc
-		chmod 0777 -R /proc/spica
-		ln -s /proc/spica /data/spica
 	else
-		echo "$date WARNING: Spica OTF is unsupported by this kernel!" >> $deflog
+		echo "$date WARNING: OTF is unsupported by this kernel!" >> $deflog
 	fi
 }
 
@@ -968,7 +893,7 @@ fi
 
 	vibrastr
 
-if [ "$ENABLE_SPICA_OTF" == "on" ]; then
+if [ "$ENABLE_OTF" == "on" ]; then
 	spicaotf
 fi
 

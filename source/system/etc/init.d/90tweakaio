@@ -107,6 +107,9 @@ Screen Off Max Frequency=324000
 # Accepted range: 324000-816000
 
 EOF
+
+# fix parfile permission
+chmod 0777 /data/tweakaio/tweakaio.conf
 }
 
 pfsize=`stat -c %s /data/tweakaio/tweakaio.conf`
@@ -288,13 +291,8 @@ else
 	helpcreate
 fi
 
-# fix parfile permission
-chmod 0777 /data/tweakaio/tweakaio.conf
-
 readvar()
 {
-export parfile="/data/tweakaio/tweakaio.conf"
-export RESET=`grep "^Reset Settings" $parfile | awk 'BEGIN {FS="="} {print $2}'`
 export SCRIPT_ENABLE=`grep "^Script Enabled" $parfile | awk 'BEGIN {FS="="} {print $2}'`
 export ENABLE_LOGGER=`grep "^Logger Enabled" $parfile | awk 'BEGIN {FS="="} {print $2}'`
 export ENABLE_LMK_TWEAK=`grep "^LMK Tweaks Enabled" $parfile | awk 'BEGIN {FS="="} {print $2}'`
@@ -332,7 +330,11 @@ export ENABLE_NITRO=`grep "^NITRO Enabled" $parfile | awk 'BEGIN {FS="="} {print
 export SCREEN_OFF_MAX_FREQ=`grep "^Screen Off Max Frequency" $parfile | awk 'BEGIN {FS="="} {print $2}'`
 }
 
+export parfile="/data/tweakaio/tweakaio.conf"
 if [ -f /data/tweakaio/tweakaio.conf ]; then
+	# fix parfile permission
+	chmod 0777 /data/tweakaio/tweakaio.conf
+	RESET=`grep "^Reset Settings" $parfile | awk 'BEGIN {FS="="} {print $2}'`
 	if [ "$RESET" == "on" ]; then
 		echo "$date Reset settings to factory defaults..." >> $deflog
 		pfcreate

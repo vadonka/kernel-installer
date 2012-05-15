@@ -1,8 +1,8 @@
 #!/system/bin/sh
 
-# LG Optimus 2X AIO init script v2.2.1
+# LG Optimus 2X AIO init script v2.2.2
 # Copyright (c) by vadonka 2012
-TIMESTAMP=1337060644
+TIMESTAMP=1337078536
 date=`date +%Y.%m.%d-%H.%M.%S`
 
 # cleanup
@@ -26,6 +26,8 @@ echo "#########################################" >> $deflog
 echo "## LG Optimus 2X tweak script log file ##" >> $deflog
 echo "#########################################" >> $deflog
 echo -e "##Kernel version: "`uname -r`"\n" >> $deflog
+
+export parfile="/data/tweakaio/tweakaio.conf"
 
 pfcreate()
 {
@@ -112,12 +114,12 @@ EOF
 chmod 0777 /data/tweakaio/tweakaio.conf
 }
 
-pfsize=`stat -c %s /data/tweakaio/tweakaio.conf`
+pfsize=`ls -la /data/tweakaio/tweakaio.conf | awk -F " " '{print $5}'`
 if [ -f /data/tweakaio/tweakaio.conf ]; then
 	if [ "$pfsize" == "0" ]; then
 		pfcreate
 	else
-		CONFTIME=`grep TIMESTAMP /data/tweakaio/tweakaio.conf | awk 'BEGIN {FS=" "} {print $3}'`
+		CONFTIME=`grep TIMESTAMP /data/tweakaio/tweakaio.conf | awk -F " " '{ print $3 }'`
 		if [[ "$CONFTIME" -ne "$TIMESTAMP" ]]; then
 			pfcreate
 		fi
@@ -282,59 +284,51 @@ During "Nitros" Profile Kernel sets max fail-safe values
 EOF
 }
 
-helpsize=`stat -c %s /data/tweakaio/tweakaio_hlp.txt`
-if [ -f /data/tweakaio/tweakaio_hlp.txt ]; then
-	if [ "$helpsize" == "0" ]; then
-		helpcreate
-	fi
-else
-	helpcreate
-fi
+helpcreate
 
 readvar()
 {
-export SCRIPT_ENABLE=`grep "^Script Enabled" $parfile | awk 'BEGIN {FS="="} {print $2}'`
-export ENABLE_LOGGER=`grep "^Logger Enabled" $parfile | awk 'BEGIN {FS="="} {print $2}'`
-export ENABLE_LMK_TWEAK=`grep "^LMK Tweaks Enabled" $parfile | awk 'BEGIN {FS="="} {print $2}'`
-export LMK_MODE=`grep "^LMK Mode" $parfile | awk 'BEGIN {FS="="} {print $2}'`
-export ENABLE_NET_TWEAKS=`grep "^Network Tweaks Enabled" $parfile | awk 'BEGIN {FS="="} {print $2}'`
-export ENABLE_VM_TWEAKS=`grep "^Memory Management Tweaks Enabled" $parfile | awk 'BEGIN {FS="="} {print $2}'`
-export ENABLE_KSM=`grep "^KSM Enabled" $parfile | awk 'BEGIN {FS="="} {print $2}'`
-export ENABLE_COMPCACHE=`grep "^Compcache Enabled" $parfile | awk 'BEGIN {FS="="} {print $2}'`
-export COMPCACHE_SIZE=`grep "^Compcache Size" $parfile | awk 'BEGIN {FS="="} {print $2}'`
-export COMPCACHE_RATIO=`grep "^Compcache Ratio" $parfile | awk 'BEGIN {FS="="} {print $2}'`
-export CACHE_DROP_INTERVAL=`grep "^Cache Drop Interval Time" $parfile | awk 'BEGIN {FS="="} {print $2}'`
-export ENABLE_MOUNT_TWEAKS=`grep "^Mount Tweaks Enabled" $parfile | awk 'BEGIN {FS="="} {print $2}'`
-export SCHEDULER=`grep "^IO Scheduler" $parfile | awk 'BEGIN {FS="="} {print $2}'`
-export ENABLE_CPU_UNDERVOLT=`grep "^CPU Undervolt Enabled" $parfile | awk 'BEGIN {FS="="} {print $2}'`
-export CPU216MHZ=`grep "^216 MHZ" $parfile | awk 'BEGIN {FS="="} {print $2}'`
-export CPU324MHZ=`grep "^324 MHZ" $parfile | awk 'BEGIN {FS="="} {print $2}'`
-export CPU503MHZ=`grep "^456 MHZ" $parfile | awk 'BEGIN {FS="="} {print $2}'`
-export CPU655MHZ=`grep "^608 MHZ" $parfile | awk 'BEGIN {FS="="} {print $2}'`
-export CPU800MHZ=`grep "^816 MHZ" $parfile | awk 'BEGIN {FS="="} {print $2}'`
-export CPU1015MHZ=`grep "^1000 MHZ" $parfile | awk 'BEGIN {FS="="} {print $2}'`
-export CPU1216MHZ=`grep "^1200 MHZ" $parfile | awk 'BEGIN {FS="="} {print $2}'`
-export CPU1408MHZ=`grep "^1408 MHZ" $parfile | awk 'BEGIN {FS="="} {print $2}'`
-export ENABLE_DALVIK_CLEANER=`grep "^Dalvik Cache Cleaner Enabled" $parfile | awk 'BEGIN {FS="="} {print $2}'`
-export ENABLE_SQLITE_DEFRAG=`grep "^SQLite3 Defrag Enabled" $parfile | awk 'BEGIN {FS="="} {print $2}'`
-export VIBRA_STR=`grep "^Vibrator Strength" $parfile | awk 'BEGIN {FS="="} {print $2}'`
-export ENABLE_OTF=`grep "^OTF Tweaks Enabled" $parfile | awk 'BEGIN {FS="="} {print $2}'`
-export AVP_FREQ=`grep "^AVP Frequency" $parfile | awk 'BEGIN {FS="="} {print $2}'`
-export VDE_FREQ=`grep "^VDE Frequency" $parfile | awk 'BEGIN {FS="="} {print $2}'`
-export GPU_FREQ=`grep "^GPU Frequency" $parfile | awk 'BEGIN {FS="="} {print $2}'`
-export MIN_CPU1_ON=`grep "^Min CPU1 On Frequency" $parfile | awk 'BEGIN {FS="="} {print $2}'`
-export CPU1_ON_DELAY=`grep "^CPU1 On Delay Time" $parfile | awk 'BEGIN {FS="="} {print $2}'`
-export MAX_CPU1_OFF=`grep "^Max CPU1 Off Frequency" $parfile | awk 'BEGIN {FS="="} {print $2}'`
-export CPU1_OFF_DELAY=`grep "^CPU1 Off Delay Time" $parfile | awk 'BEGIN {FS="="} {print $2}'`
-export ENABLE_NITRO=`grep "^NITRO Enabled" $parfile | awk 'BEGIN {FS="="} {print $2}'`
-export SCREEN_OFF_MAX_FREQ=`grep "^Screen Off Max Frequency" $parfile | awk 'BEGIN {FS="="} {print $2}'`
+export SCRIPT_ENABLE=`grep "^Script Enabled" $parfile | awk -F "=" '{ print $2 }'`
+export ENABLE_LOGGER=`grep "^Logger Enabled" $parfile | awk -F "=" '{ print $2 }'`
+export ENABLE_LMK_TWEAK=`grep "^LMK Tweaks Enabled" $parfile | awk -F "=" '{ print $2 }'`
+export LMK_MODE=`grep "^LMK Mode" $parfile | awk -F "=" '{ print $2 }'`
+export ENABLE_NET_TWEAKS=`grep "^Network Tweaks Enabled" $parfile | awk -F "=" '{ print $2 }'`
+export ENABLE_VM_TWEAKS=`grep "^Memory Management Tweaks Enabled" $parfile | awk -F "=" '{ print $2 }'`
+export ENABLE_KSM=`grep "^KSM Enabled" $parfile | awk -F "=" '{ print $2 }'`
+export ENABLE_COMPCACHE=`grep "^Compcache Enabled" $parfile | awk -F "=" '{ print $2 }'`
+export COMPCACHE_SIZE=`grep "^Compcache Size" $parfile | awk -F "=" '{ print $2 }'`
+export COMPCACHE_RATIO=`grep "^Compcache Ratio" $parfile | awk -F "=" '{ print $2 }'`
+export CACHE_DROP_INTERVAL=`grep "^Cache Drop Interval Time" $parfile | awk -F "=" '{ print $2 }'`
+export ENABLE_MOUNT_TWEAKS=`grep "^Mount Tweaks Enabled" $parfile | awk -F "=" '{ print $2 }'`
+export SCHEDULER=`grep "^IO Scheduler" $parfile | awk -F "=" '{ print $2 }'`
+export ENABLE_CPU_UNDERVOLT=`grep "^CPU Undervolt Enabled" $parfile | awk -F "=" '{ print $2 }'`
+export CPU216MHZ=`grep "^216 MHZ" $parfile | awk -F "=" '{ print $2 }'`
+export CPU324MHZ=`grep "^324 MHZ" $parfile | awk -F "=" '{ print $2 }'`
+export CPU503MHZ=`grep "^456 MHZ" $parfile | awk -F "=" '{ print $2 }'`
+export CPU655MHZ=`grep "^608 MHZ" $parfile | awk -F "=" '{ print $2 }'`
+export CPU800MHZ=`grep "^816 MHZ" $parfile | awk -F "=" '{ print $2 }'`
+export CPU1015MHZ=`grep "^1000 MHZ" $parfile | awk -F "=" '{ print $2 }'`
+export CPU1216MHZ=`grep "^1200 MHZ" $parfile | awk -F "=" '{ print $2 }'`
+export CPU1408MHZ=`grep "^1408 MHZ" $parfile | awk -F "=" '{ print $2 }'`
+export ENABLE_DALVIK_CLEANER=`grep "^Dalvik Cache Cleaner Enabled" $parfile | awk -F "=" '{ print $2 }'`
+export ENABLE_SQLITE_DEFRAG=`grep "^SQLite3 Defrag Enabled" $parfile | awk -F "=" '{ print $2 }'`
+export VIBRA_STR=`grep "^Vibrator Strength" $parfile | awk -F "=" '{ print $2 }'`
+export ENABLE_OTF=`grep "^OTF Tweaks Enabled" $parfile | awk -F "=" '{ print $2 }'`
+export AVP_FREQ=`grep "^AVP Frequency" $parfile | awk -F "=" '{ print $2 }'`
+export VDE_FREQ=`grep "^VDE Frequency" $parfile | awk -F "=" '{ print $2 }'`
+export GPU_FREQ=`grep "^GPU Frequency" $parfile | awk -F "=" '{ print $2 }'`
+export MIN_CPU1_ON=`grep "^Min CPU1 On Frequency" $parfile | awk -F "=" '{ print $2 }'`
+export CPU1_ON_DELAY=`grep "^CPU1 On Delay Time" $parfile | awk -F "=" '{ print $2 }'`
+export MAX_CPU1_OFF=`grep "^Max CPU1 Off Frequency" $parfile | awk -F "=" '{ print $2 }'`
+export CPU1_OFF_DELAY=`grep "^CPU1 Off Delay Time" $parfile | awk -F "=" '{ print $2 }'`
+export ENABLE_NITRO=`grep "^NITRO Enabled" $parfile | awk -F "=" '{ print $2 }'`
+export SCREEN_OFF_MAX_FREQ=`grep "^Screen Off Max Frequency" $parfile | awk -F "=" '{ print $2 }'`
 }
 
-export parfile="/data/tweakaio/tweakaio.conf"
 if [ -f /data/tweakaio/tweakaio.conf ]; then
 	# fix parfile permission
 	chmod 0777 /data/tweakaio/tweakaio.conf
-	RESET=`grep "^Reset Settings" $parfile | awk 'BEGIN {FS="="} {print $2}'`
+	RESET=`grep "^Reset Settings" $parfile | awk -F "=" '{ print $2 }'`
 	if [ "$RESET" == "on" ]; then
 		echo "$date Reset settings to factory defaults..." >> $deflog
 		pfcreate
@@ -375,7 +369,7 @@ sysctl_proc()
 ##########################################
 # Basic Memory Management and LMK Tweaks #
 ##########################################
-TOTALMEM=`free | grep Mem | awk 'BEGIN { FS = " " } ; { print $2 }'`
+TOTALMEM=`free | grep Mem | awk -F " " '{ print $2 }'`
 
 basic_mem_tweaks()
 {
@@ -655,8 +649,8 @@ cpuuv()
 	cpuuv_shift $CPU216MHZ CPU216UV 770 770
 	cpuuv_shift $CPU324MHZ CPU324UV 790 770
 	cpuuv_shift $CPU456MHZ CPU503UV 825 800
-	cpuuv_shift $CPU608MHZ CPU655UV 950 850
-	cpuuv_shift $CPU816MHZ CPU800UV 1025 950
+	cpuuv_shift $CPU608MHZ CPU655UV 950 900
+	cpuuv_shift $CPU816MHZ CPU800UV 1025 970
 	cpuuv_shift $CPU1000MHZ CPU1015UV 1100 1050
 	cpuuv_shift $CPU1200MHZ CPU1216UV 1150 1150
 	cpuuv_shift $CPU1408MHZ CPU1408UV 1250 1250

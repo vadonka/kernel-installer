@@ -646,14 +646,14 @@ cpuuv()
 
     # Call the procedure
 	cpumaxfreq=`cat /sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq`
-	cpuuv_shift $CPU216MHZ CPU216UV 770 770
+	cpuuv_shift $CPU216MHZ CPU216UV 775 770
 	cpuuv_shift $CPU324MHZ CPU324UV 790 770
 	cpuuv_shift $CPU456MHZ CPU503UV 825 800
-	cpuuv_shift $CPU608MHZ CPU655UV 950 900
-	cpuuv_shift $CPU816MHZ CPU800UV 1025 970
-	cpuuv_shift $CPU1000MHZ CPU1015UV 1100 1050
-	cpuuv_shift $CPU1200MHZ CPU1216UV 1150 1150
-	cpuuv_shift $CPU1408MHZ CPU1408UV 1250 1250
+	cpuuv_shift $CPU608MHZ CPU655UV 875 850
+	cpuuv_shift $CPU816MHZ CPU800UV 950 925
+	cpuuv_shift $CPU1000MHZ CPU1015UV 1050 1025
+	cpuuv_shift $CPU1200MHZ CPU1216UV 1150 1125
+	cpuuv_shift $CPU1408MHZ CPU1408UV 1250 1225
 
 # Apply the UV values
 	echo "$date CPU max freq is $cpumaxfreq" >> $deflog

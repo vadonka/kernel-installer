@@ -116,7 +116,7 @@ fi
 
 helpcreate()
 {
-echo "$date WARNING! Help file not found or invalid! Creating now..." >> $deflog
+echo "$date Help file updating..." >> $deflog
 rm -rf /data/tweakaio/tweakaio_hlp.txt
 cat > /data/tweakaio/tweakaio_hlp.txt <<EOF
 SCRIPT MODE:

@@ -2,7 +2,7 @@
 
 # LG Optimus 2X AIO init script v2.2.2
 # Copyright (c) by vadonka 2012
-TIMESTAMP=1337078536
+TIMESTAMP=1337271028
 date=`date +%Y.%m.%d-%H.%M.%S`
 
 # cleanup
@@ -63,17 +63,6 @@ Mount Tweaks Enabled=on
 # example: deadline cfq sio
 IO Scheduler=sio
 
-CPU Undervolt Enabled=off
-# VOLTAGE LEVELS (in mV)
-216 MHZ=770
-324 MHZ=790
-456 MHZ=825
-608 MHZ=950
-816 MHZ=1025
-1000 MHZ=1100
-1200 MHZ=1150
-1408 MHZ=1250
-
 Dalvik Cache Cleaner Enabled=off
 SQLite3 Defrag Enabled=off
 Vibrator Strength=3000
@@ -104,9 +93,6 @@ Max CPU1 Off Frequency=860000
 
 CPU1 Off Delay Time=1000
 # Accepted range: 300-2000
-
-Screen Off Max Frequency=324000
-# Accepted range: 324000-816000
 
 EOF
 
@@ -207,17 +193,6 @@ Default is "on"
 SCHEDULER accepted values are: noop, deadline, cfq, bfq, sio
 Default is "bfq"
 
-CPU UNDERVOLT:
-**************
-You can define the voltage levels.
-The init script limited the minimum voltage levels for safety reason,
-so you cant undervolt too much.
-The first value is the CPU freq level, the second is the voltage level
-
-CPU undervolt is disabled by default
-CPU_UV accepted values are: on, off
-Default is "off"
-
 DALVIK CACHE CLEANER:
 *********************
 Clean the outdated dalvik cache entries.
@@ -301,15 +276,6 @@ export COMPCACHE_RATIO=`grep "^Compcache Ratio" $parfile | awk -F "=" '{ print $
 export CACHE_DROP_INTERVAL=`grep "^Cache Drop Interval Time" $parfile | awk -F "=" '{ print $2 }'`
 export ENABLE_MOUNT_TWEAKS=`grep "^Mount Tweaks Enabled" $parfile | awk -F "=" '{ print $2 }'`
 export SCHEDULER=`grep "^IO Scheduler" $parfile | awk -F "=" '{ print $2 }'`
-export ENABLE_CPU_UNDERVOLT=`grep "^CPU Undervolt Enabled" $parfile | awk -F "=" '{ print $2 }'`
-export CPU216MHZ=`grep "^216 MHZ" $parfile | awk -F "=" '{ print $2 }'`
-export CPU324MHZ=`grep "^324 MHZ" $parfile | awk -F "=" '{ print $2 }'`
-export CPU503MHZ=`grep "^456 MHZ" $parfile | awk -F "=" '{ print $2 }'`
-export CPU655MHZ=`grep "^608 MHZ" $parfile | awk -F "=" '{ print $2 }'`
-export CPU800MHZ=`grep "^816 MHZ" $parfile | awk -F "=" '{ print $2 }'`
-export CPU1015MHZ=`grep "^1000 MHZ" $parfile | awk -F "=" '{ print $2 }'`
-export CPU1216MHZ=`grep "^1200 MHZ" $parfile | awk -F "=" '{ print $2 }'`
-export CPU1408MHZ=`grep "^1408 MHZ" $parfile | awk -F "=" '{ print $2 }'`
 export ENABLE_DALVIK_CLEANER=`grep "^Dalvik Cache Cleaner Enabled" $parfile | awk -F "=" '{ print $2 }'`
 export ENABLE_SQLITE_DEFRAG=`grep "^SQLite3 Defrag Enabled" $parfile | awk -F "=" '{ print $2 }'`
 export VIBRA_STR=`grep "^Vibrator Strength" $parfile | awk -F "=" '{ print $2 }'`
@@ -322,7 +288,6 @@ export CPU1_ON_DELAY=`grep "^CPU1 On Delay Time" $parfile | awk -F "=" '{ print 
 export MAX_CPU1_OFF=`grep "^Max CPU1 Off Frequency" $parfile | awk -F "=" '{ print $2 }'`
 export CPU1_OFF_DELAY=`grep "^CPU1 Off Delay Time" $parfile | awk -F "=" '{ print $2 }'`
 export ENABLE_NITRO=`grep "^NITRO Enabled" $parfile | awk -F "=" '{ print $2 }'`
-export SCREEN_OFF_MAX_FREQ=`grep "^Screen Off Max Frequency" $parfile | awk -F "=" '{ print $2 }'`
 }
 
 if [ -f /data/tweakaio/tweakaio.conf ]; then
@@ -627,41 +592,6 @@ mount_tweaks()
 	echo 2048 > /sys/devices/virtual/bdi/179:0/read_ahead_kb
 }
 
-######################
-#   CPU undervolt    #
-######################
-cpuuv()
-{
-	cpuuv_shift()
-	{
-		# Define UV shift
-		if [ -z "$1" ]; then
-			export $2="0"
-			elif [ "$1" -gt "$4" ]; then
-			export $2=$(($3-$1))
-		else
-			export $2=$(($3-$4))
-		fi
-	}
-
-    # Call the procedure
-	cpumaxfreq=`cat /sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq`
-	cpuuv_shift $CPU216MHZ CPU216UV 775 770
-	cpuuv_shift $CPU324MHZ CPU324UV 790 770
-	cpuuv_shift $CPU456MHZ CPU503UV 825 800
-	cpuuv_shift $CPU608MHZ CPU655UV 875 850
-	cpuuv_shift $CPU816MHZ CPU800UV 950 925
-	cpuuv_shift $CPU1000MHZ CPU1015UV 1050 1025
-	cpuuv_shift $CPU1200MHZ CPU1216UV 1150 1125
-	cpuuv_shift $CPU1408MHZ CPU1408UV 1250 1225
-
-# Apply the UV values
-	echo "$date CPU max freq is $cpumaxfreq" >> $deflog
-	echo "$date Applying UV..." >> $deflog
-	echo "$CPU1408UV $CPU1200UV $CPU1000UV $CPU816UV $CPU608UV $CPU456UV $CPU324UV $CPU216UV" > /sys/devices/system/cpu/cpu0/cpufreq/UV_mV_table
-	echo "$date UV shift levels are set to: "`cat /sys/devices/system/cpu/cpu0/cpufreq/UV_mV_table` >> $deflog
-}
-
 ##################
 # Dalvik cleaner #
 ##################
@@ -748,9 +678,9 @@ vibrastr()
 	fi
 }
 
-#############
-# Spica OTF #
-#############
+#######
+# OTF #
+#######
 spicaotf()
 {
 	echo "$date OTF enabled" >> $deflog
@@ -758,8 +688,7 @@ spicaotf()
 	if [ -d  "/sys/devices/virtual/misc/avpcontrol"  -a \
 	     -d  "/sys/devices/virtual/misc/vdecontrol"  -a \
 	     -d  "/sys/devices/virtual/misc/gpucontrol"  -a \
-	     -d  "/sys/devices/virtual/misc/cpu1control" -a \
-	     -d  "/sys/devices/virtual/misc/scroffmaxcontrol" ]; then
+	     -d  "/sys/devices/virtual/misc/cpu1control" ]; then
 		echo "$date OTF is supported by the kernel" >> $deflog
 		# Initialization & Boot time part
 		# AVP Freq
@@ -838,16 +767,6 @@ spicaotf()
 			echo "$date NITRO mode enabled! Battery drain is highly increased for sure!" >> $deflog
 			echo "1" > /sys/class/misc/nitrocontrol/nitro
 		fi
-		# Screen OFF Max CPU Freq
-		if [ "$SCREEN_OFF_MAX_FREQ" -gt "323999" -a "$SCREEN_OFF_MAX_FREQ" -lt "816001" ]; then
-			echo "$date SCREEN OFF MAX CPU Freq within the acceptable range" >> $deflog
-			echo $SCREEN_OFF_MAX_FREQ > /sys/class/misc/scroffmaxcontrol/scroffmaxfreq
-			echo "$date SCREEN OFF MAX CPU Freq = "`cat /sys/class/misc/scroffmaxcontrol/scroffmaxfreq` >> $deflog
-		else
-			echo "$date WARNING: Your SCREEN OFF MAX CPU Freq is out of the safe range!" >> $deflog
-			echo "324000" > /sys/class/misc/scroffmaxcontrol/scroffmaxfreq
-			echo "$date SCREEN OFF MAX CPU Freq set to 324000 by default" >> $deflog
-		fi
 	else
 		echo "$date WARNING: OTF is unsupported by this kernel!" >> $deflog
 	fi
@@ -881,12 +800,6 @@ else
 fi
 if [ "$ENABLE_LOGGER" == "off" -a -e /dev/log/main ]; then
 	rm /dev/log/main
-fi
-if [ "$ENABLE_CPU_UNDERVOLT" == "on" ]; then
-	echo "$date CPU Undervolt enabled" >> $deflog
-	cpuuv
-else
-	echo "$date CPU Undervolt disabled, used the stock levels" >> $deflog
 fi
 if [ "$ENABLE_DALVIK_CLEANER" == "on" ]; then
 	dalvik_cleaner

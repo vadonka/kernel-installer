@@ -246,7 +246,9 @@ if [ "$cyanogen" == "1" ]; then
 else
 	ui_print "-Installing AIO tweak"
 	cp -f /tmp/system/etc/init.d/90tweakaio /system/etc/init.d/
+	cp -f /tmp/system/etc/init.d/99overclock /system/etc/init.d/
 	$chmod 0755 /system/etc/init.d/90tweakaio
+	$chmod 0755 /system/etc/init.d/99overclock
 fi
 ui_print "-Installing zram_stats binary"
 cp -f /tmp/system/xbin/zram_stats /system/xbin/zram_stats

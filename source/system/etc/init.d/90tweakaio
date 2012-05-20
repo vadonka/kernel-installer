@@ -1,8 +1,8 @@
 #!/system/bin/sh
 
-# LG Optimus 2X AIO init script v2.2.3
+# LG Optimus 2X AIO init script v2.2.4
 # Copyright (c) by vadonka 2012
-TIMESTAMP=1337328296
+TIMESTAMP=1337529354
 date=`date +%Y.%m.%d-%H.%M.%S`
 
 # cleanup
@@ -67,12 +67,6 @@ Dalvik Cache Cleaner Enabled=off
 SQLite3 Defrag Enabled=off
 Vibrator Strength=3000
 # Accepted range: 1500-3600
-
-OverClock Level=stock
-# Accepted values: stock, loc, hoc
-# stock (1000Mhz)
-# loc (1216Mhz)
-# hoc (1408Mhz)
 
 OTF Tweaks Enabled=on
 

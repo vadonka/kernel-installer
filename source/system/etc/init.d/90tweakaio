@@ -1,6 +1,6 @@
 #!/system/bin/sh
 
-# LG Optimus 2X AIO init script v2.2.4
+# LG Optimus 2X AIO init script v2.2.5
 # Copyright (c) by vadonka 2012
 TIMESTAMP=1337529354
 date=`date +%Y.%m.%d-%H.%M.%S`
@@ -379,7 +379,6 @@ fi
 ##################
 network_tweaks()
 {
-	# Updated, thx for Zeppelinrox
 	sysctl_proc net.ipv4.ip_no_pmtu_disc 0
 	sysctl_proc net.ipv4.tcp_ecn 0
 	sysctl_proc net.ipv4.tcp_timestamps 0
@@ -428,7 +427,6 @@ network_tweaks()
 	sysctl_proc net.core.netdev_max_backlog 262144
 	sysctl_proc net.core.somaxconn 262144
 	sysctl_proc net.core.optmem_max 20480
-	#sysctl_proc net.core.bpf_jit_enable 1
 	sysctl_proc net.unix.max_dgram_qlen 50
 }
 
@@ -440,33 +438,12 @@ vm_tweaks()
 	# Disable normalized sleeper
 	mount -t debugfs none /sys/kernel/debug
 	echo NO_NORMALIZED_SLEEPER > /sys/kernel/debug/sched_features
-	# Memory management, updated thx for Zeppelinrox
-	etweak /proc/sys/vm/oom_kill_allocating_task 0
-	etweak /proc/sys/vm/oom_dump_tasks 1
-	etweak /proc/sys/vm/panic_on_oom 0
-	etweak /proc/sys/vm/laptop_mode 0
-	etweak /proc/sys/vm/block_dump 0
-	etweak /proc/sys/vm/swappiness 50
-	etweak /proc/sys/kernel/msgmni 2048
-	etweak /proc/sys/kernel/msgmax 64000
-	etweak /proc/sys/kernel/shmmax 268435456
-	etweak /proc/sys/vm/min_free_kbytes 10240
-	etweak /proc/sys/vm/vfs_cache_pressure 10
-	etweak /proc/sys/vm/overcommit_memory 1
-	etweak /proc/sys/vm/page-cluster 3
-	etweak /proc/sys/vm/min_free_order_shift 4
 	etweak /proc/sys/vm/dirty_writeback_centisecs 2000
 	etweak /proc/sys/vm/dirty_expire_centisecs 1000
 	etweak /proc/sys/vm/dirty_ratio 90
 	etweak /proc/sys/vm/dirty_background_ratio 5
-	etweak /proc/sys/vm/mmap_min_addr 32768
-	etweak /proc/sys/fs/lease-break-time 10
-	etweak /proc/sys/fs/file-max 65536
+	etweak /proc/sys/vm/mmap_min_addr 4096
 	etweak /sys/devices/system/cpu/sched_mc_power_savings 1
-	sysctl_proc kernel.panic 30
-	sysctl_proc kernel.panic_on_oops 0
-	sysctl_proc kernel.sched_child_runs_first 0
-	sysctl_proc kernel.threads-max 5000
 }
 
 ksm()
@@ -572,23 +549,8 @@ mount_tweaks()
 	busybox mount -o remount,rw,noauto_da_alloc /system /system
 	busybox mount -o remount,rw,noatime,noauto_da_alloc,nosuid,nodev,nodiratime,barrier=0,nobh /data /data
 	busybox mount -o remount,rw,noatime,noauto_da_alloc,nosuid,nodev,nodiratime,barrier=0,nobh /cache /cache
-	# Updated IO tweaks, thx for Zeppelinrox
-	m0()
-	{
-		etweak /sys/block/$1/queue/rotational 0
-		etweak /sys/block/$1/queue/optimal_io_size 1024
-		etweak /sys/block/$1/queue/read_ahead_kb 256
-		etweak /sys/block/$1/queue/iostats 0
-		etweak /sys/block/$1/queue/iosched/low_latency 1
-		etweak /sys/block/$1/queue/iosched/back_seek_penalty 1
-		etweak /sys/block/$1/queue/iosched/back_seek_max 1000000000
-		etweak /sys/block/$1/queue/iosched/slice_idle 0
-		etweak /sys/block/$1/queue/iosched/fifo_batch 1
-		etweak /sys/block/$1/queue/nr_requests 512
-		etweak /sys/block/$1/queue/scheduler $SCHEDULER
-	}
-	m0 mmcblk0
-	m0 mmcblk1
+	etweak /sys/block/mmcblk0/queue/scheduler $SCHEDULER
+	etweak /sys/block/mmcblk1/queue/scheduler $SCHEDULER
 	echo 2048 > /sys/devices/virtual/bdi/179:0/read_ahead_kb
 }
 
@@ -681,7 +643,7 @@ vibrastr()
 #######
 # OTF #
 #######
-spicaotf()
+otf()
 {
 	echo "$date OTF enabled" >> $deflog
 	echo "$date Checking OTF kernel support..." >> $deflog
@@ -811,7 +773,7 @@ fi
 	vibrastr
 
 if [ "$ENABLE_OTF" == "on" ]; then
-	spicaotf
+	otf
 fi
 
 exit 1

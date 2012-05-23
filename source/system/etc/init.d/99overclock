@@ -1,0 +1,40 @@
+#!/system/bin/sh
+
+# LG Optimus 2X TweakAIO SysFS interface OverClock management init script v1.0.0
+# Copyright (c) by vadonka 2012
+
+date=`date +%Y.%m.%d-%H.%M.%S`
+deflog="/data/tweakaio/logs/tweakaio.log"
+parfile="/data/tweakaio/tweakaio.conf"
+
+OverClock Level=stock
+# Accepted values: stock, loc, hoc
+
+pfsize=`ls -la $parfile | awk -F " " '{print $5}'`
+if [ -f $parfile ]; then
+	if [ "$pfsize" == "0" ]; then
+		echo "$date ERROR: Config file invalid" >> $deflog
+		exit 0
+	fi
+fi
+
+OCLEVEL=`grep "^OverClock Level" $parfile | awk -F "=" '{ print $2 }'`
+
+if [ "$OCLEVEL" == "stock" ]; then
+	echo "$date OC Level: Stock, max CPU Freq Set to 1000Mhz" >> $deflog
+	echo "216000 324000 456000 608000 760000 816000 912000 1000000" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_frequencies
+	echo "216000 324000 456000 608000 760000 816000 912000 1000000" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_step_freqs
+	echo "770 780 800 850 900 950 1000 1050" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_step_volts
+elif [ "$OCLEVEL" == "loc" ]; then
+	echo "$date OC Level: Light, max CPU Freq Set to 1216Mhz" >> $deflog
+	echo "216000 324000 456000 608000 816000 1000000 1100000 1216000" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_frequencies
+	echo "216000 324000 456000 608000 816000 1000000 1100000 1216000" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_step_freqs
+	echo "770 780 800 850 950 1050 1100 1150" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_step_volts
+elif [ "$OCLEVEL" == "hoc" ]; then
+	echo "$date OC Level: High, max CPU Freq Set to 1408Mhz" >> $deflog
+	echo "216000 324000 456000 608000 816000 1000000 1216000 1408000" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_frequencies
+	echo "216000 324000 456000 608000 816000 1000000 1216000 1408000" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_step_freqs
+	echo "770 780 800 850 950 1050 1150 1250" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_step_volts
+else
+	echo "$date OC level: High, max CPU Freq Set to 1408Mhz" >> $deflog
+fi

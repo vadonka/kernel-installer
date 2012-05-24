@@ -156,22 +156,53 @@ ui_print ""
 ui_print "Flashing the kernel"
 ui_print "*******************"
 if [ -e "/sdcard/etana.conf" ]; then
+	# Ramhack
 	hack=`$grep "^ramhack" /sdcard/etana.conf | $awk 'BEGIN {FS="="} {print $2}'`
 	if [ "$hack" == "0" -o "$hack" == "32" -o "$hack" == "48" -o "$hack" == "64" -o "$hack" == "80" -o "$hack" == "96" ]; then
 		ui_print "-ramhack size is $hack MB"
 	else
-		ui_print "-invalid/undefined ramhack size!"
 		ui_print "-ramhack is disabled by default"
 		hack=0
 	fi
+	# AVP Freq
+	avpfreq=`$grep "^avpfreq" /sdcard/etana.conf | $awk 'BEGIN {FS="="} {print $2}'`
+	if [ "$avpfreq" -gt "199999" -a "$avpfreq" -lt "280001" ]; then
+		ui_print "-AVP freq=$avpfreq"
+	else
+		avpfreq=240000
+		ui_print "-AVP freq=$avpfreq"
+	fi
+	# GPU Freq
+	gpufreq=`$grep "^gpufreq" /sdcard/etana.conf | $awk 'BEGIN {FS="="} {print $2}'`
+	if [ "$gpufreq" -gt "299999" -a "$gpufreq" -lt "366001" ]; then
+		ui_print "-GPU freq=$gpufreq"
+	else
+		gpufreq=333000
+		ui_print "-GPU freq=$gpufreq"
+	fi
+	# VDE Freq
+	vdefreq=`$grep "^vdefreq" /sdcard/etana.conf | $awk 'BEGIN {FS="="} {print $2}'`
+	if [ "$vdefreq" -gt "599999" -a "$vdefreq" -lt "700001" ]; then
+		ui_print "-VDE freq=$vdefreq"
+	else
+		vdefreq=650000
+		ui_print "-VDE freq=$vdefreq"
+	fi
 else
 	ui_print "-kernel config file not found..."
-	ui_print "-ramhack is disabled by default"
+	ui_print "-use default values"
+	ui_print "--ramhack disabled"
+	ui_print "--AVP freq=240000"
+	ui_print "--GPU freq=333000"
+	ui_print "--VDE freq=650000"
 	hack=0
+	avpfreq=240000
+	gpufreq=333000
+	vdefreq=650000
 fi
 ui_print "-building the new kernel..."
 $chmod 0777 $bd/mkbootimg
-$bd/mkbootimg --kernel $bd/zImage --ramdisk $bd/initrd.img --cmdline "mem=$((383+$hack))M@0M nvmem=$((128-$hack))M@$((384+$hack))M loglevel=0 muic_state=1 lpj=9994240 CRC=3010002a8e458d7 vmalloc=256M brdrev=1.0 video=tegrafb console=ttyS0,115200n8 usbcore.old_scheme_first=1 tegraboot=sdmmc tegrapart=recovery:35e00:2800:800,linux:34700:1000:800,mbr:400:200:800,system:600:2bc00:800,cache:2c200:8000:800,misc:34200:400:800,userdata:38700:c0000:800 androidboot.hardware=p990 avpfreq=240000 gpufreq=300000 vdefreq=650000" -o $bd/boot.img --base 0x10000000
+$bd/mkbootimg --kernel $bd/zImage --ramdisk $bd/initrd.img --cmdline "mem=$((383+$hack))M@0M nvmem=$((128-$hack))M@$((384+$hack))M loglevel=0 muic_state=1 lpj=9994240 CRC=3010002a8e458d7 vmalloc=256M brdrev=1.0 video=tegrafb console=ttyS0,115200n8 usbcore.old_scheme_first=1 tegraboot=sdmmc tegrapart=recovery:35e00:2800:800,linux:34700:1000:800,mbr:400:200:800,system:600:2bc00:800,cache:2c200:8000:800,misc:34200:400:800,userdata:38700:c0000:800 androidboot.hardware=p990 avpfreq=$avpfreq gpufreq=$gpufreq vdefreq=$vdefreq" -o $bd/boot.img --base 0x10000000
 if [ "$?" -ne 0 -o ! -f $bd/boot.img ]; then
     fatal "ERROR: Packing kernel failed!"
 else

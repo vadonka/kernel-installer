@@ -641,10 +641,7 @@ otf()
 {
 	echo "$date OTF enabled" >> $deflog
 	echo "$date Checking OTF kernel support..." >> $deflog
-	if [ -d  "/sys/devices/virtual/misc/avpcontrol"  -a \
-	     -d  "/sys/devices/virtual/misc/vdecontrol"  -a \
-	     -d  "/sys/devices/virtual/misc/gpucontrol"  -a \
-	     -d  "/sys/devices/virtual/misc/cpu1control" ]; then
+	if [ -d "/sys/devices/virtual/misc/cpu1control" ]; then
 		echo "$date OTF is supported by the kernel" >> $deflog
 		# Initialization & Boot time part
 		# CPU1 deactivation threshold

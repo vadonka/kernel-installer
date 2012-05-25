@@ -22,10 +22,16 @@ if [ -f $complog ]; then
 fi
 touch $complog
 
+carveout_size=`cat /proc/cmdline | tr ' ' '\n' | grep ^nvmem | awk -F '=' '{print $2}' | awk -F '@' '{print $1}' | sed -e s/M//`
+
 echo "#########################################" >> $deflog
 echo "## LG Optimus 2X tweak script log file ##" >> $deflog
 echo "#########################################" >> $deflog
-echo -e "##Kernel version: "`uname -r`"\n" >> $deflog
+echo "##Kernel version: "`uname -r` >> $deflog
+echo "##AVP Freq: "`cat /sys/class/misc/avpinfo/avpfreq`"Khz" >> $deflog
+echo "##GPU Freq: "`cat /sys/class/misc/gpuinfo/gpufreq`"Khz" >> $deflog
+echo "##VDE Freq: "`cat /sys/class/misc/vdeinfo/vdefreq`"Khz" >> $deflog
+echo -e "##RAMhack size: $((128-$carveout_size))MB\n" >> $deflog
 
 export parfile="/data/tweakaio/tweakaio.conf"
 

@@ -308,10 +308,10 @@ fi
 ui_print "-Installing Kernel image tools"
 cp -f /tmp/system/xbin/mkbootimg /system/xbin/mkbootimg
 cp -f /tmp/system/xbin/unpackbootimg /system/xbin/unpackbootimg
-cp -f /tmp/system/xbin/rh /system/xbin/rh
+cp -f /tmp/system/xbin/otf /system/xbin/otf
 $chmod 0755 /system/xbin/mkbootimg
 $chmod 0755 /system/xbin/unpackbootimg
-$chmod 0755 /system/xbin/rh
+$chmod 0755 /system/xbin/otf
 ui_print "-Checking bash..."
 bash_location=`$find /system -type f -name bash`
 if [ ! -f $bash_location ]; then

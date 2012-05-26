@@ -114,8 +114,8 @@ while [ $set_done = 0 ]; do
 	echo "3. Change GPU Freq"
 	echo "4. Change VDE Freq"
 	echo ""
-	echo "5. Done"
-	echo "6. Exit program"
+	echo "5. Apply settings"
+	echo "6. Exit program without apply"
 	echo ""
 	echo -n "Please enter an option [1 - 6]: "
 	read opt

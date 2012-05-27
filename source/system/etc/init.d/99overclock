@@ -6,8 +6,8 @@
 #### if you want to use custom range and volts then set this to yes
 custom="no"
 # if you want to use custom range you can adjust the freq and voltage levels here.
-# accepted freq values: 216000 312000 324000 456000 503000 608000 760000 816000 912000 1000000 1100000 1216000 1408000"
-# volt range: 775-1250
+# accepted freq values: 216000 312000 324000 456000 503000 608000 760000 816000 912000 1000000 1100000 1216000 1232000 1336000 1408000 1424000 1472000 1504000"
+# volt range: 775-1325
 #
 # example:
 custom_freq_range="216000 312000 456000 608000 760000 816000 912000 1000000"

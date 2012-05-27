@@ -1,8 +1,8 @@
 #!/system/bin/sh
 
-# LG Optimus 2X AIO init script v2.2.7
+# LG Optimus 2X AIO init script v2.2.8
 # Copyright (c) by vadonka 2012
-TIMESTAMP=1337856494
+TIMESTAMP=1338122518
 date=`date +%Y.%m.%d-%H.%M.%S`
 
 # cleanup
@@ -75,10 +75,11 @@ Vibrator Strength=3000
 # Accepted range: 1500-3600
 
 OverClock Level=stock
-# Accepted values: stock, loc, hoc
+# Accepted values: stock, loc, hoc, xoc
 # stock (1000Mhz)
 # loc (1216Mhz)
 # hoc (1408Mhz)
+# xoc (1504Mhz)
 
 OTF Tweaks Enabled=on
 

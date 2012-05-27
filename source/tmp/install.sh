@@ -1,7 +1,8 @@
 #!/sbin/sh
 device=LGP990
 
-ui_print() {
+ui_print()
+{
 	echo ui_print "$@" 1>&$UPDATE_CMD_PIPE;
 	if [ -n "$@" ]; then
 		echo ui_print 1>&$UPDATE_CMD_PIPE;
@@ -10,8 +11,24 @@ ui_print() {
 log () { echo "$@"; }
 fatal() { ui_print "$@"; exit 1; }
 
+ui_progress ()
+{
+	if [ "$1" == "" ]; then
+		module=1;
+	else
+		module=$1
+	fi;
+	i=0
+	while read LINE; do
+		if [ `expr $i % $module` -eq 0 ]; then
+			echo "ui_print #" 1>&$UPDATE_CMD_PIPE
+		fi
+		i=`expr $i + 1`
+	done
+}
+
 bd="/tmp"
-BB=$bd/busybox
+BB="/sbin/busybox"
 cp="$BB cp"
 sed="$BB sed"
 awk="$BB awk"
@@ -21,12 +38,11 @@ chown="$BB chown"
 tr="$BB tr"
 find="$BB find"
 sha1sum="$BB sha1sum"
+sleep="$BB sleep"
 
 ui_print "################################"
 ui_print "#      LGE Kernel Installer    #"
 ui_print "#      rewrited by  vadonka    #"
-ui_print "#     UI is optimized for the  #"
-ui_print "#         New Touch CWM        #"
 ui_print "################################"
 ui_print ""
 ui_print "** Installing LGE kernel Kang **"
@@ -45,6 +61,32 @@ if [ -e /system/build.prop.aiotweak ]; then
 	rm /system/build.prop.aiotweak
 fi
 
+ui_print "-Checking installer config..."
+if [ -f "/sdcard/etana.conf" ]; then
+	ui_print "--Installer config found!"
+	ui_print "--Reading variables..."
+	bpallow=`grep -c "^enable_build.prop_tweaks" /sdcard/etana.conf`
+	hack=`$grep "^ramhack" /sdcard/etana.conf | $sed 's/[^0-9]//g'`
+	avpfreq=`$grep "^avpfreq" /sdcard/etana.conf | $sed 's/[^0-9]//g'`
+	gpufreq=`$grep "^gpufreq" /sdcard/etana.conf | $sed 's/[^0-9]//g'`
+	vdefreq=`$grep "^vdefreq" /sdcard/etana.conf | $sed 's/[^0-9]//g'`
+	updatesu=`grep -c "^update_su" /sdcard/etana.conf`
+	fontallow=`grep -c "^install_roboto_font" /sdcard/etana.conf`
+	adblockallow=`grep -c "^install_adblock_host" /sdcard/etana.conf`
+	$sleep 3
+else
+	ui_print "--Installer config NOT found!"
+	ui_print "--Use default values..."
+	bpallow=1
+	hack=0
+	avpfreq=240000
+	gpufreq=333000
+	vdefreq=650000
+	updatesu=0
+	fontallow=0
+	adblockallow=0
+	$sleep 3
+fi
 # Define cyanogenmod for specific parts
 cyanogen=`$grep -c "cyanogenmod" /system/build.prop`
 
@@ -62,8 +104,8 @@ add()
 	pcheck=`$grep -c "$1" /system/build.prop`
 	orig=`$grep "$1$2" /system/build.prop`
 	mod=`echo $1$2$3`
-	if [ "$pcheck" -gt "0" ]; then
-		$sed -i "s/$orig/$mod/g" /system/build.prop
+	if [ "$pcheck" -gt 0 ]; then
+		$sed -i 's/$orig/$mod/g' /system/build.prop
 	else
 		echo $mod >> /system/build.prop
 	fi
@@ -73,9 +115,9 @@ del()
 {
 	pcheck2=`$grep -c "$1" /system/build.prop`
 	orig2=`$grep "$1$2" /system/build.prop`
-	if [ "$pcheck2" -gt "0" ]; then
+	if [ "$pcheck2" -gt 0 ]; then
 		if [ ! -z "$orig2" ];then
-			$sed -i "/$orig2/d" /system/build.prop
+			$sed -i '/$orig2/d' /system/build.prop
 		fi
 	fi
 }
@@ -85,14 +127,7 @@ del()
 # Make sure that you dont delete           #
 # white space before and after the equals! #
 ############################################
-if [ -e "/sdcard/etana.conf" ]; then
-	bpallow=`grep -c "^enable_build.prop_tweaks" /sdcard/etana.conf`
-else
-	ui_print "-Kernel config file not found..."
-	ui_print "--build.prop tweaks enabled by default"
-	bpallow="1"
-fi
-if [ "$bpallow" -gt "0" ]; then
+if [ "$bpallow" -gt 0 ]; then
 ui_print "--build.prop tweaks enabled"
 # General
 ui_print "-General"
@@ -115,7 +150,7 @@ ui_print "-Endcall BSOD workaround"
 add ro.lge.proximity.delay = 25
 add ro.lg.proximity.delay = 25
 # CM7 tweak
-if [ "$cyanogen" == "1" ]; then
+if [ "$cyanogen" == 1 ]; then
 	ui_print "-CM7 specific tweaks"
 	add persist.sys.use_dithering = 0
 	add persist.sys.purgeable_assets = 1
@@ -155,72 +190,57 @@ fi # Build.prop tweaks
 ui_print ""
 ui_print "Flashing the kernel"
 ui_print "*******************"
-if [ -e "/sdcard/etana.conf" ]; then
-	# Ramhack
-	hack=`$grep "^ramhack" /sdcard/etana.conf | $awk 'BEGIN {FS="="} {print $2}'`
-	if [ "$hack" == "0" -o "$hack" == "32" -o "$hack" == "48" -o "$hack" == "64" -o "$hack" == "80" -o "$hack" == "96" ]; then
-		ui_print "-ramhack size is $hack MB"
-	else
-		ui_print "-ramhack is disabled by default"
-		hack=0
-	fi
-	# AVP Freq
-	avpfreq=`$grep "^avpfreq" /sdcard/etana.conf | $awk 'BEGIN {FS="="} {print $2}'`
-	if [ "$avpfreq" -gt "199999" -a "$avpfreq" -lt "280001" ]; then
-		ui_print "-AVP freq=$avpfreq"
-	else
-		avpfreq=240000
-		ui_print "-AVP freq=$avpfreq"
-	fi
-	# GPU Freq
-	gpufreq=`$grep "^gpufreq" /sdcard/etana.conf | $awk 'BEGIN {FS="="} {print $2}'`
-	if [ "$gpufreq" -gt "299999" -a "$gpufreq" -lt "366001" ]; then
-		ui_print "-GPU freq=$gpufreq"
-	else
-		gpufreq=333000
-		ui_print "-GPU freq=$gpufreq"
-	fi
-	# VDE Freq
-	vdefreq=`$grep "^vdefreq" /sdcard/etana.conf | $awk 'BEGIN {FS="="} {print $2}'`
-	if [ "$vdefreq" -gt "599999" -a "$vdefreq" -lt "700001" ]; then
-		ui_print "-VDE freq=$vdefreq"
-	else
-		vdefreq=650000
-		ui_print "-VDE freq=$vdefreq"
-	fi
-else
-	ui_print "-kernel config file not found..."
-	ui_print "-use default values"
-	ui_print "--ramhack disabled"
-	ui_print "--AVP freq=240000"
-	ui_print "--GPU freq=333000"
-	ui_print "--VDE freq=650000"
+# RAMhack
+if [ "$hack" -ne 0 -a "$hack" -ne 32 -a "$hack" -ne 48 -a "$hack" -ne 64 -a "$hack" -ne 80 -a "$hack" -ne 96 ]; then
 	hack=0
-	avpfreq=240000
-	gpufreq=333000
-	vdefreq=650000
+	ui_print "-RAMhack default=$hack MB"
+else
+	ui_print "-RAMhack size=$hack MB"
 fi
-ui_print "-building the new kernel..."
+# AVP Freq
+if [ "$avpfreq" -lt 200000 -o "$avpfreq" -gt 280000 ]; then
+	avpfreq=240000
+	ui_print "-AVP freq default=$avpfreq"
+else
+	ui_print "-AVP freq=$avpfreq"
+fi
+# GPU Freq
+if [ "$gpufreq" -lt 300000 -o "$gpufreq" -gt 366000 ]; then
+	gpufreq=333000
+	ui_print "-GPU freq default=$gpufreq"
+else
+	ui_print "-GPU freq=$gpufreq"
+fi
+# VDE Freq
+if [ "$vdefreq" -lt 600000 -o "$vdefreq" -gt 700000 ]; then
+	vdefreq=650000
+	ui_print "-VDE freq default=$vdefreq"
+else
+	ui_print "-VDE freq=$vdefreq"
+fi
+$sleep 3
+
+ui_print "-Building the new kernel..."
 $chmod 0777 $bd/mkbootimg
 $bd/mkbootimg --kernel $bd/zImage --ramdisk $bd/initrd.img --cmdline "mem=$((383+$hack))M@0M nvmem=$((128-$hack))M@$((384+$hack))M loglevel=0 muic_state=1 lpj=9994240 CRC=3010002a8e458d7 vmalloc=256M brdrev=1.0 video=tegrafb console=ttyS0,115200n8 usbcore.old_scheme_first=1 tegraboot=sdmmc tegrapart=recovery:35e00:2800:800,linux:34700:1000:800,mbr:400:200:800,system:600:2bc00:800,cache:2c200:8000:800,misc:34200:400:800,userdata:38700:c0000:800 androidboot.hardware=p990 avpfreq=$avpfreq gpufreq=$gpufreq vdefreq=$vdefreq" -o $bd/boot.img --base 0x10000000
 if [ "$?" -ne 0 -o ! -f $bd/boot.img ]; then
-    fatal "ERROR: Packing kernel failed!"
+	fatal "ERROR: Packing kernel failed!"
 else
 	imgsize=`ls -la $bd | grep boot.img$ | awk 'BEGIN {FS=" "} {print $5}'`
-	if [ "$imgsize" -gt "1800000" ]; then
-		echo "-New kernel image created succesfuly"
+	if [ "$imgsize" -gt 1800000 ]; then
+		ui_print "-New kernel image created succesfuly"
 	else
 		fatal "-ERROR: Building kernel failed!"
 	fi
 fi
-ui_print "-zeroed mmcblk0p5"
+ui_print "-Zeroed mmcblk0p5"
 $BB dd if=/dev/zero of=/dev/block/mmcblk0p5
-ui_print "-writing the kernel..."
+ui_print "-Writing the kernel..."
 $BB dd if=$bd/boot.img of=/dev/block/mmcblk0p5
 if [ "$?" -ne 0 ]; then
 	fatal "ERROR: Flashing kernel failed!"
 else
-	ui_print "* Kernel flashed Succesfuly! *"
+	ui_print "** Kernel flashed Succesfuly! **"
 fi
 
 # Cleanup process
@@ -250,19 +270,11 @@ ui_print "################################"
 ui_print "-Copying modules"
 cp /tmp/system/lib/modules/* /system/lib/modules/
 $chmod 0644 /system/lib/modules/*
-if [ "$cyanogen" == "1" ]; then
-	ui_print "-Cyanogenmod found!"
-	ui_print "--Installing CM7 init scripts"
-	ui_print "--Installing AIO tweak"
-	cp -f /tmp/system/etc/init.d/* /system/etc/init.d/
-	$chmod 0755 /system/etc/init.d/*
-else
-	ui_print "-Installing AIO tweak"
-	cp -f /tmp/system/etc/init.d/90tweakaio /system/etc/init.d/
-	cp -f /tmp/system/etc/init.d/99overclock /system/etc/init.d/
-	$chmod 0755 /system/etc/init.d/90tweakaio
-	$chmod 0755 /system/etc/init.d/99overclock
-fi
+ui_print "-Installing AIO tweak"
+cp -f /tmp/system/etc/init.d/90tweakaio /system/etc/init.d/
+cp -f /tmp/system/etc/init.d/99overclock /system/etc/init.d/
+$chmod 0755 /system/etc/init.d/90tweakaio
+$chmod 0755 /system/etc/init.d/99overclock
 ui_print "-Installing zram_stats binary"
 cp -f /tmp/system/xbin/zram_stats /system/xbin/zram_stats
 $chmod 0755 /system/xbin/zram_stats
@@ -284,31 +296,24 @@ else
 	ui_print "--Bash binary found..."
 	ui_print "...skipping install bash"
 fi
-if [ -e "/sdcard/etana.conf" ]; then
-	updatesu=`grep -c "^update_su" /sdcard/etana.conf`
-else
-	ui_print "-Kernel config file not found..."
-	ui_print "--skiped su update"
-	updatesu="0"
-fi
-if [ "$updatesu" -gt "0" ]; then
+if [ "$updatesu" -gt 0 ]; then
 	ui_print "-Checking su..."
 	su_location=`$find /system -type f -name su`
 	su_sha1=`$sha1sum $su_location | awk 'BEGIN {FS=" "} {print $1}'`
 	su_3032_sha1="61410f2e93f5a397f8fc3dd51ea04d6e82734615"
-	if [[ "$su_sha1" == "$su_3032_sha1" ]]; then
+	if [ "$su_sha1" == "$su_3032_sha1" ]; then
 		ui_print "--su binary is the latest"
 		ui_print "--checking su filemod..."
 		sumod1=`ls -l /system/xbin/su | awk 'BEGIN {FS=" "} {print $1}'`
 		sumod2="-rwsr-sr-x"
-		if [[ "$sumod1" == "$sumod2" ]]; then
+		if [ "$sumod1" == "$sumod2" ]; then
 			ui_print "--su binary filemod is fine"
 		else
 			ui_print "--su binary filemod is wrong, fixing..."
 			$chmod 06755 /tmp/system/xbin/su
 			$cp -fp /tmp/system/xbin/su $su_location
 		fi
-	elif [[ "$su_location" == "" ]]; then
+	elif [ "$su_location" == "" ]; then
 		ui_print "--su binary is not found"
 		ui_print "--Installing su binary v3.0.3.2"
 		$chmod 06755 /tmp/system/xbin/su
@@ -322,27 +327,13 @@ if [ "$updatesu" -gt "0" ]; then
 		#$chown root:root $su_location
 	fi
 fi
-if [ -e "/sdcard/etana.conf" ]; then
-	fontallow=`grep -c "^install_roboto_font" /sdcard/etana.conf`
-else
-	ui_print "-Kernel config file not found..."
-	ui_print "--Installing roboto font by default"
-	fontallow="1"
+if [ "$fontallow" -gt 0 ]; then
+	ui_print "-Installing Roboto font"
+	cp -f /tmp/system/fonts/* /system/fonts/
 fi
-if [ "$fontallow" -gt "0" ]; then
-ui_print "-Installing Roboto font"
-cp -f /tmp/system/fonts/* /system/fonts/
-fi
-if [ -e "/sdcard/etana.conf" ]; then
-	adblockallow=`grep -c "^install_adblock_host" /sdcard/etana.conf`
-else
-	ui_print "-Kernel config file not found..."
-	ui_print "--Installing ADblock host file by default"
-	adblockallow="1"
-fi
-if [ "$adblockallow" -gt "0" ]; then
-ui_print "-Installing ADblock host file"
-cp -f /tmp/system/etc/hosts /system/etc/hosts
+if [ "$adblockallow" -gt 0 ]; then
+	ui_print "-Installing ADblock host file"
+	cp -f /tmp/system/etc/hosts /system/etc/hosts
 fi
 ui_print "-Install TweakAIO config editor app"
 rm -f /data/app/*tweakaio*.apk

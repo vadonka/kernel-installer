@@ -20,7 +20,7 @@ date=`date +%Y.%m.%d-%H.%M.%S`
 deflog="/data/tweakaio/logs/tweakaio.log"
 parfile="/data/tweakaio/tweakaio.conf"
 
-pfsize=`ls -la $parfile | awk -F " " '{print $5}'`
+pfsize=`ls -la $parfile | awk -F " " '{print $5}' | sed 's/[^0-9]//g'`
 if [ -f $parfile ]; then
 	if [ "$pfsize" == "0" ]; then
 		echo "$date ERROR: Config file invalid" >> $deflog
@@ -28,7 +28,7 @@ if [ -f $parfile ]; then
 	fi
 fi
 
-OCLEVEL=`grep "^OverClock Level" $parfile | awk -F "=" '{ print $2 }'`
+OCLEVEL=`grep "^OverClock Level" $parfile | awk -F "=" '{ print $2 }' | sed 's/[^a-z]//g'`
 
 if [ "$custom" != "yes" ]; then
 	if [ "$OCLEVEL" == "stock" ]; then

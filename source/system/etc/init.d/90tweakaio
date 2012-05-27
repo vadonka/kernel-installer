@@ -1,8 +1,8 @@
 #!/system/bin/sh
 
-# LG Optimus 2X AIO init script v2.2.8
+# LG Optimus 2X AIO init script v2.3.0
 # Copyright (c) by vadonka 2012
-TIMESTAMP=1338122518
+TIMESTAMP=1338151751
 date=`date +%Y.%m.%d-%H.%M.%S`
 
 # cleanup
@@ -21,6 +21,29 @@ if [ -f $complog ]; then
 	rm -f $complog
 fi
 touch $complog
+
+# Read CPU1 control variables from sysfs
+onminkhzmin=`cat /sys/class/misc/cpu1control/onminkhzmin | sed 's/[^0-9]//g'`
+onminkhzmax=`cat /sys/class/misc/cpu1control/onminkhzmax | sed 's/[^0-9]//g'`
+onminkhzdef=`cat /sys/class/misc/cpu1control/onminkhzdef | sed 's/[^0-9]//g'`
+ondelaymin=`cat /sys/class/misc/cpu1control/ondelaymin | sed 's/[^0-9]//g'`
+ondelaymax=`cat /sys/class/misc/cpu1control/ondelaymax | sed 's/[^0-9]//g'`
+ondelaydef=`cat /sys/class/misc/cpu1control/ondelaydef | sed 's/[^0-9]//g'`
+offmaxkhzmin=`cat /sys/class/misc/cpu1control/offmaxkhzmin | sed 's/[^0-9]//g'`
+offmaxkhzmax=`cat /sys/class/misc/cpu1control/offmaxkhzmax | sed 's/[^0-9]//g'`
+offmaxkhzdef=`cat /sys/class/misc/cpu1control/offmaxkhzdef | sed 's/[^0-9]//g'`
+offdelaymin=`cat /sys/class/misc/cpu1control/offdelaymin | sed 's/[^0-9]//g'`
+offdelaymax=`cat /sys/class/misc/cpu1control/offdelaymax | sed 's/[^0-9]//g'`
+offdelaydef=`cat /sys/class/misc/cpu1control/offdelaydef | sed 's/[^0-9]//g'`
+
+# Define Minfree values
+def="1536,2048,4096,5120,5632,6144"
+std="1536,3072,4096,7680,8960,10240"
+opt="1536,2048,4096,10240,12800,15360"
+str="1536,2048,4096,15360,17920,20480"
+aggr="1536,3072,4096,21000,23000,25000"
+extr="1536,3072,4096,38400,40960,43520"
+ult="1536,3072,4096,51200,57600,64000"
 
 carveout_size=`cat /proc/cmdline | tr ' ' '\n' | grep ^nvmem | awk -F '=' '{print $2}' | awk -F '@' '{print $1}' | sed -e s/M//`
 
@@ -54,7 +77,7 @@ Logger Enabled=on
 # LOW MEMORY KILLER MODE (aka LMK)
 LMK Tweaks Enabled=on
 # LMK Values are:
-# auto, def, std, opt, str, aggr, extr, ult
+# def, std, opt, str, aggr, extr, ult
 LMK Mode=str
 
 Network Tweaks Enabled=on
@@ -86,17 +109,17 @@ OTF Tweaks Enabled=on
 NITRO Enabled=off
 # Override all of this settings above!
 
-Min CPU1 On Frequency=816000
-# Accepted range: 216000-1000000
+Min CPU1 On Frequency=$onminkhzdef
+# Accepted range: $onminkhzmin-$onminkhzmax
 
-CPU1 On Delay Time=2000
-# Accepted range: 300-2500
+CPU1 On Delay Time=$ondelaydef
+# Accepted range: $ondelaymin-$ondelaymax
 
-Max CPU1 Off Frequency=860000
-# Accepted range: 216000-1000000
+Max CPU1 Off Frequency=$offmaxkhzdef
+# Accepted range: $offmaxkhzmin-$offmaxkhzmax
 
-CPU1 Off Delay Time=1000
-# Accepted range: 300-2000
+CPU1 Off Delay Time=$offdelaydef
+# Accepted range: $offdelaymin-$offdelaymax
 
 EOF
 
@@ -104,12 +127,12 @@ EOF
 chmod 0777 /data/tweakaio/tweakaio.conf
 }
 
-pfsize=`ls -la /data/tweakaio/tweakaio.conf | awk -F " " '{print $5}'`
+pfsize=`ls -la /data/tweakaio/tweakaio.conf | awk -F " " '{print $5}' | sed 's/[^0-9]//g'`
 if [ -f /data/tweakaio/tweakaio.conf ]; then
 	if [ "$pfsize" == "0" ]; then
 		pfcreate
 	else
-		CONFTIME=`grep TIMESTAMP /data/tweakaio/tweakaio.conf | awk -F " " '{ print $3 }'`
+		CONFTIME=`grep TIMESTAMP /data/tweakaio/tweakaio.conf | awk -F " " '{ print $3 }' | sed 's/[^0-9]//g'`
 		if [[ "$CONFTIME" -ne "$TIMESTAMP" ]]; then
 			pfcreate
 		fi
@@ -141,14 +164,13 @@ Default is "on"
 LOW MEMORY KILLER (LMK) MODE:
 *****************************
 LMK Accepted values are:
-auto: manage lowmemorykiller parameter automatically, depend on the total RAM
-def: stock values 2048,3072,4096,6144,7168,8192 (CM7)
-std: standard values 1536,3072,4096,7680,8960,10240
-opt: optimum values 1536,2048,4096,10240,12800,15360
-str: strict values 1536,2048,4096,15360,17920,20480
-aggr: aggressive values 1536,3072,4096,21000,23000,25000
-extr: extreme values 1536,3072,4096,38400,40960,43520
-ult: ultimate values 1536,3072,4096,51200,57600,64000
+def: stock values $def (CM7)
+std: standard values $std
+opt: optimum values $opt
+str: strict values $str
+aggr: aggressive values $aggr
+extr: extreme values $extr
+ult: ultimate values $ult
 
 LMKMODE Accepted values are: on, off
 Default is "on"
@@ -267,34 +289,34 @@ helpcreate
 
 readvar()
 {
-export SCRIPT_ENABLE=`grep "^Script Enabled" $parfile | awk -F "=" '{ print $2 }'`
-export ENABLE_LOGGER=`grep "^Logger Enabled" $parfile | awk -F "=" '{ print $2 }'`
-export ENABLE_LMK_TWEAK=`grep "^LMK Tweaks Enabled" $parfile | awk -F "=" '{ print $2 }'`
-export LMK_MODE=`grep "^LMK Mode" $parfile | awk -F "=" '{ print $2 }'`
-export ENABLE_NET_TWEAKS=`grep "^Network Tweaks Enabled" $parfile | awk -F "=" '{ print $2 }'`
-export ENABLE_VM_TWEAKS=`grep "^Memory Management Tweaks Enabled" $parfile | awk -F "=" '{ print $2 }'`
-export ENABLE_KSM=`grep "^KSM Enabled" $parfile | awk -F "=" '{ print $2 }'`
-export ENABLE_COMPCACHE=`grep "^Compcache Enabled" $parfile | awk -F "=" '{ print $2 }'`
-export COMPCACHE_SIZE=`grep "^Compcache Size" $parfile | awk -F "=" '{ print $2 }'`
-export COMPCACHE_RATIO=`grep "^Compcache Ratio" $parfile | awk -F "=" '{ print $2 }'`
-export CACHE_DROP_INTERVAL=`grep "^Cache Drop Interval Time" $parfile | awk -F "=" '{ print $2 }'`
-export ENABLE_MOUNT_TWEAKS=`grep "^Mount Tweaks Enabled" $parfile | awk -F "=" '{ print $2 }'`
-export SCHEDULER=`grep "^IO Scheduler" $parfile | awk -F "=" '{ print $2 }'`
-export ENABLE_DALVIK_CLEANER=`grep "^Dalvik Cache Cleaner Enabled" $parfile | awk -F "=" '{ print $2 }'`
-export ENABLE_SQLITE_DEFRAG=`grep "^SQLite3 Defrag Enabled" $parfile | awk -F "=" '{ print $2 }'`
-export VIBRA_STR=`grep "^Vibrator Strength" $parfile | awk -F "=" '{ print $2 }'`
-export ENABLE_OTF=`grep "^OTF Tweaks Enabled" $parfile | awk -F "=" '{ print $2 }'`
-export MIN_CPU1_ON=`grep "^Min CPU1 On Frequency" $parfile | awk -F "=" '{ print $2 }'`
-export CPU1_ON_DELAY=`grep "^CPU1 On Delay Time" $parfile | awk -F "=" '{ print $2 }'`
-export MAX_CPU1_OFF=`grep "^Max CPU1 Off Frequency" $parfile | awk -F "=" '{ print $2 }'`
-export CPU1_OFF_DELAY=`grep "^CPU1 Off Delay Time" $parfile | awk -F "=" '{ print $2 }'`
-export ENABLE_NITRO=`grep "^NITRO Enabled" $parfile | awk -F "=" '{ print $2 }'`
+SCRIPT_ENABLE=`grep "^Script Enabled" $parfile | awk -F "=" '{ print $2 }' | sed 's/[^a-z]//g'`
+ENABLE_LOGGER=`grep "^Logger Enabled" $parfile | awk -F "=" '{ print $2 }' | sed 's/[^a-z]//g'`
+ENABLE_LMK_TWEAK=`grep "^LMK Tweaks Enabled" $parfile | awk -F "=" '{ print $2 }' | sed 's/[^a-z]//g'`
+LMK_MODE=`grep "^LMK Mode" $parfile | awk -F "=" '{ print $2 }' | sed 's/[^a-z]//g'`
+ENABLE_NET_TWEAKS=`grep "^Network Tweaks Enabled" $parfile | awk -F "=" '{ print $2 }' | sed 's/[^a-z]//g'`
+ENABLE_VM_TWEAKS=`grep "^Memory Management Tweaks Enabled" $parfile | awk -F "=" '{ print $2 }' | sed 's/[^a-z]//g'`
+ENABLE_KSM=`grep "^KSM Enabled" $parfile | awk -F "=" '{ print $2 }' | sed 's/[^a-z]//g'`
+ENABLE_COMPCACHE=`grep "^Compcache Enabled" $parfile | awk -F "=" '{ print $2 }' | sed 's/[^a-z]//g'`
+COMPCACHE_SIZE=`grep "^Compcache Size" $parfile | awk -F "=" '{ print $2 }' | sed 's/[^0-9]//g'`
+COMPCACHE_RATIO=`grep "^Compcache Ratio" $parfile | awk -F "=" '{ print $2 }' | sed 's/[^0-9]//g'`
+CACHE_DROP_INTERVAL=`grep "^Cache Drop Interval Time" $parfile | awk -F "=" '{ print $2 }' | sed 's/[^0-9]//g'`
+ENABLE_MOUNT_TWEAKS=`grep "^Mount Tweaks Enabled" $parfile | awk -F "=" '{ print $2 }' | sed 's/[^a-z]//g'`
+SCHEDULER=`grep "^IO Scheduler" $parfile | awk -F "=" '{ print $2 }' | sed 's/[^a-z]//g'`
+ENABLE_DALVIK_CLEANER=`grep "^Dalvik Cache Cleaner Enabled" $parfile | awk -F "=" '{ print $2 }' | sed 's/[^a-z]//g'`
+ENABLE_SQLITE_DEFRAG=`grep "^SQLite3 Defrag Enabled" $parfile | awk -F "=" '{ print $2 }' | sed 's/[^a-z]//g'`
+VIBRA_STR=`grep "^Vibrator Strength" $parfile | awk -F "=" '{ print $2 }' | sed 's/[^0-9]//g'`
+ENABLE_OTF=`grep "^OTF Tweaks Enabled" $parfile | awk -F "=" '{ print $2 }' | sed 's/[^a-z]//g'`
+onminkhz=`grep "^Min CPU1 On Frequency" $parfile | awk -F "=" '{ print $2 }' | sed 's/[^0-9]//g'`
+ondelay=`grep "^CPU1 On Delay Time" $parfile | awk -F "=" '{ print $2 }' | sed 's/[^0-9]//g'`
+offmaxkhz=`grep "^Max CPU1 Off Frequency" $parfile | awk -F "=" '{ print $2 }' | sed 's/[^0-9]//g'`
+offdelay=`grep "^CPU1 Off Delay Time" $parfile | awk -F "=" '{ print $2 }' | sed 's/[^0-9]//g'`
+ENABLE_NITRO=`grep "^NITRO Enabled" $parfile | awk -F "=" '{ print $2 }' | sed 's/[^a-z]//g'`
 }
 
 if [ -f /data/tweakaio/tweakaio.conf ]; then
 	# fix parfile permission
 	chmod 0777 /data/tweakaio/tweakaio.conf
-	RESET=`grep "^Reset Settings" $parfile | awk -F "=" '{ print $2 }'`
+	RESET=`grep "^Reset Settings" $parfile | awk -F "=" '{ print $2 }' | sed 's/[^a-z]//g'`
 	if [ "$RESET" == "on" ]; then
 		echo "$date Reset settings to factory defaults..." >> $deflog
 		pfcreate
@@ -335,7 +357,7 @@ sysctl_proc()
 ##########################################
 # Basic Memory Management and LMK Tweaks #
 ##########################################
-TOTALMEM=`free | grep Mem | awk -F " " '{ print $2 }'`
+TOTALMEM=`free | grep Mem | awk -F " " '{ print $2 }' | sed 's/[^0-9]//g'`
 
 basic_mem_tweaks()
 {
@@ -344,35 +366,14 @@ if [ -z "$LMK_MODE" ]; then
 fi
 	# Strict minfree handler tweak
 	etweak /sys/module/lowmemorykiller/parameters/adj 0,1,2,4,6,15
-	lmk()
-		{
-			if [ "$LMK_MODE" == "$1" ]; then
-				echo "$date Lowmemorykiller mode is: $LMK_MODE" >> $deflog
-				etweak /sys/module/lowmemorykiller/parameters/minfree $2
-			fi
-		}
-
-	# lowmemorykiller auto management
-	if [ "$LMK_MODE" == "auto" ]; then
-		echo "$date Using LowMemoryKiller Auto management mode..." >> $deflog
-			if [ "$TOTALMEM" -gt "470000" ]; then
-				LMK_MODE="std"
-			elif [ "$TOTALMEM" -gt "440000" ]; then
-				LMK_MODE="opt"
-			elif [ "$TOTALMEM" -gt "410000" ]; then
-				LMK_MODE="str"
-			else
-				LMK_MODE="aggr"
-			fi
-	fi
-	# Define minfree
-	lmk def 1536,2048,4096,5120,5632,6144
-	lmk std 1536,3072,4096,7680,8960,10240
-	lmk opt 1536,2048,4096,10240,12800,15360
-	lmk str 1536,2048,4096,15360,17920,20480
-	lmk aggr 1536,3072,4096,21000,23000,25000
-	lmk extr 1536,3072,4096,38400,40960,43520
-	lmk ult 1536,3072,4096,51200,57600,64000
+	echo "$date Lowmemorykiller mode is: $LMK_MODE" >> $deflog
+	if [ "$LMK_MODE" == "def" ]; then etweak /sys/module/lowmemorykiller/parameters/minfree $def; fi
+	if [ "$LMK_MODE" == "std" ]; then etweak /sys/module/lowmemorykiller/parameters/minfree $std; fi
+	if [ "$LMK_MODE" == "opt" ]; then etweak /sys/module/lowmemorykiller/parameters/minfree $opt; fi
+	if [ "$LMK_MODE" == "str" ]; then etweak /sys/module/lowmemorykiller/parameters/minfree $str; fi
+	if [ "$LMK_MODE" == "aggr" ]; then etweak /sys/module/lowmemorykiller/parameters/minfree $aggr; fi
+	if [ "$LMK_MODE" == "extr" ]; then etweak /sys/module/lowmemorykiller/parameters/minfree $extr; fi
+	if [ "$LMK_MODE" == "ult" ]; then etweak /sys/module/lowmemorykiller/parameters/minfree $ult; fi
 }
 
 ##################
@@ -634,7 +635,7 @@ sqlidefrag()
 #####################
 vibrastr()
 {
-	VIBRA_STROLD=`cat /sys/devices/virtual/misc/vibratorcontrol/vibrator_strength`
+	VIBRA_STROLD=`cat /sys/devices/virtual/misc/vibratorcontrol/vibrator_strength | sed 's/[^0-9]//g'`
 	if [[ "$VIBRA_STR" -ne "$VIBRA_STROLD" ]]; then
 		echo "$date Adjusting vibrator strength to: $VIBRA_STR" >> $deflog
 		echo $VIBRA_STR > /sys/devices/virtual/misc/vibratorcontrol/vibrator_strength
@@ -652,43 +653,42 @@ otf()
 		echo "$date OTF is supported by the kernel" >> $deflog
 		# Initialization & Boot time part
 		# CPU1 deactivation threshold
-		if [ "$MIN_CPU1_ON" -gt "215999" -a "$MIN_CPU1_ON" -lt "1000001" ]; then
-			echo "$date CPU1 deactivation threshold freq within the acceptable range" >> $deflog
-			echo $MIN_CPU1_ON > /sys/class/misc/cpu1control/onminkhz
-			echo "$date CPU1 deactivation threshold freq = "`cat /sys/class/misc/cpu1control/onminkhz` >> $deflog
-		else
+		if [ $onminkhz -lt $onminkhzmin -o $onminkhz -gt $onminkhzmax ]; then
 			echo "$date WARNING: Your CPU1 deactivation threshold freq is out of the safe range!" >> $deflog
-			echo "816000" > /sys/class/misc/cpu1control/onminkhz
-			echo "$date CPU1 deactivation threshold freq set to 816000 by default" >> $deflog
-		fi
-		
-		if [ "$CPU1_ON_DELAY" -gt "299" -a "$CPU1_ON_DELAY" -lt "2501" ]; then
-			echo "$date CPU1 deactivation delay within the acceptable range" >> $deflog
-			echo $CPU1_ON_DELAY > /sys/class/misc/cpu1control/ondelay
-			echo "$date CPU1 deactivation delay = "`cat /sys/class/misc/cpu1control/ondelay` >> $deflog
+			echo $onminkhzdef > /sys/class/misc/cpu1control/onminkhz
+			echo "$date CPU1 deactivation threshold freq set to $onminkhzdef by default" >> $deflog
 		else
+			echo "$date CPU1 deactivation threshold freq within the acceptable range" >> $deflog
+			echo $onminkhz > /sys/class/misc/cpu1control/onminkhz
+			echo "$date CPU1 deactivation threshold freq = "`cat /sys/class/misc/cpu1control/onminkhz | sed 's/[^0-9]//g'` >> $deflog
+		fi
+		if [ $ondelay -lt $ondelaymin -o $ondelay -gt $ondelaymax ]; then
 			echo "$date WARNING: Your CPU1 deactivation delay is out of the safe range!" >> $deflog
-			echo "2000" > /sys/class/misc/cpu1control/ondelay
-			echo "$date CPU1 deactivation delay set to 2000 by default" >> $deflog
+			echo $ondelaydef > /sys/class/misc/cpu1control/ondelay
+			echo "$date CPU1 deactivation delay set to $ondelaydef by default" >> $deflog
+		else
+			echo "$date CPU1 deactivation delay within the acceptable range" >> $deflog
+			echo $ondelay > /sys/class/misc/cpu1control/ondelay
+			echo "$date CPU1 deactivation delay = "`cat /sys/class/misc/cpu1control/ondelay | sed 's/[^0-9]//g'` >> $deflog
 		fi
 		# CPU1 activation threshold
-		if [ "$MAX_CPU1_OFF" -gt "215999" -a "$MAX_CPU1_OFF" -lt "1000001" ]; then
-			echo "$date CPU1 activation threshold freq within the acceptable range" >> $deflog
-			echo $MAX_CPU1_OFF > /sys/class/misc/cpu1control/offmaxkhz
-			echo "$date CPU1 activation threshold freq = "`cat /sys/class/misc/cpu1control/offmaxkhz` >> $deflog
-		else
+		if [ $offmaxkhz -lt $offmaxkhzmin -o $offmaxkhz -gt $offmaxkhzmax ]; then
 			echo "$date WARNING: Your CPU1 activation threshold freq is out of the safe range!" >> $deflog
-			echo "860000" > /sys/class/misc/cpu1control/offmaxkhz
-			echo "$date CPU1 activation threshold freq set to 860000 by default" >> $deflog
-		fi
-		if [ "$CPU1_OFF_DELAY" -gt "299" -a "$CPU1_OFF_DELAY" -lt "2001" ]; then
-			echo "$date CPU1 activation delay within the acceptable range" >> $deflog
-			echo $CPU1_OFF_DELAY > /sys/class/misc/cpu1control/offdelay
-			echo "$date CPU1 activation delay = "`cat /sys/class/misc/cpu1control/offdelay` >> $deflog
+			echo $offmaxkhzdef > /sys/class/misc/cpu1control/offmaxkhz
+			echo "$date CPU1 activation threshold freq set to $offmaxkhzdef by default" >> $deflog
 		else
+			echo "$date CPU1 activation threshold freq within the acceptable range" >> $deflog
+			echo $offmaxkhz > /sys/class/misc/cpu1control/offmaxkhz
+			echo "$date CPU1 activation threshold freq = "`cat /sys/class/misc/cpu1control/offmaxkhz | sed 's/[^0-9]//g'` >> $deflog
+		fi
+		if [ $offdelay -lt $offdelaymin -o $offdelay -gt $offdelaymax ]; then
 			echo "$date WARNING: Your CPU1 activation delay is out of the safe range!" >> $deflog
-			echo "1000" > /sys/class/misc/cpu1control/offdelay
-			echo "$date CPU1 activation delay set to 1000 by default" >> $deflog
+			echo $offdelaydef > /sys/class/misc/cpu1control/offdelay
+			echo "$date CPU1 activation delay set to $offdelaydef by default" >> $deflog
+		else
+			echo "$date CPU1 activation delay within the acceptable range" >> $deflog
+			echo $offdelay > /sys/class/misc/cpu1control/offdelay
+			echo "$date CPU1 activation delay = "`cat /sys/class/misc/cpu1control/offdelay | sed 's/[^0-9]//g'` >> $deflog
 		fi
 		# Nitro flag check
 		if [ "$ENABLE_NITRO" == "on" ]; then
@@ -700,11 +700,12 @@ otf()
 	fi
 }
 
-#######################
-# Procedures end here #
-#######################
+########################
+# Procedures ends here #
+########################
 
 sysctl -p /etc/sysctl.conf
+
 if [ "$ENABLE_LMK_TWEAK" == "on" ]; then
 	basic_mem_tweaks
 fi

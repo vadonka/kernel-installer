@@ -2,7 +2,7 @@
 
 # LG Optimus 2X AIO init script v2.3.0
 # Copyright (c) by vadonka 2012
-TIMESTAMP=1338151751
+TIMESTAMP=1338196587
 date=`date +%Y.%m.%d-%H.%M.%S`
 
 # cleanup
@@ -103,6 +103,7 @@ OverClock Level=stock
 # loc (1216Mhz)
 # hoc (1408Mhz)
 # xoc (1504Mhz)
+Higher Min CPU Freq=off
 
 OTF Tweaks Enabled=on
 

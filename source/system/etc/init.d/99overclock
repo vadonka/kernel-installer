@@ -1,6 +1,6 @@
 #!/system/bin/sh
 
-# LG Optimus 2X TweakAIO SysFS interface OverClock management init script v1.0.1
+# LG Optimus 2X TweakAIO SysFS interface OverClock management init script v1.0.3
 # Copyright (c) by vadonka 2012
 
 #### if you want to use custom range and volts then set this to yes
@@ -29,36 +29,72 @@ if [ -f $parfile ]; then
 fi
 
 OCLEVEL=`grep "^OverClock Level" $parfile | awk -F "=" '{ print $2 }' | sed 's/[^a-z]//g'`
+HIGHMIN=`grep "^Higher Min CPU Freq" $parfile | awk -F "=" '{ print $2 }' | sed 's/[^a-z]//g'`
 
 if [ "$custom" != "yes" ]; then
 	if [ "$OCLEVEL" == "stock" ]; then
 		echo "$date OC Level: Stock, max CPU Freq Set to 1000000" >> $deflog
-		echo "216000 324000 456000 608000 760000 816000 912000 1000000" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_frequencies
-		echo "216000 324000 456000 608000 760000 816000 912000 1000000" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_step_freqs
-		echo "775 800 825 850 875 900 950 975" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_step_volts
-		echo 216000 > /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
-		echo 1000000 > /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
+		if [ "$HIGHMIN" == "on" ]; then
+			echo "312000 456000 503000 608000 760000 816000 912000 1000000" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_frequencies
+			echo "312000 456000 503000 608000 760000 816000 912000 1000000" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_step_freqs
+			echo "800 825 835 850 875 900 950 975" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_step_volts
+			echo 312000 > /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
+			echo 1000000 > /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
+		else
+			echo "216000 324000 456000 608000 760000 816000 912000 1000000" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_frequencies
+			echo "216000 324000 456000 608000 760000 816000 912000 1000000" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_step_freqs
+			echo "775 800 825 850 875 900 950 975" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_step_volts
+			echo 216000 > /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
+			echo 1000000 > /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
+		fi
 	elif [ "$OCLEVEL" == "loc" ]; then
-		echo "$date OC Level: Light, max CPU Freq Set to 1216000" >> $deflog
-		echo "216000 324000 456000 608000 816000 1000000 1100000 1216000" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_frequencies
-		echo "216000 324000 456000 608000 816000 1000000 1100000 1216000" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_step_freqs
-		echo "775 800 825 850 900 975 1050 1150" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_step_volts
-		echo 216000 > /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
-		echo 1216000 > /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
+		if [ "$HIGHMIN" == "on" ]; then
+			echo "$date OC Level: Light, max CPU Freq Set to 1216000" >> $deflog
+			echo "312000 456000 503000 608000 816000 1000000 1100000 1216000" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_frequencies
+			echo "312000 456000 503000 608000 816000 1000000 1100000 1216000" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_step_freqs
+			echo "800 825 835 850 900 975 1050 1150" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_step_volts
+			echo 312000 > /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
+			echo 1216000 > /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
+		else
+			echo "$date OC Level: Light, max CPU Freq Set to 1216000" >> $deflog
+			echo "216000 324000 456000 608000 816000 1000000 1100000 1216000" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_frequencies
+			echo "216000 324000 456000 608000 816000 1000000 1100000 1216000" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_step_freqs
+			echo "775 800 825 850 900 975 1050 1150" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_step_volts
+			echo 216000 > /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
+			echo 1216000 > /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
+		fi
 	elif [ "$OCLEVEL" == "hoc" ]; then
-		echo "$date OC Level: High, max CPU Freq Set to 1408000" >> $deflog
-		echo "216000 324000 503000 816000 1000000 1100000 1216000 1408000" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_frequencies
-		echo "216000 324000 503000 816000 1000000 1100000 1216000 1408000" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_step_freqs
-		echo "775 800 850 900 975 1050 1150 1250" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_step_volts
-		echo 216000 > /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
-		echo 1408000 > /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
+		if [ "$HIGHMIN" == "on" ]; then
+			echo "$date OC Level: High, max CPU Freq Set to 1408000" >> $deflog
+			echo "312000 456000 608000 816000 1000000 1100000 1216000 1408000" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_frequencies
+			echo "312000 456000 608000 816000 1000000 1100000 1216000 1408000" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_step_freqs
+			echo "800 825 850 900 975 1050 1150 1250" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_step_volts
+			echo 312000 > /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
+			echo 1408000 > /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
+		else
+			echo "$date OC Level: High, max CPU Freq Set to 1408000" >> $deflog
+			echo "216000 324000 503000 816000 1000000 1100000 1216000 1408000" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_frequencies
+			echo "216000 324000 503000 816000 1000000 1100000 1216000 1408000" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_step_freqs
+			echo "775 800 850 900 975 1050 1150 1250" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_step_volts
+			echo 216000 > /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
+			echo 1408000 > /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
+		fi
 	elif [ "$OCLEVEL" == "xoc" ]; then
-		echo "$date OC Level: High, max CPU Freq Set to 1504000" >> $deflog
-		echo "216000 456000 760000 912000 1100000 1216000 1408000 1504000" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_frequencies
-		echo "216000 456000 760000 912000 1100000 1216000 1408000 1504000" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_step_freqs
-		echo "775 820 875 950 1050 1150 1250 1325" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_step_volts
-		echo 216000 > /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
-		echo 1504000 > /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
+		if [ "$HIGHMIN" == "on" ]; then
+			echo "$date OC Level: High, max CPU Freq Set to 1504000" >> $deflog
+			echo "312000 503000 760000 912000 1100000 1216000 1408000 1504000" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_frequencies
+			echo "312000 503000 760000 912000 1100000 1216000 1408000 1504000" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_step_freqs
+			echo "800 850 875 950 1050 1150 1250 1325" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_step_volts
+			echo 312000 > /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
+			echo 1504000 > /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
+		else
+			echo "$date OC Level: High, max CPU Freq Set to 1504000" >> $deflog
+			echo "216000 456000 760000 912000 1100000 1216000 1408000 1504000" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_frequencies
+			echo "216000 456000 760000 912000 1100000 1216000 1408000 1504000" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_step_freqs
+			echo "775 820 875 950 1050 1150 1250 1325" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_step_volts
+			echo 216000 > /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
+			echo 1504000 > /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
+		fi
 	else
 		echo "$date OC level: High, max CPU Freq Set to 1408000" >> $deflog
 	fi

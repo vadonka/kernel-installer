@@ -72,6 +72,7 @@ if [ "$bpallow" -gt 0 ]; then
 ui_print "-Applying build.prop tweaks"
 cp -f /tmp/system/build.prop /system/build.prop
 chmod 0666 /system/build.prop
+fi
 
 # Installing modules, tweaks, mods
 ui_print ""

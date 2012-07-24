@@ -38,12 +38,12 @@ offdelaydef=`cat /sys/class/misc/cpu1control/offdelaydef | sed 's/[^0-9]//g'`
 
 # Define Minfree values
 def="1536,2048,4096,5120,5632,6144"
-std="1536,3072,4096,7680,8960,10240"
+std="1536,2048,4096,7680,8960,10240"
 opt="1536,2048,4096,10240,12800,15360"
-str="1536,2048,4096,15360,17920,20480"
-aggr="1536,3072,4096,21000,23000,25000"
-extr="1536,3072,4096,38400,40960,43520"
-ult="1536,3072,4096,51200,57600,64000"
+str="2048,4096,8192,15360,17920,20480"
+aggr="2048,4096,8192,16384,24576,30720"
+extr="3072,4096,16384,38400,40960,43520"
+ult="3072,4096,16384,51200,57600,64000"
 
 carveout_size=`cat /proc/cmdline | tr ' ' '\n' | grep ^nvmem | awk -F '=' '{print $2}' | awk -F '@' '{print $1}' | sed -e s/M//`
 
@@ -78,7 +78,7 @@ Logger Enabled=on
 LMK Tweaks Enabled=on
 # LMK Values are:
 # def, std, opt, str, aggr, extr, ult
-LMK Mode=str
+LMK Mode=aggr
 
 Network Tweaks Enabled=on
 Memory Management Tweaks Enabled=on

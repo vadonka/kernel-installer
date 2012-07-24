@@ -1,8 +1,8 @@
 #!/system/bin/sh
 
-# LG Optimus 2X AIO init script v2.3.1
+# LG Optimus 2X AIO init script v2.3.2
 # Copyright (c) by vadonka 2012
-TIMESTAMP=1342017832
+TIMESTAMP=1343144088
 date=`date +%Y.%m.%d-%H.%M.%S`
 
 # cleanup
@@ -35,6 +35,8 @@ offmaxkhzdef=`cat /sys/class/misc/cpu1control/offmaxkhzdef | sed 's/[^0-9]//g'`
 offdelaymin=`cat /sys/class/misc/cpu1control/offdelaymin | sed 's/[^0-9]//g'`
 offdelaymax=`cat /sys/class/misc/cpu1control/offdelaymax | sed 's/[^0-9]//g'`
 offdelaydef=`cat /sys/class/misc/cpu1control/offdelaydef | sed 's/[^0-9]//g'`
+
+vibrastr=`cat /sys/devices/virtual/misc/vibratorcontrol/vibrator_strength | sed 's/[^0-9]//g'`
 
 # Define Minfree values
 def="1536,2048,4096,5120,5632,6144"

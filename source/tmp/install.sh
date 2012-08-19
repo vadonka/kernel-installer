@@ -50,16 +50,12 @@ if [ -f "/sdcard/etana.conf" ]; then
 	ui_print "-Installer config found!"
 	ui_print "-Reading variables..."
 	bpallow=`grep -c "^enable_build.prop_tweaks" /sdcard/etana.conf`
-	updatesu=`grep -c "^update_su" /sdcard/etana.conf`
-	fontallow=`grep -c "^install_roboto_font" /sdcard/etana.conf`
 	adblockallow=`grep -c "^install_adblock_host" /sdcard/etana.conf`
 	$sleep 3
 else
 	ui_print "-Installer config NOT found!"
 	ui_print "-Use default values..."
 	bpallow=1
-	updatesu=0
-	fontallow=0
 	adblockallow=0
 	$sleep 3
 fi
@@ -92,41 +88,6 @@ if [ ! -f $bash_location ]; then
 else
 	ui_print "--Bash binary found..."
 	ui_print "...skipping install bash"
-fi
-if [ "$updatesu" -gt 0 ]; then
-	ui_print "-Checking su..."
-	su_location=`$find /system -type f -name su`
-	su_sha1=`$sha1sum $su_location | awk 'BEGIN {FS=" "} {print $1}'`
-	su_3032_sha1="61410f2e93f5a397f8fc3dd51ea04d6e82734615"
-	if [ "$su_sha1" == "$su_3032_sha1" ]; then
-		ui_print "--su binary is the latest"
-		ui_print "--checking su filemod..."
-		sumod1=`ls -l /system/xbin/su | awk 'BEGIN {FS=" "} {print $1}'`
-		sumod2="-rwsr-sr-x"
-		if [ "$sumod1" == "$sumod2" ]; then
-			ui_print "--su binary filemod is fine"
-		else
-			ui_print "--su binary filemod is wrong, fixing..."
-			$chmod 06755 /tmp/system/xbin/su
-			$cp -fp /tmp/system/xbin/su $su_location
-		fi
-	elif [ "$su_location" == "" ]; then
-		ui_print "--su binary is not found"
-		ui_print "--Installing su binary v3.0.3.2"
-		$chmod 06755 /tmp/system/xbin/su
-		$cp -p /tmp/system/xbin/su /system/xbin/su
-		#$chown root:root /system/xbin/su
-	else
-		ui_print "--su binary is outdated"
-		ui_print "--Installing su binary v3.0.3.2"
-		$chmod 06755 /tmp/system/xbin/su
-		$cp -fp /tmp/system/xbin/su $su_location
-		#$chown root:root $su_location
-	fi
-fi
-if [ "$fontallow" -gt 0 ]; then
-	ui_print "-Installing Roboto font"
-	cp -f /tmp/system/fonts/* /system/fonts/
 fi
 if [ "$adblockallow" -gt 0 ]; then
 	ui_print "-Installing ADblock host file"
